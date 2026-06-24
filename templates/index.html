@@ -3,31 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Network Discovery & Traffic Analysis Platform</title>
+    <title>Advanced Network Deep Diagnostic & Audit Radar</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* ── Genel ── */
+        /* ── Genel Sayfa Ayarları ── */
         body {
             background-color: #21252e;
             color: #ffffff;
             font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
-            padding-bottom: 80px;
+            padding-bottom: 120px;
         }
-
-        /* ── Navbar ── */
         .custom-navbar {
             background-color: #0d0f14;
             border-bottom: 2px solid #ff0033;
             padding: 15px 0;
         }
-        .brand-text {
-            font-weight: 700;
-            letter-spacing: 1px;
-            color: #ff0033 !important;
-        }
-
-        /* ── Ana kart ── */
+        .brand-text { font-weight: 700; letter-spacing: 1px; color: #ff0033 !important; }
+        
+        /* ── Ana Tablo Kartı ── */
         .main-card {
             background-color: #0d0f14;
             border: 1px solid #343a40;
@@ -35,8 +29,6 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.4);
             overflow: hidden;
         }
-
-        /* ── Tablo ── */
         .table { color: #ffffff !important; margin-bottom: 0; }
         .table thead th {
             background-color: #ff0033 !important;
@@ -44,9 +36,7 @@
             font-weight: 700;
             text-transform: uppercase;
             font-size: 0.85rem;
-            letter-spacing: 1px;
             padding: 14px;
-            border-bottom: none;
         }
         .table tbody td {
             color: #ffffff !important;
@@ -58,85 +48,85 @@
         .clickable-row:hover td { background-color: #1a1e29 !important; }
         .clickable-row.active td { background-color: #1a1e29 !important; }
 
-        /* ── Akıcı Animasyonlu Detay Satırı Yapısı ── */
-        .detail-row td {
-            padding: 0 !important; /* Animasyon fiziğinin bozulmaması için padding sıfırlanmalı */
-            background-color: #07090d !important;
-        }
-
+        /* ── 🔄 Akıcı Animasyonlu Detay Paneli Düzeni ── */
+        .detail-row td { padding: 0 !important; background-color: #07090d !important; }
         .detail-wrapper {
             max-height: 0;
             overflow: hidden;
             opacity: 0;
             transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease-in-out;
         }
-
-        /* Panel Açıldığında Tetiklenecek CSS Sınıfı */
-        .detail-wrapper.open {
-            max-height: 500px; /* İçeriğin sığabileceği güvenli bir üst sınır */
-            opacity: 1;
-            padding: 24px;
+        .detail-wrapper.open { max-height: 1500px; opacity: 1; padding: 24px; }
+        
+        /* 💻 Genişletilmiş CMD Terminal Teması */
+        .cmd-terminal {
+            background-color: #000000;
+            color: #00ff00;
+            font-family: 'Consolas', 'Courier New', monospace;
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid #333333;
+            white-space: pre-wrap;
+            height: 220px;
+            overflow-y: auto;
+            margin-top: 10px;
+            font-size: 0.9rem;
         }
-
-        .details-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 16px;
-        }
-        @media (max-width: 768px) {
-            .details-grid { grid-template-columns: 1fr; }
-        }
-
-        /* ── Feature kutucukları ── */
+        
+        /* Bilgi Gruplama Kutuları */
         .feature-box {
             background-color: #121620;
             padding: 16px;
             border-radius: 6px;
             border: 1px solid #2c3242;
-            transition: all 0.2s ease;
+            height: 100%;
         }
-        .feature-box:hover {
-            border-color: #ff0033;
-            box-shadow: 0 0 12px rgba(255,0,51,0.3);
+        .port-box {
+            background-color: #1a1215;
+            border: 1px solid #5c1a24;
         }
         .feature-title {
             font-size: 0.75rem;
             color: #94a3b8;
             text-transform: uppercase;
             font-weight: 700;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             letter-spacing: 0.5px;
         }
         .feature-value { font-size: 1rem; font-weight: 600; }
+        
+        .auto-scan-badge { background-color: #1e293b; color: #38bdf8; border: 1px solid #38bdf8; font-size: 0.8rem; }
+        .btn-scan { background: #ff0033; color: #ffffff !important; border: 1px solid #ff0033; font-weight: 700; text-transform: uppercase; }
+        .btn-scan:hover { background: #cc0029; box-shadow: 0 0 15px rgba(255,0,51,0.4); }
+        .ip-badge { background-color: #ffffff !important; color: #000000 !important; font-weight: 700; }
+        
+        /* 🛠️ GÖRÜNÜRLÜK DÜZELTMELERİ ── */
+        
+        /* 🔍 1. Arama Motorundaki Büyüteç İkonu (Parlak Beyaz/Kırmızı yapıldı) */
+        .search-icon-wrapper {
+            background-color: #121620 !important;
+            border-color: #343a40 !important;
+            color: #ff0033 !important; /* Büyüteç artık net kırmızı */
+            font-size: 1rem;
+        }
 
-        /* ── Buton ── */
-        .btn-scan {
-            background: #ff0033;
+        /* 🎯 2. Özellikleri Gösteren Sağdaki Ok İkonu (Görünür Beyaz yapıldı) */
+        .toggle-icon { 
+            color: #ffffff !important; /* Sönük gri yerine net beyaz */
+            font-size: 1.1rem;
+            text-shadow: 0 0 5px rgba(255,255,255,0.2);
+            transition: transform 0.3s ease, color 0.2s ease; 
+        }
+        /* Ok açıldığında kırmızı renge bürünür */
+        .toggle-icon.rotated { transform: rotate(180deg); color: #ff0033 !important; }
+
+        /* 🌐 3. Sağ üstteki Active Range Yazısı (Daha belirgin gri/beyaz kontrastı) */
+        .range-badge-custom {
+            background-color: #121620 !important;
             color: #ffffff !important;
-            border: 1px solid #ff0033;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            transition: all 0.2s ease;
+            border: 1px solid #ff0033 !important; /* Kırmızı çerçeveyle vurgulandı */
+            font-weight: 600;
         }
-        .btn-scan:hover {
-            background: #cc0029;
-            border-color: #cc0029;
-            box-shadow: 0 0 15px rgba(255,0,51,0.4);
-        }
-        .btn-scan:disabled { opacity: 0.6; cursor: not-allowed; }
-
-        /* ── Badge ── */
-        .ip-badge {
-            background-color: #ffffff !important;
-            color: #000000 !important;
-            font-weight: 700;
-        }
-        .text-muted { color: #94a3b8 !important; }
-
-        /* ── Toggle ikon ── */
-        .toggle-icon { transition: transform 0.3s ease, color 0.2s ease; }
-        .toggle-icon.rotated { transform: rotate(180deg); color: #ff0033; }
     </style>
 </head>
 <body>
@@ -144,32 +134,35 @@
     <nav class="navbar navbar-dark custom-navbar mb-4">
         <div class="container">
             <span class="navbar-brand mb-0 h1 brand-text">
-                <i class="fa-solid fa-shield-halved me-2"></i> NET-DISCOVERY & ANALYSIS
+                <i class="fa-solid fa-shield-halved me-2"></i> DEEP AUDIT & DIAGNOSTIC RADAR
             </span>
-            <span id="ip-range" class="badge bg-dark border border-secondary px-3 py-2 text-muted">
-                Network Range: Waiting...
-            </span>
+            <div class="d-flex gap-2 align-items-center">
+                <span id="auto-timer" class="badge auto-scan-badge px-3 py-2"><i class="fa-solid fa-clock fa-spin me-1"></i> Auto-Scan: 120s</span>
+                <span id="ip-range" class="badge range-badge_custom px-3 py-2 range-badge-custom">Subnet: Waiting...</span>
+            </div>
         </div>
     </nav>
 
     <div class="container">
         <div class="row align-items-center mb-4">
-            <div class="col-md-8">
-                <h2 class="h4 text-light mb-1">Connected Devices Dashboard</h2>
-                <p class="text-muted small mb-0">
-                    Trigger a live scan to discover active hosts and inspect hardware properties on your local subnet.
-                </p>
+            <div class="col-lg-6">
+                <h2 class="h4 text-light mb-1">Deep Subnet Infrastructure</h2>
+                <p class="text-muted small mb-0">Multi-threaded network analysis layer rendering deep component verification and diagnostics.</p>
             </div>
-            <div class="col-md-4 text-md-end mt-3 mt-md-0">
-                <button id="btn-scan" class="btn btn-scan btn-lg px-4 py-2 shadow-sm">
-                    <i class="fa-solid fa-radar me-2"></i> Scan System
-                </button>
+            <div class="col-lg-4 mt-3 mt-lg-0">
+                <div class="input-group">
+                    <span class="input-group-text search-icon-wrapper"><i class="fa-solid fa-magnifying-glass"></i></span>
+                    <input type="text" id="search-input" class="form-control bg-dark text-white border-secondary" placeholder="Filter nodes instantly..." disabled>
+                    <span class="input-group-text bg-danger border-danger text-white fw-bold" id="device-count">0 Nodes</span>
+                </div>
+            </div>
+            <div class="col-lg-2 text-lg-end mt-3 mt-lg-0">
+                <button id="btn-scan" class="btn btn-scan w-100 py-2 shadow-sm"><i class="fa-solid fa-radar me-2"></i> Scan</button>
             </div>
         </div>
 
         <div id="loader" class="alert alert-dark border-danger text-danger d-none shadow mb-3" role="alert">
-            <i class="fa-solid fa-circle-notch fa-spin me-2"></i>
-            Python core engine is sniffing network layers. Please wait...
+            <i class="fa-solid fa-circle-notch fa-spin me-2"></i> Spawning concurrent threads executing deep device audits...
         </div>
 
         <div class="main-card">
@@ -179,16 +172,16 @@
                         <tr>
                             <th style="width:6%">#</th>
                             <th style="width:24%">IP Address</th>
-                            <th style="width:40%">Device Network Name</th>
-                            <th style="width:20%">Status</th>
+                            <th style="width:40%">Device Name Resolving</th>
+                            <th style="width:20%">Discovered Class</th>
                             <th style="width:10%" class="text-end">Action</th>
                         </tr>
                     </thead>
                     <tbody id="device-table">
-                        <tr id="empty-row">
+                        <tr>
                             <td colspan="5" class="text-center text-muted py-5">
                                 <i class="fa-solid fa-network-wired d-block fs-1 mb-3 text-secondary"></i>
-                                No network scan has been performed yet.
+                                Radar standby mode. Click Scan or wait for auto-pulse.
                             </td>
                         </tr>
                     </tbody>
@@ -197,136 +190,213 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        const btn       = document.getElementById('btn-scan');
-        const loader    = document.getElementById('loader');
-        const tbody     = document.getElementById('device-table');
-        const ipRangeBadge     = document.getElementById('ip-range');
+        const btn = document.getElementById('btn-scan');
+        const loader = document.getElementById('loader');
+        const tbody = document.getElementById('device-table');
+        const ipRangeBadge = document.getElementById('ip-range');
+        const searchInput = document.getElementById('search-input');
+        const deviceCountBadge = document.getElementById('device-count');
+        const autoTimerBadge = document.getElementById('auto-timer');
 
-        btn.addEventListener('click', async () => {
-            // UI sıfırla
-            loader.classList.remove('d-none');
-            btn.disabled = true;
-            tbody.innerHTML = `
-                <tr>
-                    <td colspan="5" class="text-center text-danger py-5">
-                        <i class="fa-solid fa-spinner fa-spin me-2"></i> Mapping live network topology...
-                    </td>
-                </tr>`;
+        let localDevices = [];
+        let countdown = 120;
+        let timerInterval;
 
+        function startAutoScanTimer() {
+            clearInterval(timerInterval);
+            countdown = 120;
+            timerInterval = setInterval(async () => {
+                countdown--;
+                if (countdown <= 0) {
+                    countdown = 120;
+                    autoTimerBadge.innerHTML = `<i class="fa-solid fa-arrows-rotate fa-spin me-1"></i> Syncing...`;
+                    await triggerScan(true);
+                } else {
+                    autoTimerBadge.innerHTML = `<i class="fa-solid fa-clock fa-spin me-1"></i> Auto-Scan: ${countdown}s`;
+                }
+            }, 1000);
+        }
+
+        async function triggerScan(isSilent = false) {
+            if(!isSilent) {
+                loader.classList.remove('d-none');
+                btn.disabled = true;
+                tbody.innerHTML = `<tr><td colspan="5" class="text-center text-danger py-5"><i class="fa-solid fa-spinner fa-spin me-2"></i> Parsing network layer responses...</td></tr>`;
+            }
             try {
                 const response = await fetch('/api/scan');
-                const result   = await response.json();
-
-                tbody.innerHTML = '';
-
-                if (result.status !== 'success') {
-                    tbody.innerHTML = `<tr><td colspan="5" class="text-center text-danger py-5">
-                        An error occurred: ${result.message}</td></tr>`;
-                    return;
+                const result = await response.json();
+                if (result.status === 'success') {
+                    ipRangeBadge.innerText = `Active Range: ${result.range}`;
+                    localDevices = result.data;
+                    deviceCountBadge.innerText = `${localDevices.length} Nodes`;
+                    searchInput.disabled = false;
+                    renderTable(localDevices);
                 }
-
-                ipRangeBadge.innerText = `Active Range: ${result.range}`;
-
-                if (result.data.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="5" class="text-center text-warning py-5">
-                        No active hosts found. Ensure you have Admin privileges or Npcap installed.</td></tr>`;
-                    return;
+            } catch (err) {
+                if(!isSilent) tbody.innerHTML = `<tr><td colspan="5" class="text-center text-danger py-5">API Connectivity Lost.</td></tr>`;
+            } finally {
+                if(!isSilent) {
+                    loader.classList.add('d-none');
+                    btn.disabled = false;
                 }
+            }
+        }
 
-                result.data.forEach((device, i) => {
+        btn.addEventListener('click', async () => {
+            await triggerScan(false);
+            startAutoScanTimer();
+        });
 
-                    /* ── 1. Tablo satırı (Cihaz Özeti) ── */
-                    const row = document.createElement('tr');
-                    row.className = 'clickable-row';
-                    row.innerHTML = `
-                        <td><strong>${device.id}</strong></td>
-                        <td><span class="badge ip-badge font-monospace fs-6 px-2 py-1">${device.ip}</span></td>
-                        <td><span class="text-light fw-semibold">${device.name}</span></td>
-                        <td>
-                            <span class="badge bg-success-subtle text-success border border-success px-2 py-1">
-                                <i class="fa-solid fa-circle fs-6 me-1 small"></i> ${device.status}
-                            </span>
-                        </td>
-                        <td class="text-end">
-                            <i class="fa-solid fa-angle-down toggle-icon text-muted"></i>
-                        </td>
-                    `;
-                    tbody.appendChild(row);
+        searchInput.addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase();
+            const filtered = localDevices.filter(d => d.ip.includes(query) || d.device_type.toLowerCase().includes(query));
+            deviceCountBadge.innerText = `${filtered.length} Nodes`;
+            renderTable(filtered);
+        });
 
-                    /* ── 2. Detay Satırı (Hemen altına ekleniyor) ── */
-                    const detailRow = document.createElement('tr');
-                    detailRow.className = 'detail-row';
-                    detailRow.innerHTML = `
-                        <td colspan="5">
-                            <div id="wrapper-${i}" class="detail-wrapper">
-                                <div class="details-grid">
-                                    <div class="feature-box">
-                                        <div class="feature-title">Hardware (MAC) Address</div>
-                                        <div class="feature-value text-warning font-monospace">${device.mac}</div>
-                                    </div>
-                                    <div class="feature-box">
-                                        <div class="feature-title">Hardware Vendor</div>
-                                        <div class="feature-value">
-                                            <i class="fa-solid fa-microchip me-1 text-danger"></i>
-                                            ${device.properties.vendor}
+        function renderTable(dataList) {
+            tbody.innerHTML = '';
+            if(dataList.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="text-center text-muted py-4">No nodes matching search criteria.</td></tr>`;
+                return;
+            }
+
+            dataList.forEach((device, i) => {
+                const row = document.createElement('tr');
+                row.className = 'clickable-row';
+                row.innerHTML = `
+                    <td><strong>${device.id}</strong></td>
+                    <td><span class="badge ip-badge font-monospace fs-6 px-2 py-1">${device.ip}</span></td>
+                    <td><span class="text-light fw-semibold text-break">${device.name}</span></td>
+                    <td><span class="text-info fw-bold"><i class="fa-solid ${device.device_icon} me-2 text-danger"></i>${device.device_type}</span></td>
+                    <td class="text-end"><i class="fa-solid fa-angle-down toggle-icon"></i></td>
+                `;
+                tbody.appendChild(row);
+
+                const detailRow = document.createElement('tr');
+                detailRow.className = 'detail-row';
+                detailRow.innerHTML = `
+                    <td colspan="5">
+                        <div id="wrapper-${i}" class="detail-wrapper">
+                            <div class="d-flex flex-column gap-3">
+                                
+                                <div class="row g-2">
+                                    <div class="col-md-3">
+                                        <div class="feature-box">
+                                            <div class="feature-title">Hardware (MAC) Address</div>
+                                            <div class="feature-value text-warning font-monospace small">${device.mac}</div>
                                         </div>
                                     </div>
-                                    <div class="feature-box">
-                                        <div class="feature-title">Latency Rate</div>
-                                        <div class="feature-value text-success">${device.properties.latency}</div>
+                                    <div class="col-md-3">
+                                        <div class="feature-box">
+                                            <div class="feature-title">Verified Hardware Vendor</div>
+                                            <div class="feature-value text-light fs-6"><i class="fa-solid fa-microchip me-1 text-danger"></i> ${device.properties.vendor}</div>
+                                        </div>
                                     </div>
-                                    <div class="feature-box">
-                                        <div class="feature-title">Connection Interface</div>
-                                        <div class="feature-value text-light">${device.properties.connection_type}</div>
+                                    <div class="col-md-3">
+                                        <div class="feature-box">
+                                            <div class="feature-title">OS Signature & Kernel</div>
+                                            <div class="feature-value text-success fs-6">${device.properties.estimated_os}</div>
+                                        </div>
                                     </div>
-                                    <div class="feature-box">
-                                        <div class="feature-title">Discovered Ports</div>
-                                        <div class="feature-value text-danger font-monospace small">${device.properties.open_ports}</div>
-                                    </div>
-                                    <div class="feature-box">
-                                        <div class="feature-title">Signal Quality</div>
-                                        <div class="feature-value text-light">${device.properties.signal_strength}</div>
+                                    <div class="col-md-3">
+                                        <div class="feature-box">
+                                            <div class="feature-title">Link Speed / RSSI</div>
+                                            <div class="feature-value text-light fs-6">${device.properties.connection_type} (${device.properties.latency})</div>
+                                        </div>
                                     </div>
                                 </div>
+
+                                <div class="w-100">
+                                    <div class="feature-box port-box">
+                                        <div class="feature-title text-danger"><i class="fa-solid fa-door-open me-1"></i> Live Automated Port Scan (Mini-Nmap Sweep)</div>
+                                        <div class="feature-value text-danger font-monospace fs-5 fw-bold mt-1">${device.properties.open_ports}</div>
+                                    </div>
+                                </div>
+
+                                <div class="row g-3">
+                                    <div class="col-lg-6">
+                                        <div class="feature-box">
+                                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                                <div class="feature-title m-0"><i class="fa-solid fa-satellite-dish me-1 text-danger"></i> Interactive Ping Engine</div>
+                                                <button class="btn btn-sm btn-outline-light px-3 py-1" onclick="runPing('${device.ip}', ${i})">Execute Ping</button>
+                                            </div>
+                                            <div id="ping-terminal-${i}" class="cmd-terminal">C:\\Users\\admin> Press "Execute Ping" to send ICMP sequence...</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-lg-6">
+                                        <div class="feature-box">
+                                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                                <div class="feature-title m-0"><i class="fa-solid fa-plug me-1 text-danger"></i> Remote Telnet Handshake</div>
+                                                <div class="d-flex gap-2">
+                                                    <input type="number" id="port-${i}" class="form-control form-control-sm bg-dark text-white border-secondary text-center font-monospace" value="23" style="width: 70px;">
+                                                    <button class="btn btn-sm btn-outline-light px-3 py-1" onclick="runTelnet('${device.ip}', ${i})">Connect</button>
+                                                </div>
+                                            </div>
+                                            <div id="telnet-terminal-${i}" class="cmd-terminal">Terminal Standby. Pick a target port and tap Connect...</div>
+                                        </div>
+                                    </div>
+                                </div>
+
                             </div>
-                        </td>
-                    `;
-                    tbody.appendChild(detailRow);
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(detailRow);
 
-                    /* ── Tıklama Mekanizması: Aç / Kapat ── */
-                    row.addEventListener('click', () => {
-                        const wrapper = document.getElementById(`wrapper-${i}`);
-                        const isCurrentlyOpen = wrapper.classList.contains('open');
+                row.addEventListener('click', () => {
+                    const wrapper = document.getElementById(`wrapper-${i}`);
+                    const isCurrentlyOpen = wrapper.classList.contains('open');
 
-                        // Önce tüm açık panelleri, aktif satırları ve dönen ikonları temizle/kapat
-                        document.querySelectorAll('.detail-wrapper.open').forEach(w => w.classList.remove('open'));
-                        document.querySelectorAll('.clickable-row.active').forEach(r => r.classList.remove('active'));
-                        document.querySelectorAll('.toggle-icon.rotated').forEach(ic => ic.classList.remove('rotated'));
+                    document.querySelectorAll('.detail-wrapper.open').forEach(w => w.classList.remove('open'));
+                    document.querySelectorAll('.clickable-row.active').forEach(r => r.classList.remove('active'));
+                    document.querySelectorAll('.toggle-icon.rotated').forEach(ic => ic.classList.remove('rotated'));
 
-                        // Eğer tıklanan panel zaten açık değilse, şimdi aç
-                        if (!isCurrentlyOpen) {
-                            wrapper.classList.add('open');
-                            row.classList.add('active');
-                            row.querySelector('.toggle-icon').classList.add('rotated');
-                            
-                            // Akıcı şekilde satıra odaklan
-                            setTimeout(() => {
-                                detailRow.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-                            }, 100);
-                        }
-                    });
+                    if (!isCurrentlyOpen) {
+                        wrapper.classList.add('open');
+                        row.classList.add('active');
+                        row.querySelector('.toggle-icon').classList.add('rotated');
+                    }
                 });
+            });
+        }
 
-            } catch (err) {
-                tbody.innerHTML = `<tr><td colspan="5" class="text-center text-danger py-5">
-                    Could not reach the backend API.</td></tr>`;
-            } finally {
-                loader.classList.add('d-none');
-                btn.disabled = false;
-            }
-        });
+        async function runPing(ip, index) {
+            const term = document.getElementById(`ping-terminal-${index}`);
+            term.innerHTML = `C:\\Users\\admin> ping ${ip}\nSending standard ICMP requests to remote network layer...`;
+            try {
+                const response = await fetch('/api/ping', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ ip: ip })
+                });
+                const res = await response.json();
+                term.innerHTML = res.output;
+            } catch (err) { term.innerHTML = "Transmission failure."; }
+        }
+
+        async function runTelnet(ip, index) {
+            const term = document.getElementById(`telnet-terminal-${index}`);
+            const portVal = document.getElementById(`port-${index}`).value;
+            term.innerHTML = `TCP Handshake targeted at port ${portVal}...\nEstablishing socket transmission socket...`;
+            try {
+                const response = await fetch('/api/telnet', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ ip: ip, port: portVal })
+                });
+                const res = await response.json();
+                term.innerHTML = res.output;
+            } catch (err) { term.innerHTML = "Handshake aborted."; }
+        }
+
+        window.onload = () => {
+            triggerScan(false);
+            startAutoScanTimer();
+        };
     </script>
 </body>
 </html>
