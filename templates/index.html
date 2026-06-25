@@ -48,7 +48,7 @@
         .clickable-row:hover td { background-color: #1a1e29 !important; }
         .clickable-row.active td { background-color: #1a1e29 !important; }
 
-        /* ── 🔄 Akıcı Animasyonlu Detay Paneli Düzeni ── */
+        /* ── Akıcı Animasyonlu Detay Paneli Düzeni ── */
         .detail-row td { padding: 0 !important; background-color: #07090d !important; }
         .detail-wrapper {
             max-height: 0;
@@ -58,7 +58,7 @@
         }
         .detail-wrapper.open { max-height: 1500px; opacity: 1; padding: 24px; }
         
-        /* 💻 Genişletilmiş CMD Terminal Teması */
+        /* 💻 CMD Terminal Teması */
         .cmd-terminal {
             background-color: #000000;
             color: #00ff00;
@@ -95,37 +95,115 @@
         }
         .feature-value { font-size: 1rem; font-weight: 600; }
         
-        .auto-scan-badge { background-color: #1e293b; color: #38bdf8; border: 1px solid #38bdf8; font-size: 0.8rem; }
+        /* Badges & Buttons */
+        .auto-scan-badge { background-color: transparent; color: #38bdf8; font-size: 0.8rem; font-weight: 600; }
+        .my-ip-badge { background-color: #112211; color: #4ade80; border: 1px solid #22c55e; font-size: 0.8rem; }
         .btn-scan { background: #ff0033; color: #ffffff !important; border: 1px solid #ff0033; font-weight: 700; text-transform: uppercase; }
         .btn-scan:hover { background: #cc0029; box-shadow: 0 0 15px rgba(255,0,51,0.4); }
         .ip-badge { background-color: #ffffff !important; color: #000000 !important; font-weight: 700; }
         
-        /* 🛠️ GÖRÜNÜRLÜK DÜZELTMELERİ ── */
-        
-        /* 🔍 1. Arama Motorundaki Büyüteç İkonu (Parlak Beyaz/Kırmızı yapıldı) */
+        /* 🛠️ GÖRÜNÜRLÜK VE AKILLI SWITCH TASARIMI ── */
+        .scan-control-group {
+            background-color: #0d0f14 !important;
+            border: 1px solid #38bdf8;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            width: 210px; 
+            justify-content: flex-start;
+        }
+        .scan-control-group.disabled-state {
+            border-color: #475569 !important;
+        }
+        .switch-wrapper {
+            background-color: rgba(255, 255, 255, 0.03);
+        }
+        .cursor-pointer { cursor: pointer; }
+
+        /* 🎛️ Checkbox Yumuşak Animasyonu */
+        .form-check-input {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        }
+        .form-check-input:checked {
+            background-color: #ff0033;
+            border-color: #ff0033;
+            box-shadow: 0 0 8px rgba(255, 0, 51, 0.5);
+        }
+
+        /* 🕒 Kesintisiz, Pürüzsüz Dönen Saat Animasyonu */
+        .perfect-spin {
+            display: inline-block;
+            animation: custom-spin 1s linear infinite !important;
+        }
+        @keyframes custom-spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
         .search-icon-wrapper {
             background-color: #121620 !important;
             border-color: #343a40 !important;
-            color: #ff0033 !important; /* Büyüteç artık net kırmızı */
+            color: #ff0033 !important;
             font-size: 1rem;
         }
 
-        /* 🎯 2. Özellikleri Gösteren Sağdaki Ok İkonu (Görünür Beyaz yapıldı) */
         .toggle-icon { 
-            color: #ffffff !important; /* Sönük gri yerine net beyaz */
+            color: #ffffff !important;
             font-size: 1.1rem;
             text-shadow: 0 0 5px rgba(255,255,255,0.2);
             transition: transform 0.3s ease, color 0.2s ease; 
         }
-        /* Ok açıldığında kırmızı renge bürünür */
         .toggle-icon.rotated { transform: rotate(180deg); color: #ff0033 !important; }
 
-        /* 🌐 3. Sağ üstteki Active Range Yazısı (Daha belirgin gri/beyaz kontrastı) */
         .range-badge-custom {
             background-color: #121620 !important;
             color: #ffffff !important;
-            border: 1px solid #ff0033 !important; /* Kırmızı çerçeveyle vurgulandı */
+            border: 1px solid #ff0033 !important;
             font-weight: 600;
+        }
+
+        /* Renkli Port Badge Tasarımları */
+        .port-badge {
+            font-family: 'Consolas', monospace;
+            font-size: 0.85rem;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        .port-critical {
+            background-color: rgba(255, 0, 51, 0.15);
+            color: #ff3355;
+            border: 1px solid #ff0033;
+        }
+        .port-standard {
+            background-color: rgba(34, 197, 94, 0.15);
+            color: #4ade80;
+            border: 1px solid #22c55e;
+        }
+
+        /* ❌ GÖRÜNÜRLÜK VE RENK KONTRAST AYARLARI */
+        .na-text {
+            color: #cbd5e1 !important; /* Arka planda boğulmayan belirgin açık gümüş gri */
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-shadow: 0 0 6px rgba(255, 255, 255, 0.2);
+        }
+        .port-none-detected {
+            color: #86efac !important; /* Canlı fosforlu zümrüt yeşili */
+            font-weight: 700;
+            text-shadow: 0 0 12px rgba(134, 239, 172, 0.4);
+        }
+        .port-none-detected i {
+            color: #4ade80 !important;
+        }
+        
+        /* ✨ Hardware Vendor İsimleri ve İkonları İçin Parlak Stil */
+        .vendor-text-wrapper {
+            color: #e2e8f0 !important; /* Sönük gri yerine parlak, net beyaz/gri tonu */
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        .vendor-text-wrapper i {
+            color: #ef4444 !important; /* Mikroçip ikonu belirgin canlı kırmızı */
+            text-shadow: 0 0 6px rgba(239, 68, 68, 0.3);
         }
     </style>
 </head>
@@ -136,8 +214,18 @@
             <span class="navbar-brand mb-0 h1 brand-text">
                 <i class="fa-solid fa-shield-halved me-2"></i> DEEP AUDIT & DIAGNOSTIC RADAR
             </span>
-            <div class="d-flex gap-2 align-items-center">
-                <span id="auto-timer" class="badge auto-scan-badge px-3 py-2"><i class="fa-solid fa-clock fa-spin me-1"></i> Auto-Scan: 120s</span>
+            <div class="d-flex gap-2 align-items-center flex-wrap">
+                <span id="my-ip" class="badge my-ip-badge px-3 py-2"><i class="fa-solid fa-desktop me-1"></i> Your IP: Fetching...</span>
+                
+                <div id="scan-group-container" class="d-flex align-items-center scan-control-group rounded overflow-hidden p-0" style="height: 34px;">
+                    <div class="switch-wrapper px-3 h-100 d-flex align-items-center border-end border-secondary">
+                        <input class="form-check-input m-0 cursor-pointer" type="checkbox" id="auto-scan-toggle" checked>
+                    </div>
+                    <span id="auto-timer" class="badge auto-scan-badge border-0 rounded-0 px-3 py-2 h-100 d-flex align-items-center">
+                        <i class="fa-solid fa-clock perfect-spin me-1"></i> Auto-Scan: 120s
+                    </span>
+                </div>
+
                 <span id="ip-range" class="badge range-badge_custom px-3 py-2 range-badge-custom">Subnet: Waiting...</span>
             </div>
         </div>
@@ -145,11 +233,12 @@
 
     <div class="container">
         <div class="row align-items-center mb-4">
-            <div class="col-lg-6">
+            <div class="col-lg-5">
                 <h2 class="h4 text-light mb-1">Deep Subnet Infrastructure</h2>
-                <p class="text-muted small mb-0">Multi-threaded network analysis layer rendering deep component verification and diagnostics.</p>
+                <p class="text-muted small mb-0">Multi-threaded network analysis layer rendering deep component verification.</p>
+                <span class="text-warning small d-block mt-1" id="last-scan-time"><i class="fa-solid fa-history me-1"></i> Last Scan: Never</span>
             </div>
-            <div class="col-lg-4 mt-3 mt-lg-0">
+            <div class="col-lg-5 mt-3 mt-lg-0">
                 <div class="input-group">
                     <span class="input-group-text search-icon-wrapper"><i class="fa-solid fa-magnifying-glass"></i></span>
                     <input type="text" id="search-input" class="form-control bg-dark text-white border-secondary" placeholder="Filter nodes instantly..." disabled>
@@ -157,7 +246,7 @@
                 </div>
             </div>
             <div class="col-lg-2 text-lg-end mt-3 mt-lg-0">
-                <button id="btn-scan" class="btn btn-scan w-100 py-2 shadow-sm"><i class="fa-solid fa-radar me-2"></i> Scan</button>
+                <button id="btn-scan" class="btn btn-scan w-100 py-2 shadow-sm"><i class="fa-solid fa-radar me-2"></i> Scan Now </button>
             </div>
         </div>
 
@@ -170,16 +259,17 @@
                 <table class="table align-middle">
                     <thead>
                         <tr>
-                            <th style="width:6%">#</th>
-                            <th style="width:24%">IP Address</th>
-                            <th style="width:40%">Device Name Resolving</th>
-                            <th style="width:20%">Discovered Class</th>
-                            <th style="width:10%" class="text-end">Action</th>
+                            <th style="width:5%">#</th>
+                            <th style="width:20%">IP Address</th>
+                            <th style="width:30%">Hostname</th>
+                            <th style="width:25%">MAC Address</th>
+                            <th style="width:15%">Hardware Vendor</th>
+                            <th style="width:5%" class="text-end">Details</th>
                         </tr>
                     </thead>
                     <tbody id="device-table">
                         <tr>
-                            <td colspan="5" class="text-center text-muted py-5">
+                            <td colspan="6" class="text-center text-muted py-5">
                                 <i class="fa-solid fa-network-wired d-block fs-1 mb-3 text-secondary"></i>
                                 Radar standby mode. Click Scan or wait for auto-pulse.
                             </td>
@@ -195,9 +285,13 @@
         const loader = document.getElementById('loader');
         const tbody = document.getElementById('device-table');
         const ipRangeBadge = document.getElementById('ip-range');
+        const myIpBadge = document.getElementById('my-ip');
         const searchInput = document.getElementById('search-input');
         const deviceCountBadge = document.getElementById('device-count');
         const autoTimerBadge = document.getElementById('auto-timer');
+        const autoScanToggle = document.getElementById('auto-scan-toggle');
+        const scanGroupContainer = document.getElementById('scan-group-container');
+        const lastScanTimeDiv = document.getElementById('last-scan-time');
 
         let localDevices = [];
         let countdown = 120;
@@ -205,15 +299,28 @@
 
         function startAutoScanTimer() {
             clearInterval(timerInterval);
-            countdown = 120;
+            if (autoScanToggle.checked) {
+                scanGroupContainer.classList.remove('disabled-state');
+                autoTimerBadge.style.color = '#38bdf8';
+                autoTimerBadge.innerHTML = `<i class="fa-solid fa-clock perfect-spin me-1"></i> Auto-Scan: ${countdown}s`;
+            }
+
             timerInterval = setInterval(async () => {
+                if (!autoScanToggle.checked) {
+                    scanGroupContainer.classList.add('disabled-state');
+                    autoTimerBadge.style.color = '#64748b';
+                    autoTimerBadge.innerHTML = `<i class="fa-solid fa-pause me-1"></i> Auto-Scan: Disabled`;
+                    return;
+                }
+
                 countdown--;
                 if (countdown <= 0) {
                     countdown = 120;
-                    autoTimerBadge.innerHTML = `<i class="fa-solid fa-arrows-rotate fa-spin me-1"></i> Syncing...`;
+                    autoTimerBadge.innerHTML = `<i class="fa-solid fa-arrows-rotate perfect-spin me-1"></i> Syncing...`;
                     await triggerScan(true);
                 } else {
-                    autoTimerBadge.innerHTML = `<i class="fa-solid fa-clock fa-spin me-1"></i> Auto-Scan: ${countdown}s`;
+                    autoTimerBadge.style.color = '#38bdf8';
+                    autoTimerBadge.innerHTML = `<i class="fa-solid fa-clock perfect-spin me-1"></i> Auto-Scan: ${countdown}s`;
                 }
             }, 1000);
         }
@@ -222,20 +329,25 @@
             if(!isSilent) {
                 loader.classList.remove('d-none');
                 btn.disabled = true;
-                tbody.innerHTML = `<tr><td colspan="5" class="text-center text-danger py-5"><i class="fa-solid fa-spinner fa-spin me-2"></i> Parsing network layer responses...</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="6" class="text-center text-danger py-5"><i class="fa-solid fa-spinner fa-spin me-2"></i> Parsing network layer responses...</td></tr>`;
             }
             try {
                 const response = await fetch('/api/scan');
                 const result = await response.json();
                 if (result.status === 'success') {
                     ipRangeBadge.innerText = `Active Range: ${result.range}`;
+                    myIpBadge.innerHTML = `<i class="fa-solid fa-desktop me-1"></i> Your IP: ${result.local_ip}`;
                     localDevices = result.data;
                     deviceCountBadge.innerText = `${localDevices.length} Nodes`;
                     searchInput.disabled = false;
                     renderTable(localDevices);
+                    
+                    const now = new Date();
+                    const timestamp = now.toTimeString().split(' ')[0];
+                    lastScanTimeDiv.innerHTML = `<i class="fa-solid fa-history me-1"></i> Last Scan: ${timestamp}`;
                 }
             } catch (err) {
-                if(!isSilent) tbody.innerHTML = `<tr><td colspan="5" class="text-center text-danger py-5">API Connectivity Lost.</td></tr>`;
+                if(!isSilent) tbody.innerHTML = `<tr><td colspan="6" class="text-center text-danger py-5">API Connectivity Lost.</td></tr>`;
             } finally {
                 if(!isSilent) {
                     loader.classList.add('d-none');
@@ -249,9 +361,28 @@
             startAutoScanTimer();
         });
 
+        autoScanToggle.addEventListener('change', () => {
+            if (autoScanToggle.checked) {
+                countdown = 120;
+                scanGroupContainer.classList.remove('disabled-state');
+                autoTimerBadge.style.color = '#38bdf8';
+                autoTimerBadge.innerHTML = `<i class="fa-solid fa-clock perfect-spin me-1"></i> Auto-Scan: ${countdown}s`;
+                startAutoScanTimer();
+            } else {
+                clearInterval(timerInterval);
+                scanGroupContainer.classList.add('disabled-state');
+                autoTimerBadge.style.color = '#64748b';
+                autoTimerBadge.innerHTML = `<i class="fa-solid fa-pause me-1"></i> Auto-Scan: Disabled`;
+            }
+        });
+
         searchInput.addEventListener('input', (e) => {
             const query = e.target.value.toLowerCase();
-            const filtered = localDevices.filter(d => d.ip.includes(query) || d.device_type.toLowerCase().includes(query));
+            const filtered = localDevices.filter(d => 
+                d.ip.includes(query) || 
+                (d.name && d.name.toLowerCase().includes(query)) ||
+                d.device_type.toLowerCase().includes(query)
+            );
             deviceCountBadge.innerText = `${filtered.length} Nodes`;
             renderTable(filtered);
         });
@@ -259,18 +390,35 @@
         function renderTable(dataList) {
             tbody.innerHTML = '';
             if(dataList.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" class="text-center text-muted py-4">No nodes matching search criteria.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="6" class="text-center text-muted py-4">No nodes matching search criteria.</td></tr>`;
                 return;
             }
 
             dataList.forEach((device, i) => {
+                const hostnameStr = device.name ? `<span class="text-light fw-semibold text-break">${device.name}</span>` : `<span class="na-text">N/A</span>`;
+                const vendorStr = device.properties.vendor ? `<span>${device.properties.vendor}</span>` : `<span class="na-text">N/A</span>`;
+                const macStr = device.mac ? `<span class="font-monospace text-warning small">${device.mac}</span>` : `<span class="na-text">N/A</span>`;
+
+                let portsHtml = "";
+                if (device.properties.open_ports && device.properties.open_ports.length > 0) {
+                    device.properties.open_ports.forEach(p => {
+                        const isCritical = [22, 23, 445, 3389].includes(p.port);
+                        const badgeClass = isCritical ? 'port-critical' : 'port-standard';
+                        portsHtml += `<span class="badge port-badge ${badgeClass} me-2 mb-1"><i class="fa-solid fa-shield-cat me-1"></i>${p.port} (${p.service})</span>`;
+                    });
+                } else {
+                    portsHtml = `<div class="feature-value port-none-detected font-monospace small"><i class="fa-solid fa-lock me-2"></i>None Detected (Secured Subnet Node)</div>`;
+                }
+
                 const row = document.createElement('tr');
                 row.className = 'clickable-row';
+                // 🚀 `vendor-text-wrapper` sınıfı entegre edildi, böylece donanım ismi ve ikon loş durmayacak
                 row.innerHTML = `
                     <td><strong>${device.id}</strong></td>
                     <td><span class="badge ip-badge font-monospace fs-6 px-2 py-1">${device.ip}</span></td>
-                    <td><span class="text-light fw-semibold text-break">${device.name}</span></td>
-                    <td><span class="text-info fw-bold"><i class="fa-solid ${device.device_icon} me-2 text-danger"></i>${device.device_type}</span></td>
+                    <td>${hostnameStr}</td>
+                    <td>${macStr}</td>
+                    <td><span class="vendor-text-wrapper"><i class="fa-solid fa-microchip me-1"></i> ${vendorStr}</span></td>
                     <td class="text-end"><i class="fa-solid fa-angle-down toggle-icon"></i></td>
                 `;
                 tbody.appendChild(row);
@@ -278,21 +426,21 @@
                 const detailRow = document.createElement('tr');
                 detailRow.className = 'detail-row';
                 detailRow.innerHTML = `
-                    <td colspan="5">
+                    <td colspan="6">
                         <div id="wrapper-${i}" class="detail-wrapper">
                             <div class="d-flex flex-column gap-3">
                                 
                                 <div class="row g-2">
                                     <div class="col-md-3">
                                         <div class="feature-box">
-                                            <div class="feature-title">Hardware (MAC) Address</div>
-                                            <div class="feature-value text-warning font-monospace small">${device.mac}</div>
+                                            <div class="feature-title">Resolved Hostname</div>
+                                            <div class="feature-value text-break small ${device.name ? 'text-info' : 'na-text'}">${device.name ? device.name : 'N/A (No PTR Record)'}</div>
                                         </div>
                                     </div>
                                     <div class="col-md-3">
                                         <div class="feature-box">
-                                            <div class="feature-title">Verified Hardware Vendor</div>
-                                            <div class="feature-value text-light fs-6"><i class="fa-solid fa-microchip me-1 text-danger"></i> ${device.properties.vendor}</div>
+                                            <div class="feature-title">Discovered Class & Type</div>
+                                            <div class="feature-value text-light fs-6"><i class="fa-solid ${device.device_icon} me-2 text-danger"></i>${device.device_type}</div>
                                         </div>
                                     </div>
                                     <div class="col-md-3">
@@ -311,8 +459,10 @@
 
                                 <div class="w-100">
                                     <div class="feature-box port-box">
-                                        <div class="feature-title text-danger"><i class="fa-solid fa-door-open me-1"></i> Live Automated Port Scan (Mini-Nmap Sweep)</div>
-                                        <div class="feature-value text-danger font-monospace fs-5 fw-bold mt-1">${device.properties.open_ports}</div>
+                                        <div class="feature-title text-danger mb-2"><i class="fa-solid fa-door-open me-1"></i> Live Automated Port Scan (Mini-Nmap Sweep)</div>
+                                        <div class="d-flex flex-wrap align-items-center mt-1">
+                                            ${portsHtml}
+                                        </div>
                                     </div>
                                 </div>
 
@@ -320,10 +470,13 @@
                                     <div class="col-lg-6">
                                         <div class="feature-box">
                                             <div class="d-flex justify-content-between align-items-center mb-1">
-                                                <div class="feature-title m-0"><i class="fa-solid fa-satellite-dish me-1 text-danger"></i> Interactive Ping Engine</div>
-                                                <button class="btn btn-sm btn-outline-light px-3 py-1" onclick="runPing('${device.ip}', ${i})">Execute Ping</button>
+                                                <div class="feature-title m-0"><i class="fa-solid fa-satellite-dish me-1 text-danger"></i> Interactive Ping Engine (-t mode)</div>
+                                                <div class="d-flex gap-2">
+                                                    <button id="ping-btn-${i}" class="btn btn-sm btn-outline-light px-3 py-1" onclick="runPing('${device.ip}', ${i})">Execute Ping</button>
+                                                    <button id="ping-stop-btn-${i}" class="btn btn-sm btn-outline-danger px-3 py-1 d-none" onclick="stopPing(${i})">Stop</button>
+                                                </div>
                                             </div>
-                                            <div id="ping-terminal-${i}" class="cmd-terminal">C:\\Users\\admin> Press "Execute Ping" to send ICMP sequence...</div>
+                                            <div id="ping-terminal-${i}" class="cmd-terminal">C:\\Users\\admin> Press "Execute Ping" to start infinite ICMP sequence...</div>
                                         </div>
                                     </div>
 
@@ -364,18 +517,62 @@
             });
         }
 
+        let activePingIntervals = {};
+
         async function runPing(ip, index) {
             const term = document.getElementById(`ping-terminal-${index}`);
-            term.innerHTML = `C:\\Users\\admin> ping ${ip}\nSending standard ICMP requests to remote network layer...`;
-            try {
-                const response = await fetch('/api/ping', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({ ip: ip })
-                });
-                const res = await response.json();
-                term.innerHTML = res.output;
-            } catch (err) { term.innerHTML = "Transmission failure."; }
+            const startBtn = document.getElementById(`ping-btn-${index}`);
+            const stopBtn = document.getElementById(`ping-stop-btn-${index}`);
+            
+            if (activePingIntervals[index]) return;
+
+            startBtn.disabled = true;
+            startBtn.innerText = "Running...";
+            stopBtn.classList.remove('d-none');
+
+            term.innerHTML = `C:\\Users\\admin> ping ${ip} -t\nSpawning continuous ICMP transmission socket...\n\n`;
+            term.scrollTop = term.scrollHeight;
+
+            activePingIntervals[index] = setInterval(async () => {
+                try {
+                    const response = await fetch('/api/ping', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({ ip: ip })
+                    });
+                    const res = await response.json();
+                    
+                    if (res.status === 'success') {
+                        const lines = res.output.split('\n');
+                        const replyLine = lines.find(line => line.toLowerCase().includes('reply') || line.toLowerCase().includes('bytes from') || line.toLowerCase().includes('timed out')) || "Request timed out.";
+                        
+                        term.innerHTML += replyLine + "\n";
+                    } else {
+                        term.innerHTML += "Request timed out.\n";
+                    }
+                } catch (err) {
+                    term.innerHTML += "Transmission failure.\n";
+                }
+                term.scrollTop = term.scrollHeight;
+            }, 1000); 
+        }
+
+        function stopPing(index) {
+            if (activePingIntervals[index]) {
+                clearInterval(activePingIntervals[index]);
+                delete activePingIntervals[index];
+            }
+
+            const term = document.getElementById(`ping-terminal-${index}`);
+            const startBtn = document.getElementById(`ping-btn-${index}`);
+            const stopBtn = document.getElementById(`ping-stop-btn-${index}`);
+
+            startBtn.disabled = false;
+            startBtn.innerText = "Execute Ping";
+            stopBtn.classList.add('d-none');
+
+            term.innerHTML += `\n--- Ping statistics stopped by user ---\nC:\\Users\\admin> `;
+            term.scrollTop = term.scrollHeight;
         }
 
         async function runTelnet(ip, index) {
