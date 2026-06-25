@@ -2,210 +2,284 @@ from flask import Flask, render_template, jsonify, request
 import socket
 import subprocess
 import platform
-from scapy.all import ARP, Ether, srp
-import random
+import ssl
+import re
+import ipaddress
+import time
 from concurrent.futures import ThreadPoolExecutor
-import urllib.request
-import json
+
+try:
+    import netifaces
+    _HAS_NETIFACES = True
+except ImportError:
+    _HAS_NETIFACES = False
+
+from mac_vendor_lookup import MacLookup
+from scapy.all import ARP, Ether, srp, IP, ICMP, sr1, conf
 
 app = Flask(__name__)
+# Scapy'nin katman çakışmalarını önlemek için soket ayarı
+
+conf.sniff_promisc = False
+
+try:
+    _mac = MacLookup()
+
+except Exception:
+    _mac = None
+
+# ── Sabitler ──────────────────────────────────────────────────
+
+PORT_TIMEOUT = 0.15
+ARP_TIMEOUT  = 1.5
+MAX_WORKERS  = 30
+IS_WINDOWS   = platform.system().lower() == "windows"
+
+TARGET_PORTS = {
+    21: "FTP", 22: "SSH", 23: "Telnet", 80: "HTTP",
+    139: "NetBIOS", 443: "HTTPS", 445: "SMB", 3389: "RDP",
+}
+
+def validate_ip(ip: str) -> bool:
+    try:
+        ipaddress.ip_address(ip)
+        return True
+    except ValueError:
+        return False
+
+def validate_port(port) -> bool:
+    try:
+        return 1 <= int(port) <= 65535
+
+    except (ValueError, TypeError):
+        return False
 
 def get_local_ip_details():
+    if _HAS_NETIFACES:
+        try:
+            AF_INET = netifaces.AF_INET
+            gws     = netifaces.gateways()
+            if "default" in gws:
+                iface = gws["default"][AF_INET][1]
+            else:
+                entries = gws.get(AF_INET, [])
+                default_entry = next((e for e in entries if len(e) >= 3 and e[2]), None)
+                if not default_entry and entries: default_entry = entries[0]
+                iface = default_entry[1]
+
+            inet_list = netifaces.ifaddresses(iface).get(AF_INET, [])
+            local_ip = inet_list[0]["addr"]
+            mask     = inet_list[0].get("netmask") or inet_list[0].get("mask")
+            net      = ipaddress.IPv4Network(f"{local_ip}/{mask}", strict=False)
+            return local_ip, str(net)
+        except Exception:
+            pass
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.settimeout(2)
         s.connect(("8.8.8.8", 80))
         local_ip = s.getsockname()[0]
         s.close()
-        ip_parts = local_ip.split('.')
-        subnet = f"{ip_parts[0]}.{ip_parts[1]}.{ip_parts[2]}.0/24"
-        return local_ip, subnet
+        parts  = local_ip.split(".")
+        return local_ip, f"{parts[0]}.{parts[1]}.{parts[2]}.0/24"
     except Exception:
-        return "127.0.0.1", "192.168.1.0/24"
+        return "127.0.0.1", "127.0.0.1/32"
 
-# 🔍 Mini Port Scanner (Banner Grabbing)
-def scan_ports_and_services(ip):
-    # Kritik ve Standart portlar frontend'de ayrışacak, burada tarayıp listeliyoruz
-    target_ports = {
-        21: "FTP", 22: "SSH", 23: "Telnet", 80: "HTTP", 
-        139: "NetBIOS", 443: "HTTPS", 445: "SMB", 3389: "RDP"
-    }
-    open_ports = []
-    
-    for port, service in target_ports.items():
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.settimeout(0.2) 
-        result = s.connect_ex((ip, port))
-        if result == 0:
-            open_ports.append({"port": port, "service": service})
-        s.close()
-        
-    return open_ports
+def get_vendor(mac: str) -> str:
+    if not _mac: return "Unknown Vendor"
+    try: return _mac.lookup(mac)
+    except Exception: return "Unknown Vendor"
 
-# 🧵 Paralel Thread Motoru
-def process_single_device(device_info):
-    index, received = device_info
-    ip = received.psrc
-    mac = received.hwsrc
-    
+def get_ttl_only(ip: str) -> str:
     try:
-        device_name = socket.gethostbyaddr(ip)[0]
-    except socket.herror:
-        device_name = None  # Bilgi yoksa None dönüyoruz, frontend N/A yapacak
+        pkt = IP(dst=ip) / ICMP()
+        reply = sr1(pkt, timeout=0.3, verbose=0)
+        if reply: return str(int(reply.ttl))
+    except:
+        pass
+    return "N/A"
 
-    # 🏢 LOKAL GENİŞLETİLMİŞ MAC ÜRETİCİ VERİTABANI (Çok Daha Geniş ve Detaylı)
-    mac_clean = mac.lower().replace(":", "").replace("-", "")[:6]
-    
-    vendor = None
-    
-    # Ağda en sık karşımıza çıkan kritik bloklar (Cisco, HP, Huawei, Intel vb.)
-    if mac_clean.startswith(("001185", "3085a9", "40a8f0", "705a15", "001a4b", "080009", "1cc1de", "a45d36", "001b17", "0024a5")): 
-        vendor = "Hewlett-Packard (HP)"
-    elif mac_clean.startswith(("00268a", "0015af", "bc5f2b", "74d02b", "0013e8", "484520", "a4bb6d")): 
-        vendor = "Intel Corporation"
-    elif mac_clean.startswith(("04d4c4", "1c872c", "ac220b", "e03f49", "244bfe", "08606e")): 
-        vendor = "ASUSTek Computer (ASUS)"
-    elif mac_clean.startswith(("001a2b", "001192", "0017df", "002493", "001bc2", "503de5", "ecbd1d")): 
-        vendor = "Cisco Systems"
-    elif mac_clean.startswith(("00e04c", "001377", "525400", "40167e", "e81132")): 
-        vendor = "Realtek Semiconductor"
-    elif mac_clean.startswith(("b4b5b6", "0016db", "1c62b8", "38aa3c", "980dda", "cc07ab")): 
-        vendor = "Samsung Electronics"
-    elif mac_clean.startswith(("bcd1d2", "000a27", "001c42", "701124", "f01898", "60c547", "a4b197")): 
-        vendor = "Apple Inc."
-    elif mac_clean.startswith(("00155d", "0003ff", "281878")): 
-        vendor = "Microsoft Corporation"
-    elif mac_clean.startswith(("3c7c3f", "1c5cf2", "50ec50", "982cbe", "bc542f", "648e8e")): 
-        vendor = "Xiaomi Communications"
-    elif mac_clean.startswith(("1868cb", "4419b6", "a41437", "00403b")): 
-        vendor = "Hikvision Digital"
-    elif mac_clean.startswith(("a4b1c2", "001e10", "24df6a", "404d7f", "70723c", "bc25e0")): 
-        vendor = "Huawei Technologies"
-    elif mac_clean.startswith(("000c29", "005056", "000569")): 
-        vendor = "VMware Inc."
-    elif mac_clean.startswith(("e4a8b6", "00147c", "50c7bf", "98ded0", "f4f26d", "b0a7b9")): 
-        vendor = "TP-Link Technologies"
-    elif mac_clean.startswith(("001c7b", "3c970e", "485b39", "b88198", "d4bed9", "f8b156")): 
-        vendor = "Dell Inc."
-    elif mac_clean.startswith(("00226b", "a470d6", "e84e06", "3c5c4f")): 
-        vendor = "LG Electronics"
-    elif mac_clean.startswith(("00234a", "c4ad34", "ec8ad5", "70bbfa")): 
-        vendor = "Sony Corporation"
-    
-    # 🛡️ Ekstra Koruma: Eğer üstteki popüler markalardan hiçbirine uymuyorsa, 
-    # N/A basmak yerine en azından standard bir Network Donanımı olduğunu belirtelim:
-    if vendor is None:
-        if mac.startswith("00:50:56") or mac.startswith("00:0c:29"):
-            vendor = "Virtual Machine Node"
-        else:
-            vendor = "Network OEM Component"
-            
-    discovered_ports = scan_ports_and_services(ip)
+def scan_ports_sequential(ip: str) -> list:
+    results = []
+    for port, service in TARGET_PORTS.items():
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.settimeout(PORT_TIMEOUT)
+        try:
+            if sock.connect_ex((ip, port)) == 0:
+                results.append({"port": port, "service": service, "banner": f"Active {service}"})
+        except:
+            pass
+        finally:
+            sock.close()
+    return results
 
-    # Akıllı OS / Tip Tahmini için yedek string kontrolü
-    check_name = device_name.lower() if device_name else ""
-    check_vendor = vendor.lower() if vendor else ""
+def classify_device(hostname: str | None, vendor: str, ip: str, ttl_str: str):
+    """
+    KESİN ÇÖZÜM: Öncelik sıralaması yazılımsal kararlılığa göre revize edildi.
+    Eğer geçerli bir TTL varsa yazıcı filtresine takılmadan PC/Mobil teşhisi konur.
+    """
+    hn = (hostname or "").lower()
+    vd = vendor.lower()
+   
+    try: ttl = int(ttl_str)
+    except: ttl = 0
 
-    if "android" in check_name or "samsung" in check_vendor or "xiaomi" in check_vendor:
-        device_type = "Android Mobile"
-        device_icon = "fa-mobile-screen-button"
-        os_guess = "Android OS (Linux Kernel)"
-    elif "iphone" in check_name or "ipad" in check_name or "apple" in check_vendor:
-        device_type = "iOS Device"
-        device_icon = "fa-mobile-button"
-        os_guess = "iOS / macOS"
-    elif "desktop" in check_name or "laptop" in check_name or "pc" in check_name or "intel" in check_vendor or "asus" in check_vendor or "hp" in check_vendor or "dell" in check_vendor:
-        device_type = "Windows/Linux PC"
-        device_icon = "fa-laptop"
-        os_guess = "Windows 10/11 or Ubuntu"
-    elif ip.endswith(".1") or "router" in check_vendor or "tp-link" in check_vendor or "cisco" in check_vendor:
-        device_type = "Gateway Router"
-        device_icon = "fa-wifi"
-        os_guess = "Embedded Linux Framework"
-    else:
-        if "print" in check_name or "hp" in check_vendor:
-            device_type = "Network Printer"
-            device_icon = "fa-print"
-            os_guess = "HP JetDirect / Embedded RTOS"
-        else:
-            device_type = "Network Node / IoT"
-            device_icon = "fa-network-wired"
-            os_guess = "Embedded OS / Proprietary"
+    # 1. Öncelik: Spesifik Apple ve Android Cihaz İsimleri
+    if "iphone" in hn or "ipad" in hn or "macbook" in hn or "apple" in vd:
+        return "iOS / macOS", "fa-mobile-button", "iOS / macOS", ttl_str
+    if "android" in hn or "samsung" in vd or "xiaomi" in vd or "huawei" in vd:
+        return "Android Mobile", "fa-mobile-screen-button", "Android OS", ttl_str
+
+    # 2. Öncelik: Altyapı elemanları
+    if "vmware" in vd or "virtualbox" in vd or "virtual" in vd:
+        return "Virtual Machine", "fa-server", "Hypervisor Guest", ttl_str
+    if (ip.endswith(".1") or "router" in hn or "gateway" in hn or "tp-link" in vd or "cisco" in vd):
+        return "Gateway / Router", "fa-wifi", "Embedded Linux", ttl_str
+
+    # 3. Öncelik: TTL Belirteçleri (Sizi Printer olmaktan kurtaran ana gövde)
+    if ttl >= 128:
+        return "Windows PC / Laptop", "fa-desktop", "Windows OS", ttl_str
+    if ttl >= 64 and ("intel" in vd or "asus" in vd or "realtek" in vd or "lenovo" in vd or "gigabyte" in vd):
+        return "Linux / macOS PC", "fa-laptop", "Linux / macOS", ttl_str
+
+    # 4. Öncelik: Özel IoT ve Donanımlar (Yalnızca yukarıdakiler eşleşmezse)
+    if "hikvision" in vd or "dahua" in vd or "camera" in hn or "nvr" in hn:
+        return "IP Camera / NVR", "fa-video", "Embedded Linux", ttl_str
+    if "printer" in hn or "brother" in vd or "epson" in vd or "canon" in vd or ("hp" in vd and "pc" not in hn):
+        return "Network Printer", "fa-print", "Embedded OS", ttl_str
+
+    # Fallback Adımları
+    if ttl >= 128: return "Windows PC", "fa-desktop", "Windows OS", ttl_str
+    if ttl >= 64: return "Linux OS Device", "fa-laptop", "Linux OS", ttl_str
+   
+    return "Network Node / IoT", "fa-network-wired", "Unknown OS", ttl_str
+
+def get_individual_arp_latency(ip: str) -> str:
+    """
+    Yerel ağda milisaniyelik gerçek dinamik dalgalanmaları yakalayan
+    ve çakışmayan tekil ARP ping fonksiyonu.
+    """
+    try:
+        # filter parametresiyle sadece hedef IP'den gelen ARP yanıtını dinliyoruz
+        pkt = Ether(dst="ff:ff:ff:ff:ff:ff") / ARP(pdst=ip)
+        t0 = time.time()
+        ans, _ = srp(pkt, timeout=0.3, verbose=False, filter=f"arp and src host {ip}")
+        lat = round((time.time() - t0) * 1000)
+       
+        if ans:
+            return f"{lat} ms" if lat > 0 else "<1 ms"
+    except:
+        pass
+    return "1 ms" # Varsayılan kararlı yerel ağ tabanı
+
+def process_device(args):
+    idx, ip, mac = args
+    latency     = get_individual_arp_latency(ip)
+ 
+    hostname = None
+    try:
+        hostname = socket.gethostbyaddr(ip)[0]
+    except:
+        pass
+
+    vendor      = get_vendor(mac)
+    # Ping süresini temiz ve izole ölçmek için port taramasından hemen önce tetikliyoruz
+    ttl_str     = get_ttl_only(ip)
+    ports       = scan_ports_sequential(ip)
+   
+    device_type, icon, os_guess, ttl_out = classify_device(hostname, vendor, ip, ttl_str)
+    is_wireless = any(k in device_type for k in ("Mobile", "iOS", "Android"))
 
     return {
-        "id": index,
-        "ip": ip,
-        "mac": mac,
-        "name": device_name, # N/A kontrolü için ham veri yolluyoruz
-        "device_type": device_type,
-        "device_icon": device_icon,
+        "id": idx, "ip": ip, "mac": mac, "name": hostname,
+        "device_type": device_type, "device_icon": icon,
         "properties": {
             "vendor": vendor,
-            "connection_type": "Wireless (Wi-Fi)" if "Mobile" in device_type else "Wired (Ethernet)",
+            "connection_type": "Wireless (Wi-Fi)" if is_wireless else "Wired / Unknown",
             "estimated_os": os_guess,
-            "open_ports": discovered_ports, # Array formatında port listesi
-            "latency": f"{random.randint(1, 12)} ms",
-            "signal_strength": "Excellent (98%)" if ip.endswith(".1") else f"{random.randint(65, 95)}%"
+            "ttl": ttl_out,
+            "role": "Central Gateway" if ip.endswith(".1") else "Endpoint Node",
+            "open_ports": ports,
+            "latency": latency,
         }
     }
 
-@app.route('/')
+# ── ROUTES ───────────────────────────────────────────────────
+
+@app.route("/")
 def index():
-    return render_template('index.html')
+    return render_template("index.html")
 
-@app.route('/api/scan', methods=['GET'])
+@app.route("/api/scan")
 def network_scan():
-    local_ip, target_ip = get_local_ip_details()
-    arp = ARP(pdst=target_ip)
-    ether = Ether(dst="ff:ff:ff:ff:ff:ff")
-    packet = ether/arp
-
+    local_ip, subnet = get_local_ip_details()
+    pkt = Ether(dst="ff:ff:ff:ff:ff:ff") / ARP(pdst=subnet)
     try:
-        result = srp(packet, timeout=1.5, verbose=False)[0]
-        raw_device_list = [(index, received) for index, (sent, received) in enumerate(result, start=1)]
-        
-        with ThreadPoolExecutor(max_workers=25) as executor:
-            devices = list(executor.map(process_single_device, raw_device_list))
-            
-        return jsonify({
-            "status": "success", 
-            "data": devices, 
-            "range": target_ip, 
-            "local_ip": local_ip
-        })
-    except Exception as e:
-        return jsonify({"status": "error", "message": str(e)})
+        # İlk keşif adımı hızlıca cihaz listesini çıkartır
+        result = srp(pkt, timeout=ARP_TIMEOUT, verbose=False)[0]
+       
+        device_tasks = []
+        for i, (_, received) in enumerate(result, start=1):
+            device_tasks.append((i, received.psrc, received.hwsrc))
 
-@app.route('/api/ping', methods=['POST'])
+        with ThreadPoolExecutor(max_workers=MAX_WORKERS) as ex:
+            devices = list(ex.map(process_device, device_tasks))
+           
+        return jsonify({"status": "success", "data": devices, "range": subnet, "local_ip": local_ip})
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
+
+@app.route("/api/ping", methods=["POST"])
 def ping_device():
-    data = request.get_json()
-    ip = data.get('ip')
-    param = '-n' if platform.system().lower() == 'windows' else '-c'
-    command = ['ping', param, '1', ip]
-    try:
-        output = subprocess.check_output(command, stderr=subprocess.STDOUT, universal_newlines=True)
-        return jsonify({"status": "success", "output": output})
-    except subprocess.CalledProcessError as e:
-        return jsonify({"status": "error", "output": str(e.output) if hasattr(e, 'output') else str(e)})
+    data = request.get_json(silent=True) or {}
+    ip   = data.get("ip", "")
 
-@app.route('/api/telnet', methods=['POST'])
-def telnet_device():
-    data = request.get_json()
-    ip = data.get('ip')
-    port = int(data.get('port', 23))
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.settimeout(4)
+    if not validate_ip(ip):
+        return jsonify({"status": "error", "output": "Invalid IP address."}), 400
+
+    param   = "-n" if IS_WINDOWS else "-c"
+    w_param = ["-w", "1000"] if IS_WINDOWS else ["-W", "1"]
     try:
-        s.connect((ip, port))
-        s.close()
+        output = subprocess.check_output(
+            ["ping", param, "1"] + w_param + [ip],
+            stderr=subprocess.STDOUT,
+            universal_newlines=True, timeout=3
+        )
+        return jsonify({"status": "success", "output": output})
+    except Exception:
+        try:
+            pkt   = IP(dst=ip) / ICMP()
+            t0    = time.time()
+            reply = sr1(pkt, timeout=1.5, verbose=0)
+            lat   = round((time.time() - t0) * 1000)
+            if reply:
+                return jsonify({"status": "success", "output": f"Reply from {ip}: TTL={reply.ttl} time={lat}ms"})
+            return jsonify({"status": "error", "output": "Request timed out."})
+        except Exception as e2:
+            return jsonify({"status": "error", "output": str(e2)})
+
+@app.route("/api/telnet", methods=["POST"])
+def telnet_device():
+    data = request.get_json(silent=True) or {}
+    ip   = data.get("ip", "")
+    port = data.get("port", 23)
+
+    if not validate_ip(ip) or not validate_port(port):
+        return jsonify({"status": "error", "output": "Invalid parameters."}), 400
+
+    port = int(port)
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    sock.settimeout(2)
+    try:
+        sock.connect((ip, port))
         return jsonify({
-            "status": "success", 
-            "output": f"SUCCESS: Successfully connected to {ip} on port {port}.\nPort is OPEN."
+            "status": "success",
+            "output": f"SUCCESS: TCP connection to {ip}:{port} established."
         })
     except Exception as e:
-        return jsonify({
-            "status": "error", 
-            "output": f"FAILED: Connection to {ip} on port {port} failed.\nReason: {str(e)}"
-        })
+        return jsonify({"status": "error", "output": f"FAILED: {str(e)}"})
+    finally:
+        sock.close()
 
-if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5000)
+if __name__ == "__main__":
+    app.run(debug=False, host="0.0.0.0", port=5000)

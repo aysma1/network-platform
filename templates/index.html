@@ -107,7 +107,7 @@
             background-color: #0d0f14 !important;
             border: 1px solid #38bdf8;
             transition: border-color 0.3s ease, box-shadow 0.3s ease;
-            width: 210px; 
+            width: 210px;
             justify-content: flex-start;
         }
         .scan-control-group.disabled-state {
@@ -145,11 +145,11 @@
             font-size: 1rem;
         }
 
-        .toggle-icon { 
+        .toggle-icon {
             color: #ffffff !important;
             font-size: 1.1rem;
             text-shadow: 0 0 5px rgba(255,255,255,0.2);
-            transition: transform 0.3s ease, color 0.2s ease; 
+            transition: transform 0.3s ease, color 0.2s ease;
         }
         .toggle-icon.rotated { transform: rotate(180deg); color: #ff0033 !important; }
 
@@ -181,13 +181,13 @@
 
         /* ❌ GÖRÜNÜRLÜK VE RENK KONTRAST AYARLARI */
         .na-text {
-            color: #cbd5e1 !important; /* Arka planda boğulmayan belirgin açık gümüş gri */
+            color: #cbd5e1 !important;
             font-weight: 700;
             letter-spacing: 0.5px;
             text-shadow: 0 0 6px rgba(255, 255, 255, 0.2);
         }
         .port-none-detected {
-            color: #86efac !important; /* Canlı fosforlu zümrüt yeşili */
+            color: #86efac !important;
             font-weight: 700;
             text-shadow: 0 0 12px rgba(134, 239, 172, 0.4);
         }
@@ -197,12 +197,12 @@
         
         /* ✨ Hardware Vendor İsimleri ve İkonları İçin Parlak Stil */
         .vendor-text-wrapper {
-            color: #e2e8f0 !important; /* Sönük gri yerine parlak, net beyaz/gri tonu */
+            color: #e2e8f0 !important;
             font-weight: 600;
             font-size: 0.9rem;
         }
         .vendor-text-wrapper i {
-            color: #ef4444 !important; /* Mikroçip ikonu belirgin canlı kırmızı */
+            color: #ef4444 !important;
             text-shadow: 0 0 6px rgba(239, 68, 68, 0.3);
         }
     </style>
@@ -378,8 +378,8 @@
 
         searchInput.addEventListener('input', (e) => {
             const query = e.target.value.toLowerCase();
-            const filtered = localDevices.filter(d => 
-                d.ip.includes(query) || 
+            const filtered = localDevices.filter(d =>
+                d.ip.includes(query) ||
                 (d.name && d.name.toLowerCase().includes(query)) ||
                 d.device_type.toLowerCase().includes(query)
             );
@@ -412,7 +412,6 @@
 
                 const row = document.createElement('tr');
                 row.className = 'clickable-row';
-                // 🚀 `vendor-text-wrapper` sınıfı entegre edildi, böylece donanım ismi ve ikon loş durmayacak
                 row.innerHTML = `
                     <td><strong>${device.id}</strong></td>
                     <td><span class="badge ip-badge font-monospace fs-6 px-2 py-1">${device.ip}</span></td>
@@ -433,12 +432,6 @@
                                 <div class="row g-2">
                                     <div class="col-md-3">
                                         <div class="feature-box">
-                                            <div class="feature-title">Resolved Hostname</div>
-                                            <div class="feature-value text-break small ${device.name ? 'text-info' : 'na-text'}">${device.name ? device.name : 'N/A (No PTR Record)'}</div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <div class="feature-box">
                                             <div class="feature-title">Discovered Class & Type</div>
                                             <div class="feature-value text-light fs-6"><i class="fa-solid ${device.device_icon} me-2 text-danger"></i>${device.device_type}</div>
                                         </div>
@@ -452,7 +445,13 @@
                                     <div class="col-md-3">
                                         <div class="feature-box">
                                             <div class="feature-title">Link Speed / RSSI</div>
-                                            <div class="feature-value text-light fs-6">${device.properties.connection_type} (${device.properties.latency})</div>
+                                            <div class="feature-value text-light fs-6">${device.properties.connection_type}</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="feature-box" style="background-color: #111827; border-color: #1f2937;">
+                                            <div class="feature-title text-info"><i class="fa-solid fa-gauge-high me-1"></i> Current Latency</div>
+                                            <div class="feature-value text-info font-monospace fs-6">${device.properties.latency}</div>
                                         </div>
                                     </div>
                                 </div>
@@ -554,7 +553,7 @@
                     term.innerHTML += "Transmission failure.\n";
                 }
                 term.scrollTop = term.scrollHeight;
-            }, 1000); 
+            }, 1000);
         }
 
         function stopPing(index) {
