@@ -6,6 +6,8 @@
     <title>Advanced Network Deep Diagnostic & Audit Radar</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         /* ── Genel Sayfa Ayarları ── */
         body {
@@ -47,6 +49,49 @@
         .clickable-row { cursor: pointer; transition: background-color 0.2s ease; }
         .clickable-row:hover td { background-color: #1a1e29 !important; }
         .clickable-row.active td { background-color: #1a1e29 !important; }
+
+        /* 🚨 GÜVENSİZ CİHAZ DURUMU (Kalıcı Koyu Kırmızı Arka Plan) ── */
+        .table tbody tr.row-danger-alert td,
+        .table tbody tr.row-danger-alert:not(:hover) td {
+            background-color: #3a161a !important; 
+            color: #f87171 !important;           
+            border-bottom: 1px solid #7a1f2d !important;
+        }
+        .table tbody tr.row-danger-alert:hover td { 
+            background-color: #4c1d22 !important; 
+        }
+        
+        /* 🎯 Kırmızı Satır İçi IP Kutucuğu Kontrast Ayarı */
+        .table tbody tr.row-danger-alert .ip-badge { 
+            background-color: #1a0a0c !important; 
+            color: #ff8888 !important;            
+            border: 1px solid #7a1f2d !important;  
+            box-shadow: 0 0 6px rgba(255, 0, 51, 0.15); 
+        }
+
+        /* 🍏 GÜVENLİ CİHAZ DURUMU (Kalıcı Koyu Yeşil Arka Plan) ── */
+        .table tbody tr.row-success-alert td,
+        .table tbody tr.row-success-alert:not(:hover) td {
+            background-color: #142c1b !important; 
+            color: #86efac !important;           
+            border-bottom: 1px solid #1f7a3a !important;
+        }
+        .table tbody tr.row-success-alert:hover td { 
+            background-color: #1c3d26 !important; 
+        }
+        
+        /* 🎯 Yeşil Satır İçi IP Kutucuğu Kontrast Ayarı */
+        .table tbody tr.row-success-alert .ip-badge { 
+            background-color: #0a140e !important; 
+            color: #a7f3d0 !important;            
+            border: 1px solid #1f7a3a !important;  
+        }
+
+        /* Ortak Metin Renklerini Sabitleme */
+        .row-danger-alert .text-light, .row-danger-alert .fw-semibold, .row-danger-alert td span,
+        .row-success-alert .text-light, .row-success-alert .fw-semibold, .row-success-alert td span {
+            color: #ffffff !important;
+        }
 
         /* ── Akıcı Animasyonlu Detay Paneli Düzeni ── */
         .detail-row td { padding: 0 !important; background-color: #07090d !important; }
@@ -160,7 +205,7 @@
             font-weight: 600;
         }
 
-        /* Renkli Port Badge Tasarımları */
+        /* 🏷️ Port Badge Tasarımları (Kuru Kafa & Nötr Görünüm) ── */
         .port-badge {
             font-family: 'Consolas', monospace;
             font-size: 0.85rem;
@@ -169,14 +214,15 @@
             font-weight: bold;
         }
         .port-critical {
-            background-color: rgba(255, 0, 51, 0.15);
-            color: #ff3355;
-            border: 1px solid #ff0033;
+            background-color: rgba(255, 0, 51, 0.25) !important;
+            color: #ff4d66 !important;
+            border: 1px solid #ff0033 !important;
+            box-shadow: 0 0 8px rgba(255, 0, 51, 0.3);
         }
-        .port-standard {
-            background-color: rgba(34, 197, 94, 0.15);
-            color: #4ade80;
-            border: 1px solid #22c55e;
+        .port-neutral {
+            background-color: rgba(148, 163, 184, 0.1) !important;
+            color: #cbd5e1 !important;
+            border: 1px solid #475569 !important;
         }
 
         /* ❌ GÖRÜNÜRLÜK VE RENK KONTRAST AYARLARI */
@@ -205,7 +251,7 @@
             color: #ef4444 !important;
             text-shadow: 0 0 6px rgba(239, 68, 68, 0.3);
         }
-    </style>
+    </style> 
 </head>
 <body>
 
@@ -232,29 +278,32 @@
     </nav>
 
     <div class="container">
-        <div class="row align-items-center mb-4">
-            <div class="col-lg-5">
-                <h2 class="h4 text-light mb-1">Deep Subnet Infrastructure</h2>
-                <p class="text-muted small mb-0">Multi-threaded network analysis layer rendering deep component verification.</p>
-                <span class="text-warning small d-block mt-1" id="last-scan-time"><i class="fa-solid fa-history me-1"></i> Last Scan: Never</span>
-            </div>
-            <div class="col-lg-5 mt-3 mt-lg-0">
-                <div class="input-group">
-                    <span class="input-group-text search-icon-wrapper"><i class="fa-solid fa-magnifying-glass"></i></span>
-                    <input type="text" id="search-input" class="form-control bg-dark text-white border-secondary" placeholder="Filter nodes instantly..." disabled>
-                    <span class="input-group-text bg-danger border-danger text-white fw-bold" id="device-count">0 Nodes</span>
-                </div>
-            </div>
-            <div class="col-lg-2 text-lg-end mt-3 mt-lg-0">
-                <button id="btn-scan" class="btn btn-scan w-100 py-2 shadow-sm"><i class="fa-solid fa-radar me-2"></i> Scan Now </button>
-            </div>
-        </div>
-
-        <div id="loader" class="alert alert-dark border-danger text-danger d-none shadow mb-3" role="alert">
-            <i class="fa-solid fa-circle-notch fa-spin me-2"></i> Spawning concurrent threads executing deep device audits...
+        <div class="mb-4">
+            <h2 class="h4 text-light mb-1 fw-bold">Deep Subnet Infrastructure</h2>
+            <span class="text-warning small" id="last-scan-time"><i class="fa-solid fa-history me-1"></i> Last Scan: Never</span>
         </div>
 
         <div class="main-card">
+            
+            <div class="p-3 border-bottom border-secondary d-flex gap-3 flex-wrap flex-md-nowrap align-items-center bg-dark w-100">
+    
+                <div class="input-group flex-grow-1" style="max-width: 600px; height: 38px;">
+                    <span class="input-group-text search-icon-wrapper py-0"><i class="fa-solid fa-magnifying-glass"></i></span>
+                    <input type="text" id="search-input" class="form-control bg-dark text-white border-secondary h-100 py-0" placeholder="Filter nodes instantly..." disabled>
+                    <span class="input-group-text bg-danger border-danger text-white fw-bold h-100 py-0" id="device-count" style="font-size: 0.85rem;">0 Nodes</span>
+                </div>
+
+                <div class="d-flex gap-2 ms-md-auto" style="width: 240px; height: 38px;">
+                    <button id="btn-pdf" class="btn btn-outline-danger h-100 flex-fill fw-bold m-0 py-0" style="font-size: 0.8rem;" onclick="exportNetworkReport()" disabled>
+                        <i class="fa-solid fa-file-pdf me-1"></i> PDF
+                    </button>
+                    <button id="btn-scan" class="btn btn-scan h-100 flex-fill fw-bold m-0 py-0" style="font-size: 0.8rem;">
+                        <i class="fa-solid fa-radar me-1"></i> SCAN NOW
+                    </button>
+                </div>
+
+            </div>
+
             <div class="table-responsive">
                 <table class="table align-middle">
                     <thead>
@@ -278,6 +327,7 @@
                 </table>
             </div>
         </div>
+
     </div>
 
     <script>
@@ -326,31 +376,82 @@
         }
 
         async function triggerScan(isSilent = false) {
+            const pdfButton = document.getElementById('btn-pdf');
+
             if(!isSilent) {
-                loader.classList.remove('d-none');
                 btn.disabled = true;
-                tbody.innerHTML = `<tr><td colspan="6" class="text-center text-danger py-5"><i class="fa-solid fa-spinner fa-spin me-2"></i> Parsing network layer responses...</td></tr>`;
+                searchInput.disabled = true;
+                if(pdfButton) pdfButton.disabled = true; // Tarama sırasında PDF'i kilitle
+                
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="text-center py-5">
+                            <div class="d-flex justify-content-between align-items-center mx-auto mb-2" style="max-width: 450px;">
+                                <span class="text-danger fw-bold small" id="progress-status">
+                                    <i class="fa-solid fa-radar perfect-spin me-2"></i> [Stage 1/3] Initializing Socket & Resolving Subnet...
+                                </span>
+                                <span class="text-light small font-monospace fw-bold" id="progress-percent">25%</span>
+                            </div>
+                            <div class="mx-auto" style="max-width: 450px;">
+                                <div class="progress bg-dark border border-secondary" style="height: 10px; border-radius: 4px;">
+                                    <div id="progress-bar" class="progress-bar progress-bar-striped progress-bar-animated bg-danger" role="progressbar" style="width: 25%"></div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                `;
             }
+
+            const progressBar = document.getElementById('progress-bar');
+            const progressStatus = document.getElementById('progress-status');
+            const progressPercent = document.getElementById('progress-percent');
+
+            setTimeout(() => {
+                if(!isSilent && progressBar) {
+                    progressBar.style.width = '60%';
+                    if(progressPercent) progressPercent.innerText = '60%';
+                    if(progressStatus) {
+                        progressStatus.innerHTML = `<i class="fa-solid fa-network-wired fa-spin me-2"></i> [Stage 2/3] Executing ARP Sweep & Identifying Live Nodes...`;
+                    }
+                }
+            }, 400);
+
             try {
                 const response = await fetch('/api/scan');
                 const result = await response.json();
+                
                 if (result.status === 'success') {
+                    if(!isSilent && progressBar) {
+                        progressBar.style.width = '100%';
+                        if(progressPercent) progressPercent.innerText = '100%';
+                        if(progressStatus) {
+                            progressStatus.innerHTML = `<i class="fa-solid fa-circle-check text-success me-2"></i> [Stage 3/3] Port Sweep Completed. Injecting Security Matrix...`;
+                        }
+                    }
+
                     ipRangeBadge.innerText = `Active Range: ${result.range}`;
                     myIpBadge.innerHTML = `<i class="fa-solid fa-desktop me-1"></i> Your IP: ${result.local_ip}`;
                     localDevices = result.data;
                     deviceCountBadge.innerText = `${localDevices.length} Nodes`;
                     searchInput.disabled = false;
-                    renderTable(localDevices);
+                    
+                    if(pdfButton) pdfButton.disabled = false; // Tarama bitti, PDF artık tıklanabilir!
+                    
+                    setTimeout(() => {
+                        renderTable(localDevices);
+                    }, 700);
                     
                     const now = new Date();
                     const timestamp = now.toTimeString().split(' ')[0];
                     lastScanTimeDiv.innerHTML = `<i class="fa-solid fa-history me-1"></i> Last Scan: ${timestamp}`;
                 }
             } catch (err) {
-                if(!isSilent) tbody.innerHTML = `<tr><td colspan="6" class="text-center text-danger py-5">API Connectivity Lost.</td></tr>`;
+                if(!isSilent && progressStatus) {
+                    progressStatus.innerHTML = `<i class="fa-solid fa-circle-xmark text-danger me-2"></i> Fatal: Subnet sweep aborted.`;
+                    tbody.innerHTML = `<tr><td colspan="6" class="text-center text-danger py-5">Fatal: API Connectivity Lost.</td></tr>`;
+                }
             } finally {
                 if(!isSilent) {
-                    loader.classList.add('d-none');
                     btn.disabled = false;
                 }
             }
@@ -399,19 +500,40 @@
                 const vendorStr = device.properties.vendor ? `<span>${device.properties.vendor}</span>` : `<span class="na-text">N/A</span>`;
                 const macStr = device.mac ? `<span class="font-monospace text-warning small">${device.mac}</span>` : `<span class="na-text">N/A</span>`;
 
+                // ── PORT VE RADAR RİSK SÜZGECİ ──
                 let portsHtml = "";
+                let hasCriticalPort = false; // Kırmızı/Yeşil satır rengini belirleyen ana bayrak
+                
+                // Kırmızı alarm verdirecek kritik zafiyet portları
+                const criticalPorts = [21, 22, 23, 139, 445, 3389];
+
                 if (device.properties.open_ports && device.properties.open_ports.length > 0) {
                     device.properties.open_ports.forEach(p => {
-                        const isCritical = [22, 23, 445, 3389].includes(p.port);
-                        const badgeClass = isCritical ? 'port-critical' : 'port-standard';
-                        portsHtml += `<span class="badge port-badge ${badgeClass} me-2 mb-1"><i class="fa-solid fa-shield-cat me-1"></i>${p.port} (${p.service})</span>`;
+                        const isCritical = criticalPorts.includes(p.port);
+                        
+                        if (isCritical) {
+                            hasCriticalPort = true; // İçeride tek bir tane bile güvensiz port varsa cihaz mimlenir
+                            // Güvensiz portlar için kuru kafa ikonu ve kırmızı badge
+                            portsHtml += `<span class="badge port-badge port-critical me-2 mb-1"><i class="fa-solid fa-skull me-1"></i>${p.port} (${p.service})</span>`;
+                        } else {
+                            // Güvenli/Standart portlar (80, 443 vb.) da buraya basılıyor, gizlenmiyor!
+                            portsHtml += `<span class="badge port-badge port-neutral me-2 mb-1"><i class="fa-solid fa-door-open me-1"></i>${p.port} (${p.service})</span>`;
+                        }
                     });
                 } else {
+                    // Cihazın hiçbir açık portu yoksa basılacak güvenli yazısı
                     portsHtml = `<div class="feature-value port-none-detected font-monospace small"><i class="fa-solid fa-lock me-2"></i>None Detected (Secured Subnet Node)</div>`;
                 }
 
+                // ── NET İKİLİ SATIR RENKLENDİRMESİ ──
                 const row = document.createElement('tr');
-                row.className = 'clickable-row';
+                
+                if (hasCriticalPort) {
+                    row.className = 'clickable-row row-danger-alert'; // Kuru kafalı portu olanlar -> NET KIRMIZI
+                } else {
+                    row.className = 'clickable-row row-success-alert'; // Sadece güvenli portu açık olanlar veya portu olmayanlar -> NET YEŞİL
+                }
+
                 row.innerHTML = `
                     <td><strong>${device.id}</strong></td>
                     <td><span class="badge ip-badge font-monospace fs-6 px-2 py-1">${device.ip}</span></td>
@@ -422,6 +544,7 @@
                 `;
                 tbody.appendChild(row);
 
+                // Detay paneli şablonu
                 const detailRow = document.createElement('tr');
                 detailRow.className = 'detail-row';
                 detailRow.innerHTML = `
@@ -457,8 +580,10 @@
                                 </div>
 
                                 <div class="w-100">
-                                    <div class="feature-box port-box">
-                                        <div class="feature-title text-danger mb-2"><i class="fa-solid fa-door-open me-1"></i> Live Automated Port Scan (Mini-Nmap Sweep)</div>
+                                    <div class="feature-box port-box" style="${hasCriticalPort ? 'border-color: #ff0033; background-color: #210c0e;' : 'border-color: #22c55e; background-color: #0c2112;'}">
+                                        <div class="feature-title ${hasCriticalPort ? 'text-danger' : 'text-success'} mb-2">
+                                            <i class="fa-solid ${hasCriticalPort ? 'fa-radiation' : 'fa-shield-halved'} me-1"></i> Live Automated Port Scan (Mini-Nmap Sweep)
+                                        </div>
                                         <div class="d-flex flex-wrap align-items-center mt-1">
                                             ${portsHtml}
                                         </div>
@@ -499,18 +624,21 @@
                 `;
                 tbody.appendChild(detailRow);
 
+                // ── ÇOKLU DETAY PANELİ AÇMA MANTIĞI (Aynı anda birkaç IP açılabilir) ──
                 row.addEventListener('click', () => {
                     const wrapper = document.getElementById(`wrapper-${i}`);
-                    const isCurrentlyOpen = wrapper.classList.contains('open');
+                    const toggleIcon = row.querySelector('.toggle-icon');
 
-                    document.querySelectorAll('.detail-wrapper.open').forEach(w => w.classList.remove('open'));
-                    document.querySelectorAll('.clickable-row.active').forEach(r => r.classList.remove('active'));
-                    document.querySelectorAll('.toggle-icon.rotated').forEach(ic => ic.classList.remove('rotated'));
-
-                    if (!isCurrentlyOpen) {
+                    // DİKKAT: Diğer açık panelleri kapatan toplu silme döngülerini kaldırdık!
+                    // Artık her satır  sadece kendi durumunu değiştirir (Toggle)
+                    if (wrapper.classList.contains('open')) {
+                        wrapper.classList.remove('open');
+                        row.classList.remove('active');
+                        if(toggleIcon) toggleIcon.classList.remove('rotated');
+                    } else {
                         wrapper.classList.add('open');
                         row.classList.add('active');
-                        row.querySelector('.toggle-icon').classList.add('rotated');
+                        if(toggleIcon) toggleIcon.classList.add('rotated');
                     }
                 });
             });
@@ -593,6 +721,53 @@
             triggerScan(false);
             startAutoScanTimer();
         };
+        
+        async function exportNetworkReport() {
+            const { jsPDF } = window.jspdf;
+            const pdfButton = document.getElementById('btn-pdf');
+            
+            pdfButton.disabled = true;
+            pdfButton.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin me-1"></i> Printing...`;
+
+            // Performans için detay pencerelerini açmıyoruz, mevcut temiz ana listenin dökümünü alıyoruz
+            const element = document.querySelector('.main-card');
+
+            // Doğrudan render katmanına geçiyoruz (Saniyeler süren donma problemi bitti)
+            html2canvas(element, {
+                backgroundColor: '#0d0f14',
+                scale: 1.2, // 101 cihazlık devasa liste için ideal hafif ölçek (Hafıza dostu)
+                useCORS: true,
+                logging: false
+            }).then(canvas => {
+                const imgData = canvas.toDataURL('image/png');
+                
+                const pdf = new jsPDF('l', 'mm', 'a4');
+                const imgWidth = 297; 
+                const pageHeight = 210; 
+                const imgHeight = (canvas.height * imgWidth) / canvas.width;
+                let heightLeft = imgHeight;
+                let position = 0;
+
+                pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+                heightLeft -= pageHeight;
+
+                while (heightLeft > 0) {
+                    position = heightLeft - imgHeight;
+                    pdf.addPage();
+                    pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+                    heightLeft -= pageHeight;
+                }
+
+                pdf.save(`Network_Report_${new Date().toISOString().split('T')[0]}.pdf`);
+                
+                pdfButton.disabled = false;
+                pdfButton.innerHTML = `<i class="fa-solid fa-file-pdf me-1"></i> PDF`;
+            }).catch(err => {
+                console.error(err);
+                pdfButton.disabled = false;
+                pdfButton.innerHTML = `<i class="fa-solid fa-file-pdf me-1"></i> PDF`;
+            });
+        }
     </script>
 </body>
 </html>

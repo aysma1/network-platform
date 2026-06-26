@@ -6,6 +6,7 @@ import ssl
 import re
 import ipaddress
 import time
+import os
 from concurrent.futures import ThreadPoolExecutor
 
 try:
@@ -18,26 +19,39 @@ from mac_vendor_lookup import MacLookup
 from scapy.all import ARP, Ether, srp, IP, ICMP, sr1, conf
 
 app = Flask(__name__)
-# Scapy'nin katman çakışmalarını önlemek için soket ayarı
 
+# Scapy thread güvenliği ve katman çakışmalarını önleme ayarları
 conf.sniff_promisc = False
 
 try:
+    from mac_vendor_lookup import MacLookup
     _mac = MacLookup()
-
+    # KESİN ÇÖZÜM: Kod başlamadan önce yerel veritabanı dosyasının 
+    # indirilip hazırlandığından emin oluyoruz.
+    try:
+        _mac.load_local()  # Eğer sistemde varsa yerelden yükler
+    except FileNotFoundError:
+        _mac.update_binary_if_needed()  # Yoksa internetten çeker ve hazırlar
+    _HAS_NETIFACES = True
 except Exception:
     _mac = None
 
 # ── Sabitler ──────────────────────────────────────────────────
-
-PORT_TIMEOUT = 0.15
-ARP_TIMEOUT  = 1.5
-MAX_WORKERS  = 30
+PORT_TIMEOUT = 0.35
+ARP_TIMEOUT  = 2.0
+MAX_WORKERS  = 40  # Thread havuzunu genişlettik (Tamamen eşzamanlılık için)
 IS_WINDOWS   = platform.system().lower() == "windows"
 
 TARGET_PORTS = {
-    21: "FTP", 22: "SSH", 23: "Telnet", 80: "HTTP",
-    139: "NetBIOS", 443: "HTTPS", 445: "SMB", 3389: "RDP",
+    21: "FTP", 
+    22: "SSH", 
+    23: "Telnet", 
+    80: "HTTP", 
+    139: "NetBIOS", 
+    443: "HTTPS", 
+    445: "SMB", 
+    3389: "RDP",
+    8080: "HTTP-ALT",
 }
 
 def validate_ip(ip: str) -> bool:
@@ -50,7 +64,6 @@ def validate_ip(ip: str) -> bool:
 def validate_port(port) -> bool:
     try:
         return 1 <= int(port) <= 65535
-
     except (ValueError, TypeError):
         return False
 
@@ -59,7 +72,7 @@ def get_local_ip_details():
         try:
             AF_INET = netifaces.AF_INET
             gws     = netifaces.gateways()
-            if "default" in gws:
+            if "default" in gws and AF_INET in gws["default"]:
                 iface = gws["default"][AF_INET][1]
             else:
                 entries = gws.get(AF_INET, [])
@@ -86,20 +99,58 @@ def get_local_ip_details():
         return "127.0.0.1", "127.0.0.1/32"
 
 def get_vendor(mac: str) -> str:
-    if not _mac: return "Unknown Vendor"
-    try: return _mac.lookup(mac)
-    except Exception: return "Unknown Vendor"
+    if not mac:
+        return "Unknown Vendor"
+    clean = mac.upper().replace("-", ":").strip()
+    
+    if _mac:
+        try:
+            result = _mac.lookup(clean)
+            if result:
+                return result
+        except Exception:
+            pass
+    
+    oui_path = os.path.join(os.path.expanduser("~"), ".cache", "mac-vendors", "oui.txt")
+    if os.path.exists(oui_path):
+        # MAC'in ilk 3 byte'ını al: "AA:BB:CC" → "AA-BB-CC"
+        prefix = clean[:8].replace(":", "-").upper()
+        try:
+            with open(oui_path, "r", encoding="utf-8", errors="ignore") as f:
+                for line in f:
+                    # Satır başı prefix kontrolü — boşlukları ignore et
+                    if line.startswith(prefix) and "(hex)" in line:
+                        # Format: "28-6F-B9   (hex)\t\tNokia Shanghai Bell\n"
+                        parts = line.split("\t\t")
+                        if len(parts) >= 2:
+                            return parts[-1].strip()
+        except Exception:
+            pass
+    
+    return "Unknown Vendor"
 
 def get_ttl_only(ip: str) -> str:
+    """
+    Thread çakışmalarını önlemek için native ping (subprocess) kullanarak 
+    TTL değerini yakalayan daha güvenli fonksiyon.
+    """
     try:
-        pkt = IP(dst=ip) / ICMP()
-        reply = sr1(pkt, timeout=0.3, verbose=0)
-        if reply: return str(int(reply.ttl))
+        param = "-n" if IS_WINDOWS else "-c"
+        w_param = ["-w", "800"] if IS_WINDOWS else ["-W", "1"]
+        output = subprocess.check_output(
+            ["ping", param, "1"] + w_param + [ip],
+            stderr=subprocess.STDOUT,
+            universal_newlines=True
+        )
+        match = re.search(r"TTL=(\d+)", output, re.IGNORECASE)
+        if match:
+            return match.group(1)
     except:
         pass
     return "N/A"
 
-def scan_ports_sequential(ip: str) -> list:
+def scan_ports_parallel(ip: str) -> list:
+    """Tek bir cihazın portlarını tararken de hafif soket kullanarak hızlıca döner"""
     results = []
     for port, service in TARGET_PORTS.items():
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -115,12 +166,12 @@ def scan_ports_sequential(ip: str) -> list:
 
 def classify_device(hostname: str | None, vendor: str, ip: str, ttl_str: str):
     """
-    KESİN ÇÖZÜM: Öncelik sıralaması yazılımsal kararlılığa göre revize edildi.
-    Eğer geçerli bir TTL varsa yazıcı filtresine takılmadan PC/Mobil teşhisi konur.
+    GÜNCELLENMİŞ KESİN ÇÖZÜM: Marka tabanlı yanlış eşleşmeleri (HP laptopların printer çıkması gibi) 
+    önlemek için donanım/isimlendirme kırılımları ve TTL mantığı optimize edildi.
     """
     hn = (hostname or "").lower()
     vd = vendor.lower()
-   
+    
     try: ttl = int(ttl_str)
     except: ttl = 0
 
@@ -136,45 +187,74 @@ def classify_device(hostname: str | None, vendor: str, ip: str, ttl_str: str):
     if (ip.endswith(".1") or "router" in hn or "gateway" in hn or "tp-link" in vd or "cisco" in vd):
         return "Gateway / Router", "fa-wifi", "Embedded Linux", ttl_str
 
-    # 3. Öncelik: TTL Belirteçleri (Sizi Printer olmaktan kurtaran ana gövde)
+    # 3. Öncelik: Ağ isminden net PC/Laptop tespiti (TTL gelmese bile kurtarır)
+    if any(k in hn for k in ("laptop", "desktop", "pc", "computer", "notebook")):
+        if ttl >= 128 or "windows" in hn:
+            return "Windows PC / Laptop", "fa-desktop", "Windows OS", ttl_str
+        return "PC / Laptop", "fa-laptop", "Linux / macOS or Windows", ttl_str
+
+    # 4. Öncelik: TTL Belirteçleri (Güvenli donanım eşleşmeleriyle birlikte)
     if ttl >= 128:
         return "Windows PC / Laptop", "fa-desktop", "Windows OS", ttl_str
-    if ttl >= 64 and ("intel" in vd or "asus" in vd or "realtek" in vd or "lenovo" in vd or "gigabyte" in vd):
-        return "Linux / macOS PC", "fa-laptop", "Linux / macOS", ttl_str
+    if ttl >= 64 and any(k in vd for k in ("intel", "asus", "realtek", "lenovo", "gigabyte", "hp", "dell", "msi")):
+        if "printer" not in hn:
+            return "PC / Laptop Node", "fa-laptop", "Linux / macOS / Windows", ttl_str
 
-    # 4. Öncelik: Özel IoT ve Donanımlar (Yalnızca yukarıdakiler eşleşmezse)
+    # 5. Öncelik: Özel IoT ve Donanımlar (Yazıcı filtresi daraltıldı)
     if "hikvision" in vd or "dahua" in vd or "camera" in hn or "nvr" in hn:
         return "IP Camera / NVR", "fa-video", "Embedded Linux", ttl_str
-    if "printer" in hn or "brother" in vd or "epson" in vd or "canon" in vd or ("hp" in vd and "pc" not in hn):
+    
+    is_hp_printer = (
+        "hp" in vd and not any(k in hn for k in ("laptop", "desktop", "pc", "note", "pavilion", "elitebook", "probook", "envy", "spectre", "omen"))
+        and any(k in hn for k in ("print", "laserjet", "officejet", "deskjet", "mfp"))
+    )
+    if "printer" in hn or "brother" in vd or "epson" in vd or "canon" in vd or is_hp_printer:
         return "Network Printer", "fa-print", "Embedded OS", ttl_str
 
     # Fallback Adımları
     if ttl >= 128: return "Windows PC", "fa-desktop", "Windows OS", ttl_str
     if ttl >= 64: return "Linux OS Device", "fa-laptop", "Linux OS", ttl_str
+    
+    if any(k in vd for k in ("hp", "dell", "lenovo", "asus", "acer")):
+        return "Computer Node (Unverified TTL)", "fa-laptop", "Unknown OS", ttl_str
    
     return "Network Node / IoT", "fa-network-wired", "Unknown OS", ttl_str
 
 def get_individual_arp_latency(ip: str) -> str:
-    """
-    Yerel ağda milisaniyelik gerçek dinamik dalgalanmaları yakalayan
-    ve çakışmayan tekil ARP ping fonksiyonu.
-    """
     try:
-        # filter parametresiyle sadece hedef IP'den gelen ARP yanıtını dinliyoruz
-        pkt = Ether(dst="ff:ff:ff:ff:ff:ff") / ARP(pdst=ip)
-        t0 = time.time()
-        ans, _ = srp(pkt, timeout=0.3, verbose=False, filter=f"arp and src host {ip}")
-        lat = round((time.time() - t0) * 1000)
-       
-        if ans:
-            return f"{lat} ms" if lat > 0 else "<1 ms"
-    except:
+        param = "-n" if IS_WINDOWS else "-c"
+        w_param = ["-w", "800"] if IS_WINDOWS else ["-W", "1"]
+        output = subprocess.check_output(
+            ["ping", param, "1"] + w_param + [ip],
+            stderr=subprocess.STDOUT,
+            universal_newlines=True,
+            timeout=2
+        )
+        match = re.search(r"[Aa]verage\s*=\s*(\d+)\s*ms", output)
+        if match:
+            val = int(match.group(1))
+            return "<1 ms" if val == 0 else f"{val} ms"
+        match = re.search(r"[Oo]rtalama\s*=\s*(\d+)\s*ms", output)
+        if match:
+            val = int(match.group(1))
+            return "<1 ms" if val == 0 else f"{val} ms"
+        match = re.search(r"rtt .+ = [\d.]+/([\d.]+)/", output)
+        if match:
+            val = round(float(match.group(1)))
+            return "<1 ms" if val == 0 else f"{val} ms"
+    except Exception:
         pass
-    return "1 ms" # Varsayılan kararlı yerel ağ tabanı
+    return "N/A"
 
 def process_device(args):
+    """
+    Bütün cihazlar buraya THREAD havuzundan eşzamanlı (Parallel) olarak düşer.
+    Hiçbir cihaz bir diğerinin port taramasını veya ping atmasını beklemez.
+    """
     idx, ip, mac = args
-    latency     = get_individual_arp_latency(ip)
+    
+    # Latency, Hostname, TTL ve Port taraması her thread içinde tamamen asenkron yürür.
+    latency  = get_individual_arp_latency(ip)
  
     hostname = None
     try:
@@ -183,10 +263,9 @@ def process_device(args):
         pass
 
     vendor      = get_vendor(mac)
-    # Ping süresini temiz ve izole ölçmek için port taramasından hemen önce tetikliyoruz
     ttl_str     = get_ttl_only(ip)
-    ports       = scan_ports_sequential(ip)
-   
+    ports       = scan_ports_parallel(ip)
+    
     device_type, icon, os_guess, ttl_out = classify_device(hostname, vendor, ip, ttl_str)
     is_wireless = any(k in device_type for k in ("Mobile", "iOS", "Android"))
 
@@ -215,16 +294,18 @@ def network_scan():
     local_ip, subnet = get_local_ip_details()
     pkt = Ether(dst="ff:ff:ff:ff:ff:ff") / ARP(pdst=subnet)
     try:
-        # İlk keşif adımı hızlıca cihaz listesini çıkartır
+        # 1. Aşama: Ağdaki aktif cihazların IP ve MAC listesini Scapy ile saniyeler içinde süpürürüz.
         result = srp(pkt, timeout=ARP_TIMEOUT, verbose=False)[0]
-       
+        
         device_tasks = []
         for i, (_, received) in enumerate(result, start=1):
             device_tasks.append((i, received.psrc, received.hwsrc))
 
+        # 2. Aşama: Bulunan tüm cihazları (Örn: 15 cihaz) havuzdaki 40 thread'e aynı anda dağıtırız.
+        # Böylece hepsi AYNI ANDA ping atar, port tarar ve ismini çözer. Süreç aşırı hızlanır.
         with ThreadPoolExecutor(max_workers=MAX_WORKERS) as ex:
             devices = list(ex.map(process_device, device_tasks))
-           
+            
         return jsonify({"status": "success", "data": devices, "range": subnet, "local_ip": local_ip})
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
@@ -247,16 +328,7 @@ def ping_device():
         )
         return jsonify({"status": "success", "output": output})
     except Exception:
-        try:
-            pkt   = IP(dst=ip) / ICMP()
-            t0    = time.time()
-            reply = sr1(pkt, timeout=1.5, verbose=0)
-            lat   = round((time.time() - t0) * 1000)
-            if reply:
-                return jsonify({"status": "success", "output": f"Reply from {ip}: TTL={reply.ttl} time={lat}ms"})
-            return jsonify({"status": "error", "output": "Request timed out."})
-        except Exception as e2:
-            return jsonify({"status": "error", "output": str(e2)})
+        return jsonify({"status": "error", "output": "Request timed out."})
 
 @app.route("/api/telnet", methods=["POST"])
 def telnet_device():
