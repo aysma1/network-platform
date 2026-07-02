@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wireless Airspace Audit Radar</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+    <nav class="navbar navbar-dark custom-navbar mb-4">
+        <div class="container">
+            <span class="navbar-brand mb-0 h1 brand-text">
+                <i class="fa-solid fa-satellite-dish me-2"></i> WIRELESS AIRSPACE RADAR
+            </span>
+            <div class="d-flex gap-2">
+                <button id="scanBtn" class="btn btn-sm btn-warning fw-bold">
+                    <i class="fa-solid fa-satellite-dish me-1"></i> SCAN NOW
+                </button>
+                <a href="/" class="btn btn-sm btn-outline-secondary fw-bold">
+                    <i class="fa-solid fa-arrow-left me-1"></i> BACK TO SUBNET
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+
+        <div class="mb-4 d-flex justify-content-between align-items-center">
+            <div>
+                <h2 class="h4 text-light mb-1 fw-bold">Networks Around You</h2>
+                <span class="text-warning small">
+                    <i class="fa-solid fa-circle-nodes me-1"></i> Real-time Over-the-Air (OTA) Wi-Fi Scan
+                </span>
+            </div>
+            <span class="badge range-badge-custom px-3 py-2 fs-6">
+                {{ networks|length }} Networks Detected
+            </span>
+        </div>
+
+        <div class="main-card">
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead>
+                        <tr>
+                            <th>SSID (Network Name)</th>
+                            <th>BSSID (Access Point MAC)</th>
+                            <th>Signal Strength</th>
+                            <th>Channel</th>
+                            <th>Frequency</th>
+                            <th>Channel Width</th>
+                            <th>Band</th>
+                            <th>Security Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="networksBody">
+                        {% for net in networks %}
+                        <tr class="clickable-row">
+                            <td class="fw-bold">
+                                {% if "Open" in net.security %}
+                                    <i class="fa-solid fa-unlock text-success me-2"></i>
+                                {% else %}
+                                    <i class="fa-solid fa-lock text-danger me-2"></i>
+                                {% endif %}
+                                {{ net.ssid }}
+                            </td>
+                            <td><span class="font-monospace text-warning small">{{ net.bssid }}</span></td>
+                            <td>
+                                <span class="{% if net.signal >= -60 %}wifi-signal-good{% elif net.signal >= -80 %}wifi-signal-medium{% else %}wifi-signal-poor{% endif %}">
+                                    <i class="fa-solid fa-signal me-1"></i> {{ net.signal }} dBm
+                                </span>
+                            </td>
+                            <td class="font-monospace text-info fw-bold">{{ net.channel }}</td>
+                            <td class="text-muted small">{{ net.frequency }} MHz</td>
+                            <td><span class="badge bg-secondary text-dark fw-bold font-monospace">{{ net.width }} MHz</span></td>
+                            <td>
+                                <span class="badge {% if '5' in net.band %}bg-primary{% else %}bg-dark border border-secondary{% endif %}">
+                                    {{ net.band }} GHz
+                                </span>
+                            </td>
+                            <td>
+                                <span class="badge port-badge {% if 'Open' in net.security %}security-badge-open{% else %}security-badge-wpa{% endif %}">
+                                    {{ net.security }}
+                                </span>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="8" class="text-center text-muted py-5">
+                                <i class="fa-solid fa-wifi d-block fs-1 mb-3 text-secondary"></i>
+                                No wireless airspace signatures captured. Verify your network adapter interface.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</body>
+<script>
+document.getElementById('scanBtn').addEventListener('click', async function () {
+    const btn = this;
+    const originalHtml = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-1"></i> SCANNING...';
+
+    try {
+        const res = await fetch('/api/wifi-scan');
+        const data = await res.json();
+
+        if (data.status === 'error') {
+            alert('Tarama hatası: ' + data.message);
+            return;
+        }
+
+        const tbody = document.getElementById('networksBody');
+        if (!data.networks || data.networks.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="8" class="text-center text-muted py-5">
+                <i class="fa-solid fa-wifi d-block fs-1 mb-3 text-secondary"></i>
+                No wireless airspace signatures captured. Verify your network adapter interface.</td></tr>`;
+        } else {
+            tbody.innerHTML = data.networks.map(net => `
+                <tr class="clickable-row">
+                    <td class="fw-bold">
+                        <i class="fa-solid ${net.security.includes('Open') ? 'fa-unlock text-success' : 'fa-lock text-danger'} me-2"></i>
+                        ${net.ssid}
+                    </td>
+                    <td><span class="font-monospace text-warning small">${net.bssid}</span></td>
+                    <td>
+                        <span class="${net.signal >= -60 ? 'wifi-signal-good' : net.signal >= -80 ? 'wifi-signal-medium' : 'wifi-signal-poor'}">
+                            <i class="fa-solid fa-signal me-1"></i> ${net.signal} dBm
+                        </span>
+                    </td>
+                    <td class="font-monospace text-info fw-bold">${net.channel}</td>
+                    <td class="text-muted small">${net.frequency} MHz</td>
+                    <td><span class="badge bg-secondary text-dark fw-bold font-monospace">${net.width} MHz</span></td>
+                    <td><span class="badge ${net.band.includes('5') ? 'bg-primary' : 'bg-dark border border-secondary'}">${net.band} GHz</span></td>
+                    <td><span class="badge port-badge ${net.security.includes('Open') ? 'security-badge-open' : 'security-badge-wpa'}">${net.security}</span></td>
+                </tr>
+            `).join('');
+        }
+
+        document.querySelector('.range-badge-custom').textContent = data.networks.length + ' Networks Detected';
+    } catch (err) {
+        alert('An error occurred during the scan: ' + err.message);
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = originalHtml;
+    }
+});
+</script>
+</html>

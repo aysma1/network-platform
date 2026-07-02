@@ -6,263 +6,39 @@
     <title>Advanced Network Deep Diagnostic & Audit Radar</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <style>
-        /* ── Genel Sayfa Ayarları ── */
-        body {
-            background-color: #21252e;
-            color: #ffffff;
-            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
-            padding-bottom: 120px;
-        }
-        .custom-navbar {
-            background-color: #0d0f14;
-            border-bottom: 2px solid #ff0033;
-            padding: 15px 0;
-        }
-        .brand-text { font-weight: 700; letter-spacing: 1px; color: #ff0033 !important; }
-        
-        /* ── Ana Tablo Kartı ── */
-        .main-card {
-            background-color: #0d0f14;
-            border: 1px solid #343a40;
-            border-radius: 8px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
-            overflow: hidden;
-        }
-        .table { color: #ffffff !important; margin-bottom: 0; }
-        .table thead th {
-            background-color: #ff0033 !important;
-            color: #ffffff !important;
-            font-weight: 700;
-            text-transform: uppercase;
-            font-size: 0.85rem;
-            padding: 14px;
-        }
-        .table tbody td {
-            color: #ffffff !important;
-            border-bottom: 1px solid #2a2f3d;
-            background-color: #0d0f14 !important;
-            padding: 16px 12px;
-        }
-        .clickable-row { cursor: pointer; transition: background-color 0.2s ease; }
-        .clickable-row:hover td { background-color: #1a1e29 !important; }
-        .clickable-row.active td { background-color: #1a1e29 !important; }
-
-        /* 🚨 GÜVENSİZ CİHAZ DURUMU (Kalıcı Koyu Kırmızı Arka Plan) ── */
-        .table tbody tr.row-danger-alert td,
-        .table tbody tr.row-danger-alert:not(:hover) td {
-            background-color: #3a161a !important; 
-            color: #f87171 !important;           
-            border-bottom: 1px solid #7a1f2d !important;
-        }
-        .table tbody tr.row-danger-alert:hover td { 
-            background-color: #4c1d22 !important; 
-        }
-        
-        /* 🎯 Kırmızı Satır İçi IP Kutucuğu Kontrast Ayarı */
-        .table tbody tr.row-danger-alert .ip-badge { 
-            background-color: #1a0a0c !important; 
-            color: #ff8888 !important;            
-            border: 1px solid #7a1f2d !important;  
-            box-shadow: 0 0 6px rgba(255, 0, 51, 0.15); 
-        }
-
-        /* 🍏 GÜVENLİ CİHAZ DURUMU (Kalıcı Koyu Yeşil Arka Plan) ── */
-        .table tbody tr.row-success-alert td,
-        .table tbody tr.row-success-alert:not(:hover) td {
-            background-color: #142c1b !important; 
-            color: #86efac !important;           
-            border-bottom: 1px solid #1f7a3a !important;
-        }
-        .table tbody tr.row-success-alert:hover td { 
-            background-color: #1c3d26 !important; 
-        }
-        
-        /* 🎯 Yeşil Satır İçi IP Kutucuğu Kontrast Ayarı */
-        .table tbody tr.row-success-alert .ip-badge { 
-            background-color: #0a140e !important; 
-            color: #a7f3d0 !important;            
-            border: 1px solid #1f7a3a !important;  
-        }
-
-        /* Ortak Metin Renklerini Sabitleme */
-        .row-danger-alert .text-light, .row-danger-alert .fw-semibold, .row-danger-alert td span,
-        .row-success-alert .text-light, .row-success-alert .fw-semibold, .row-success-alert td span {
-            color: #ffffff !important;
-        }
-
-        /* ── Akıcı Animasyonlu Detay Paneli Düzeni ── */
-        .detail-row td { padding: 0 !important; background-color: #07090d !important; }
-        .detail-wrapper {
-            max-height: 0;
-            overflow: hidden;
-            opacity: 0;
-            transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease-in-out;
-        }
-        .detail-wrapper.open { max-height: 1500px; opacity: 1; padding: 24px; }
-        
-        /* 💻 CMD Terminal Teması */
-        .cmd-terminal {
-            background-color: #000000;
-            color: #00ff00;
-            font-family: 'Consolas', 'Courier New', monospace;
-            padding: 15px;
-            border-radius: 6px;
-            border: 1px solid #333333;
-            white-space: pre-wrap;
-            height: 220px;
-            overflow-y: auto;
-            margin-top: 10px;
-            font-size: 0.9rem;
-        }
-        
-        /* Bilgi Gruplama Kutuları */
-        .feature-box {
-            background-color: #121620;
-            padding: 16px;
-            border-radius: 6px;
-            border: 1px solid #2c3242;
-            height: 100%;
-        }
-        .port-box {
-            background-color: #1a1215;
-            border: 1px solid #5c1a24;
-        }
-        .feature-title {
-            font-size: 0.75rem;
-            color: #94a3b8;
-            text-transform: uppercase;
-            font-weight: 700;
-            margin-bottom: 6px;
-            letter-spacing: 0.5px;
-        }
-        .feature-value { font-size: 1rem; font-weight: 600; }
-        
-        /* Badges & Buttons */
-        .auto-scan-badge { background-color: transparent; color: #38bdf8; font-size: 0.8rem; font-weight: 600; }
-        .my-ip-badge { background-color: #112211; color: #4ade80; border: 1px solid #22c55e; font-size: 0.8rem; }
-        .btn-scan { background: #ff0033; color: #ffffff !important; border: 1px solid #ff0033; font-weight: 700; text-transform: uppercase; }
-        .btn-scan:hover { background: #cc0029; box-shadow: 0 0 15px rgba(255,0,51,0.4); }
-        .ip-badge { background-color: #ffffff !important; color: #000000 !important; font-weight: 700; }
-        
-        /* 🛠️ GÖRÜNÜRLÜK VE AKILLI SWITCH TASARIMI ── */
-        .scan-control-group {
-            background-color: #0d0f14 !important;
-            border: 1px solid #38bdf8;
-            transition: border-color 0.3s ease, box-shadow 0.3s ease;
-            width: 210px;
-            justify-content: flex-start;
-        }
-        .scan-control-group.disabled-state {
-            border-color: #475569 !important;
-        }
-        .switch-wrapper {
-            background-color: rgba(255, 255, 255, 0.03);
-        }
-        .cursor-pointer { cursor: pointer; }
-
-        /* 🎛️ Checkbox Yumuşak Animasyonu */
-        .form-check-input {
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-        }
-        .form-check-input:checked {
-            background-color: #ff0033;
-            border-color: #ff0033;
-            box-shadow: 0 0 8px rgba(255, 0, 51, 0.5);
-        }
-
-        /* 🕒 Kesintisiz, Pürüzsüz Dönen Saat Animasyonu */
-        .perfect-spin {
-            display: inline-block;
-            animation: custom-spin 1s linear infinite !important;
-        }
-        @keyframes custom-spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-
-        .search-icon-wrapper {
-            background-color: #121620 !important;
-            border-color: #343a40 !important;
-            color: #ff0033 !important;
-            font-size: 1rem;
-        }
-
-        .toggle-icon {
-            color: #ffffff !important;
-            font-size: 1.1rem;
-            text-shadow: 0 0 5px rgba(255,255,255,0.2);
-            transition: transform 0.3s ease, color 0.2s ease;
-        }
-        .toggle-icon.rotated { transform: rotate(180deg); color: #ff0033 !important; }
-
-        .range-badge-custom {
-            background-color: #121620 !important;
-            color: #ffffff !important;
-            border: 1px solid #ff0033 !important;
-            font-weight: 600;
-        }
-
-        /* 🏷️ Port Badge Tasarımları (Kuru Kafa & Nötr Görünüm) ── */
-        .port-badge {
-            font-family: 'Consolas', monospace;
-            font-size: 0.85rem;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-weight: bold;
-        }
-        .port-critical {
-            background-color: rgba(255, 0, 51, 0.25) !important;
-            color: #ff4d66 !important;
-            border: 1px solid #ff0033 !important;
-            box-shadow: 0 0 8px rgba(255, 0, 51, 0.3);
-        }
-        .port-neutral {
-            background-color: rgba(148, 163, 184, 0.1) !important;
-            color: #cbd5e1 !important;
-            border: 1px solid #475569 !important;
-        }
-
-        /* ❌ GÖRÜNÜRLÜK VE RENK KONTRAST AYARLARI */
-        .na-text {
-            color: #cbd5e1 !important;
-            font-weight: 700;
-            letter-spacing: 0.5px;
-            text-shadow: 0 0 6px rgba(255, 255, 255, 0.2);
-        }
-        .port-none-detected {
-            color: #86efac !important;
-            font-weight: 700;
-            text-shadow: 0 0 12px rgba(134, 239, 172, 0.4);
-        }
-        .port-none-detected i {
-            color: #4ade80 !important;
-        }
-        
-        /* ✨ Hardware Vendor İsimleri ve İkonları İçin Parlak Stil */
-        .vendor-text-wrapper {
-            color: #e2e8f0 !important;
-            font-weight: 600;
-            font-size: 0.9rem;
-        }
-        .vendor-text-wrapper i {
-            color: #ef4444 !important;
-            text-shadow: 0 0 6px rgba(239, 68, 68, 0.3);
-        }
-    </style> 
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
 
+    <!-- NAVBAR: WI-FI RADAR Butonu Buraya Alındı -->
     <nav class="navbar navbar-dark custom-navbar mb-4">
         <div class="container">
             <span class="navbar-brand mb-0 h1 brand-text">
                 <i class="fa-solid fa-shield-halved me-2"></i> DEEP AUDIT & DIAGNOSTIC RADAR
             </span>
+            <div class="d-flex align-items-center">
+                <a href="/wifi-scan" class="btn btn-sm btn-wifi-radar d-flex align-items-center gap-1 px-3 py-2">
+                    <i class="fa-solid fa-wifi"></i> WI-FI RADAR
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- BAŞLIK VE RADAR DURUM ALANI (Tablonun/Filtrenin Tamamen Dışında) -->
+        <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+            <div>
+                <h2 class="h4 text-light mb-1 fw-bold">Deep Subnet Infrastructure</h2>
+                <span class="text-warning small" id="last-scan-time">
+                    <i class="fa-solid fa-history me-1"></i> Last Scan: Never
+                </span>
+            </div>
+            
+            <!-- Sağ Üst Köşedeki Ağ Durum Bilgileri -->
             <div class="d-flex gap-2 align-items-center flex-wrap">
-                <span id="my-ip" class="badge my-ip-badge px-3 py-2"><i class="fa-solid fa-desktop me-1"></i> Your IP: Fetching...</span>
-                
+                <span id="my-ip" class="badge my-ip-badge px-3 py-2">
+                    <i class="fa-solid fa-desktop me-1"></i> Your IP: Fetching...
+                </span>
                 <div id="scan-group-container" class="d-flex align-items-center scan-control-group rounded overflow-hidden p-0" style="height: 34px;">
                     <div class="switch-wrapper px-3 h-100 d-flex align-items-center border-end border-secondary">
                         <input class="form-check-input m-0 cursor-pointer" type="checkbox" id="auto-scan-toggle" checked>
@@ -271,37 +47,76 @@
                         <i class="fa-solid fa-clock perfect-spin me-1"></i> Auto-Scan: 120s
                     </span>
                 </div>
-
-                <span id="ip-range" class="badge range-badge_custom px-3 py-2 range-badge-custom">Subnet: Waiting...</span>
+                <span id="ip-range" class="badge range-badge-custom px-3 py-2">Subnet: Waiting...</span>
             </div>
-        </div>
-    </nav>
-
-    <div class="container">
-        <div class="mb-4">
-            <h2 class="h4 text-light mb-1 fw-bold">Deep Subnet Infrastructure</h2>
-            <span class="text-warning small" id="last-scan-time"><i class="fa-solid fa-history me-1"></i> Last Scan: Never</span>
         </div>
 
         <div class="main-card">
-            
-            <div class="p-3 border-bottom border-secondary d-flex gap-3 flex-wrap flex-md-nowrap align-items-center bg-dark w-100">
-    
-                <div class="input-group flex-grow-1" style="max-width: 600px; height: 38px;">
-                    <span class="input-group-text search-icon-wrapper py-0"><i class="fa-solid fa-magnifying-glass"></i></span>
-                    <input type="text" id="search-input" class="form-control bg-dark text-white border-secondary h-100 py-0" placeholder="Filter nodes instantly..." disabled>
-                    <span class="input-group-text bg-danger border-danger text-white fw-bold h-100 py-0" id="device-count" style="font-size: 0.85rem;">0 Nodes</span>
+
+            <!-- Filtre Paneli -->
+            <div class="filter-panel">
+                <div class="filter-top-bar">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="fa-solid fa-sliders text-danger"></i>
+                        <span class="filter-panel-title">FILTER & SEARCH</span>
+                        <span id="device-count" class="badge bg-danger ms-1" style="font-size:0.78rem;">0 Nodes</span>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button id="btn-filter-reset" class="btn btn-sm btn-outline-secondary fw-bold" onclick="resetFilters()" disabled>
+                            <i class="fa-solid fa-rotate-left me-1"></i> Reset
+                        </button>
+                        <button id="btn-pdf" class="btn btn-sm btn-outline-danger fw-bold" onclick="exportNetworkReport()" disabled>
+                            <i class="fa-solid fa-file-pdf me-1"></i> PDF
+                        </button>
+                        <button id="btn-scan" class="btn btn-sm btn-scan fw-bold">
+                            <i class="fa-solid fa-radar me-1"></i> SCAN NOW
+                        </button>
+                    </div>
                 </div>
 
-                <div class="d-flex gap-2 ms-md-auto" style="width: 240px; height: 38px;">
-                    <button id="btn-pdf" class="btn btn-outline-danger h-100 flex-fill fw-bold m-0 py-0" style="font-size: 0.8rem;" onclick="exportNetworkReport()" disabled>
-                        <i class="fa-solid fa-file-pdf me-1"></i> PDF
-                    </button>
-                    <button id="btn-scan" class="btn btn-scan h-100 flex-fill fw-bold m-0 py-0" style="font-size: 0.8rem;">
-                        <i class="fa-solid fa-radar me-1"></i> SCAN NOW
-                    </button>
+                <div class="filter-fields-grid">
+                    <div class="filter-field-group">
+                        <label class="filter-label"><i class="fa-solid fa-network-wired me-1 text-danger"></i> IP Address</label>
+                        <input type="text" id="filter-ip" class="filter-input" placeholder="e.g. 192.168.1" disabled>
+                    </div>
+                    <div class="filter-field-group">
+                        <label class="filter-label"><i class="fa-solid fa-tag me-1 text-danger"></i> Hostname</label>
+                        <input type="text" id="filter-hostname" class="filter-input" placeholder="e.g. desktop-pc" disabled>
+                    </div>
+                    <div class="filter-field-group">
+                        <label class="filter-label"><i class="fa-solid fa-fingerprint me-1 text-danger"></i> MAC Address</label>
+                        <input type="text" id="filter-mac" class="filter-input font-monospace" placeholder="e.g. aa:bb:cc" disabled>
+                    </div>
+                    <div class="filter-field-group">
+                        <label class="filter-label"><i class="fa-solid fa-microchip me-1 text-danger"></i> Hardware Vendor</label>
+                        <input type="text" id="filter-vendor" class="filter-input" placeholder="e.g. Intel, TP-Link" disabled>
+                    </div>
+                    <div class="filter-field-group">
+                        <label class="filter-label"><i class="fa-solid fa-shield-halved me-1 text-danger"></i> Security Status</label>
+                        <select id="filter-security" class="filter-input filter-select" disabled>
+                            <option value="all">All Nodes</option>
+                            <option value="danger">⚠ Critical Port Open</option>
+                            <option value="safe">✓ Secured</option>
+                        </select>
+                    </div>
+                    <div class="filter-field-group">
+                        <label class="filter-label"><i class="fa-solid fa-laptop me-1 text-danger"></i> Device Type</label>
+                        <select id="filter-devtype" class="filter-input filter-select" disabled>
+                            <option value="all">All Types</option>
+                            <option value="windows">Windows PC</option>
+                            <option value="linux">Linux Device</option>
+                            <option value="ios">iOS / macOS</option>
+                            <option value="android">Android</option>
+                            <option value="router">Router / Gateway</option>
+                            <option value="printer">Printer</option>
+                            <option value="camera">IP Camera</option>
+                            <option value="vm">Virtual Machine</option>
+                            <option value="iot">IoT / Unknown</option>
+                        </select>
+                    </div>
                 </div>
 
+                <div id="active-filter-tags" class="active-filter-tags d-none"></div>
             </div>
 
             <div class="table-responsive">
@@ -327,447 +142,10 @@
                 </table>
             </div>
         </div>
-
     </div>
 
-    <script>
-        const btn = document.getElementById('btn-scan');
-        const loader = document.getElementById('loader');
-        const tbody = document.getElementById('device-table');
-        const ipRangeBadge = document.getElementById('ip-range');
-        const myIpBadge = document.getElementById('my-ip');
-        const searchInput = document.getElementById('search-input');
-        const deviceCountBadge = document.getElementById('device-count');
-        const autoTimerBadge = document.getElementById('auto-timer');
-        const autoScanToggle = document.getElementById('auto-scan-toggle');
-        const scanGroupContainer = document.getElementById('scan-group-container');
-        const lastScanTimeDiv = document.getElementById('last-scan-time');
-
-        let localDevices = [];
-        let countdown = 120;
-        let timerInterval;
-
-        function startAutoScanTimer() {
-            clearInterval(timerInterval);
-            if (autoScanToggle.checked) {
-                scanGroupContainer.classList.remove('disabled-state');
-                autoTimerBadge.style.color = '#38bdf8';
-                autoTimerBadge.innerHTML = `<i class="fa-solid fa-clock perfect-spin me-1"></i> Auto-Scan: ${countdown}s`;
-            }
-
-            timerInterval = setInterval(async () => {
-                if (!autoScanToggle.checked) {
-                    scanGroupContainer.classList.add('disabled-state');
-                    autoTimerBadge.style.color = '#64748b';
-                    autoTimerBadge.innerHTML = `<i class="fa-solid fa-pause me-1"></i> Auto-Scan: Disabled`;
-                    return;
-                }
-
-                countdown--;
-                if (countdown <= 0) {
-                    countdown = 120;
-                    autoTimerBadge.innerHTML = `<i class="fa-solid fa-arrows-rotate perfect-spin me-1"></i> Syncing...`;
-                    await triggerScan(true);
-                } else {
-                    autoTimerBadge.style.color = '#38bdf8';
-                    autoTimerBadge.innerHTML = `<i class="fa-solid fa-clock perfect-spin me-1"></i> Auto-Scan: ${countdown}s`;
-                }
-            }, 1000);
-        }
-
-        async function triggerScan(isSilent = false) {
-            const pdfButton = document.getElementById('btn-pdf');
-
-            if(!isSilent) {
-                btn.disabled = true;
-                searchInput.disabled = true;
-                if(pdfButton) pdfButton.disabled = true; // Tarama sırasında PDF'i kilitle
-                
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="6" class="text-center py-5">
-                            <div class="d-flex justify-content-between align-items-center mx-auto mb-2" style="max-width: 450px;">
-                                <span class="text-danger fw-bold small" id="progress-status">
-                                    <i class="fa-solid fa-radar perfect-spin me-2"></i> [Stage 1/3] Initializing Socket & Resolving Subnet...
-                                </span>
-                                <span class="text-light small font-monospace fw-bold" id="progress-percent">25%</span>
-                            </div>
-                            <div class="mx-auto" style="max-width: 450px;">
-                                <div class="progress bg-dark border border-secondary" style="height: 10px; border-radius: 4px;">
-                                    <div id="progress-bar" class="progress-bar progress-bar-striped progress-bar-animated bg-danger" role="progressbar" style="width: 25%"></div>
-                                </div>
-                            </div>
-                        </td>
-                    </tr>
-                `;
-            }
-
-            const progressBar = document.getElementById('progress-bar');
-            const progressStatus = document.getElementById('progress-status');
-            const progressPercent = document.getElementById('progress-percent');
-
-            setTimeout(() => {
-                if(!isSilent && progressBar) {
-                    progressBar.style.width = '60%';
-                    if(progressPercent) progressPercent.innerText = '60%';
-                    if(progressStatus) {
-                        progressStatus.innerHTML = `<i class="fa-solid fa-network-wired fa-spin me-2"></i> [Stage 2/3] Executing ARP Sweep & Identifying Live Nodes...`;
-                    }
-                }
-            }, 400);
-
-            try {
-                const response = await fetch('/api/scan');
-                const result = await response.json();
-                
-                if (result.status === 'success') {
-                    if(!isSilent && progressBar) {
-                        progressBar.style.width = '100%';
-                        if(progressPercent) progressPercent.innerText = '100%';
-                        if(progressStatus) {
-                            progressStatus.innerHTML = `<i class="fa-solid fa-circle-check text-success me-2"></i> [Stage 3/3] Port Sweep Completed. Injecting Security Matrix...`;
-                        }
-                    }
-
-                    ipRangeBadge.innerText = `Active Range: ${result.range}`;
-                    myIpBadge.innerHTML = `<i class="fa-solid fa-desktop me-1"></i> Your IP: ${result.local_ip}`;
-                    localDevices = result.data;
-                    deviceCountBadge.innerText = `${localDevices.length} Nodes`;
-                    searchInput.disabled = false;
-                    
-                    if(pdfButton) pdfButton.disabled = false; // Tarama bitti, PDF artık tıklanabilir!
-                    
-                    setTimeout(() => {
-                        renderTable(localDevices);
-                    }, 700);
-                    
-                    const now = new Date();
-                    const timestamp = now.toTimeString().split(' ')[0];
-                    lastScanTimeDiv.innerHTML = `<i class="fa-solid fa-history me-1"></i> Last Scan: ${timestamp}`;
-                }
-            } catch (err) {
-                if(!isSilent && progressStatus) {
-                    progressStatus.innerHTML = `<i class="fa-solid fa-circle-xmark text-danger me-2"></i> Fatal: Subnet sweep aborted.`;
-                    tbody.innerHTML = `<tr><td colspan="6" class="text-center text-danger py-5">Fatal: API Connectivity Lost.</td></tr>`;
-                }
-            } finally {
-                if(!isSilent) {
-                    btn.disabled = false;
-                }
-            }
-        }
-
-        btn.addEventListener('click', async () => {
-            await triggerScan(false);
-            startAutoScanTimer();
-        });
-
-        autoScanToggle.addEventListener('change', () => {
-            if (autoScanToggle.checked) {
-                countdown = 120;
-                scanGroupContainer.classList.remove('disabled-state');
-                autoTimerBadge.style.color = '#38bdf8';
-                autoTimerBadge.innerHTML = `<i class="fa-solid fa-clock perfect-spin me-1"></i> Auto-Scan: ${countdown}s`;
-                startAutoScanTimer();
-            } else {
-                clearInterval(timerInterval);
-                scanGroupContainer.classList.add('disabled-state');
-                autoTimerBadge.style.color = '#64748b';
-                autoTimerBadge.innerHTML = `<i class="fa-solid fa-pause me-1"></i> Auto-Scan: Disabled`;
-            }
-        });
-
-        searchInput.addEventListener('input', (e) => {
-            const query = e.target.value.toLowerCase();
-            const filtered = localDevices.filter(d =>
-                d.ip.includes(query) ||
-                (d.name && d.name.toLowerCase().includes(query)) ||
-                d.device_type.toLowerCase().includes(query)
-            );
-            deviceCountBadge.innerText = `${filtered.length} Nodes`;
-            renderTable(filtered);
-        });
-
-        function renderTable(dataList) {
-            tbody.innerHTML = '';
-            if(dataList.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" class="text-center text-muted py-4">No nodes matching search criteria.</td></tr>`;
-                return;
-            }
-
-            dataList.forEach((device, i) => {
-                const hostnameStr = device.name ? `<span class="text-light fw-semibold text-break">${device.name}</span>` : `<span class="na-text">N/A</span>`;
-                const vendorStr = device.properties.vendor ? `<span>${device.properties.vendor}</span>` : `<span class="na-text">N/A</span>`;
-                const macStr = device.mac ? `<span class="font-monospace text-warning small">${device.mac}</span>` : `<span class="na-text">N/A</span>`;
-
-                // ── PORT VE RADAR RİSK SÜZGECİ ──
-                let portsHtml = "";
-                let hasCriticalPort = false; // Kırmızı/Yeşil satır rengini belirleyen ana bayrak
-                
-                // Kırmızı alarm verdirecek kritik zafiyet portları
-                const criticalPorts = [21, 22, 23, 139, 445, 3389];
-
-                if (device.properties.open_ports && device.properties.open_ports.length > 0) {
-                    device.properties.open_ports.forEach(p => {
-                        const isCritical = criticalPorts.includes(p.port);
-                        
-                        if (isCritical) {
-                            hasCriticalPort = true; // İçeride tek bir tane bile güvensiz port varsa cihaz mimlenir
-                            // Güvensiz portlar için kuru kafa ikonu ve kırmızı badge
-                            portsHtml += `<span class="badge port-badge port-critical me-2 mb-1"><i class="fa-solid fa-skull me-1"></i>${p.port} (${p.service})</span>`;
-                        } else {
-                            // Güvenli/Standart portlar (80, 443 vb.) da buraya basılıyor, gizlenmiyor!
-                            portsHtml += `<span class="badge port-badge port-neutral me-2 mb-1"><i class="fa-solid fa-door-open me-1"></i>${p.port} (${p.service})</span>`;
-                        }
-                    });
-                } else {
-                    // Cihazın hiçbir açık portu yoksa basılacak güvenli yazısı
-                    portsHtml = `<div class="feature-value port-none-detected font-monospace small"><i class="fa-solid fa-lock me-2"></i>None Detected (Secured Subnet Node)</div>`;
-                }
-
-                // ── NET İKİLİ SATIR RENKLENDİRMESİ ──
-                const row = document.createElement('tr');
-                
-                if (hasCriticalPort) {
-                    row.className = 'clickable-row row-danger-alert'; // Kuru kafalı portu olanlar -> NET KIRMIZI
-                } else {
-                    row.className = 'clickable-row row-success-alert'; // Sadece güvenli portu açık olanlar veya portu olmayanlar -> NET YEŞİL
-                }
-
-                row.innerHTML = `
-                    <td><strong>${device.id}</strong></td>
-                    <td><span class="badge ip-badge font-monospace fs-6 px-2 py-1">${device.ip}</span></td>
-                    <td>${hostnameStr}</td>
-                    <td>${macStr}</td>
-                    <td><span class="vendor-text-wrapper"><i class="fa-solid fa-microchip me-1"></i> ${vendorStr}</span></td>
-                    <td class="text-end"><i class="fa-solid fa-angle-down toggle-icon"></i></td>
-                `;
-                tbody.appendChild(row);
-
-                // Detay paneli şablonu
-                const detailRow = document.createElement('tr');
-                detailRow.className = 'detail-row';
-                detailRow.innerHTML = `
-                    <td colspan="6">
-                        <div id="wrapper-${i}" class="detail-wrapper">
-                            <div class="d-flex flex-column gap-3">
-                                
-                                <div class="row g-2">
-                                    <div class="col-md-3">
-                                        <div class="feature-box">
-                                            <div class="feature-title">Discovered Class & Type</div>
-                                            <div class="feature-value text-light fs-6"><i class="fa-solid ${device.device_icon} me-2 text-danger"></i>${device.device_type}</div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <div class="feature-box">
-                                            <div class="feature-title">OS Signature & Kernel</div>
-                                            <div class="feature-value text-success fs-6">${device.properties.estimated_os}</div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <div class="feature-box">
-                                            <div class="feature-title">Link Speed / RSSI</div>
-                                            <div class="feature-value text-light fs-6">${device.properties.connection_type}</div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <div class="feature-box" style="background-color: #111827; border-color: #1f2937;">
-                                            <div class="feature-title text-info"><i class="fa-solid fa-gauge-high me-1"></i> Current Latency</div>
-                                            <div class="feature-value text-info font-monospace fs-6">${device.properties.latency}</div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="w-100">
-                                    <div class="feature-box port-box" style="${hasCriticalPort ? 'border-color: #ff0033; background-color: #210c0e;' : 'border-color: #22c55e; background-color: #0c2112;'}">
-                                        <div class="feature-title ${hasCriticalPort ? 'text-danger' : 'text-success'} mb-2">
-                                            <i class="fa-solid ${hasCriticalPort ? 'fa-radiation' : 'fa-shield-halved'} me-1"></i> Live Automated Port Scan (Mini-Nmap Sweep)
-                                        </div>
-                                        <div class="d-flex flex-wrap align-items-center mt-1">
-                                            ${portsHtml}
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="row g-3">
-                                    <div class="col-lg-6">
-                                        <div class="feature-box">
-                                            <div class="d-flex justify-content-between align-items-center mb-1">
-                                                <div class="feature-title m-0"><i class="fa-solid fa-satellite-dish me-1 text-danger"></i> Interactive Ping Engine (-t mode)</div>
-                                                <div class="d-flex gap-2">
-                                                    <button id="ping-btn-${i}" class="btn btn-sm btn-outline-light px-3 py-1" onclick="runPing('${device.ip}', ${i})">Execute Ping</button>
-                                                    <button id="ping-stop-btn-${i}" class="btn btn-sm btn-outline-danger px-3 py-1 d-none" onclick="stopPing(${i})">Stop</button>
-                                                </div>
-                                            </div>
-                                            <div id="ping-terminal-${i}" class="cmd-terminal">C:\\Users\\admin> Press "Execute Ping" to start infinite ICMP sequence...</div>
-                                        </div>
-                                    </div>
-
-                                    <div class="col-lg-6">
-                                        <div class="feature-box">
-                                            <div class="d-flex justify-content-between align-items-center mb-1">
-                                                <div class="feature-title m-0"><i class="fa-solid fa-plug me-1 text-danger"></i> Remote Telnet Handshake</div>
-                                                <div class="d-flex gap-2">
-                                                    <input type="number" id="port-${i}" class="form-control form-control-sm bg-dark text-white border-secondary text-center font-monospace" value="23" style="width: 70px;">
-                                                    <button class="btn btn-sm btn-outline-light px-3 py-1" onclick="runTelnet('${device.ip}', ${i})">Connect</button>
-                                                </div>
-                                            </div>
-                                            <div id="telnet-terminal-${i}" class="cmd-terminal">Terminal Standby. Pick a target port and tap Connect...</div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                            </div>
-                        </div>
-                    </td>
-                `;
-                tbody.appendChild(detailRow);
-
-                // ── ÇOKLU DETAY PANELİ AÇMA MANTIĞI (Aynı anda birkaç IP açılabilir) ──
-                row.addEventListener('click', () => {
-                    const wrapper = document.getElementById(`wrapper-${i}`);
-                    const toggleIcon = row.querySelector('.toggle-icon');
-
-                    // DİKKAT: Diğer açık panelleri kapatan toplu silme döngülerini kaldırdık!
-                    // Artık her satır  sadece kendi durumunu değiştirir (Toggle)
-                    if (wrapper.classList.contains('open')) {
-                        wrapper.classList.remove('open');
-                        row.classList.remove('active');
-                        if(toggleIcon) toggleIcon.classList.remove('rotated');
-                    } else {
-                        wrapper.classList.add('open');
-                        row.classList.add('active');
-                        if(toggleIcon) toggleIcon.classList.add('rotated');
-                    }
-                });
-            });
-        }
-
-        let activePingIntervals = {};
-
-        async function runPing(ip, index) {
-            const term = document.getElementById(`ping-terminal-${index}`);
-            const startBtn = document.getElementById(`ping-btn-${index}`);
-            const stopBtn = document.getElementById(`ping-stop-btn-${index}`);
-            
-            if (activePingIntervals[index]) return;
-
-            startBtn.disabled = true;
-            startBtn.innerText = "Running...";
-            stopBtn.classList.remove('d-none');
-
-            term.innerHTML = `C:\\Users\\admin> ping ${ip} -t\nSpawning continuous ICMP transmission socket...\n\n`;
-            term.scrollTop = term.scrollHeight;
-
-            activePingIntervals[index] = setInterval(async () => {
-                try {
-                    const response = await fetch('/api/ping', {
-                        method: 'POST',
-                        headers: {'Content-Type': 'application/json'},
-                        body: JSON.stringify({ ip: ip })
-                    });
-                    const res = await response.json();
-                    
-                    if (res.status === 'success') {
-                        const lines = res.output.split('\n');
-                        const replyLine = lines.find(line => line.toLowerCase().includes('reply') || line.toLowerCase().includes('bytes from') || line.toLowerCase().includes('timed out')) || "Request timed out.";
-                        
-                        term.innerHTML += replyLine + "\n";
-                    } else {
-                        term.innerHTML += "Request timed out.\n";
-                    }
-                } catch (err) {
-                    term.innerHTML += "Transmission failure.\n";
-                }
-                term.scrollTop = term.scrollHeight;
-            }, 1000);
-        }
-
-        function stopPing(index) {
-            if (activePingIntervals[index]) {
-                clearInterval(activePingIntervals[index]);
-                delete activePingIntervals[index];
-            }
-
-            const term = document.getElementById(`ping-terminal-${index}`);
-            const startBtn = document.getElementById(`ping-btn-${index}`);
-            const stopBtn = document.getElementById(`ping-stop-btn-${index}`);
-
-            startBtn.disabled = false;
-            startBtn.innerText = "Execute Ping";
-            stopBtn.classList.add('d-none');
-
-            term.innerHTML += `\n--- Ping statistics stopped by user ---\nC:\\Users\\admin> `;
-            term.scrollTop = term.scrollHeight;
-        }
-
-        async function runTelnet(ip, index) {
-            const term = document.getElementById(`telnet-terminal-${index}`);
-            const portVal = document.getElementById(`port-${index}`).value;
-            term.innerHTML = `TCP Handshake targeted at port ${portVal}...\nEstablishing socket transmission socket...`;
-            try {
-                const response = await fetch('/api/telnet', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({ ip: ip, port: portVal })
-                });
-                const res = await response.json();
-                term.innerHTML = res.output;
-            } catch (err) { term.innerHTML = "Handshake aborted."; }
-        }
-
-        window.onload = () => {
-            triggerScan(false);
-            startAutoScanTimer();
-        };
-        
-        async function exportNetworkReport() {
-            const { jsPDF } = window.jspdf;
-            const pdfButton = document.getElementById('btn-pdf');
-            
-            pdfButton.disabled = true;
-            pdfButton.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin me-1"></i> Printing...`;
-
-            // Performans için detay pencerelerini açmıyoruz, mevcut temiz ana listenin dökümünü alıyoruz
-            const element = document.querySelector('.main-card');
-
-            // Doğrudan render katmanına geçiyoruz (Saniyeler süren donma problemi bitti)
-            html2canvas(element, {
-                backgroundColor: '#0d0f14',
-                scale: 1.2, // 101 cihazlık devasa liste için ideal hafif ölçek (Hafıza dostu)
-                useCORS: true,
-                logging: false
-            }).then(canvas => {
-                const imgData = canvas.toDataURL('image/png');
-                
-                const pdf = new jsPDF('l', 'mm', 'a4');
-                const imgWidth = 297; 
-                const pageHeight = 210; 
-                const imgHeight = (canvas.height * imgWidth) / canvas.width;
-                let heightLeft = imgHeight;
-                let position = 0;
-
-                pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-                heightLeft -= pageHeight;
-
-                while (heightLeft > 0) {
-                    position = heightLeft - imgHeight;
-                    pdf.addPage();
-                    pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-                    heightLeft -= pageHeight;
-                }
-
-                pdf.save(`Network_Report_${new Date().toISOString().split('T')[0]}.pdf`);
-                
-                pdfButton.disabled = false;
-                pdfButton.innerHTML = `<i class="fa-solid fa-file-pdf me-1"></i> PDF`;
-            }).catch(err => {
-                console.error(err);
-                pdfButton.disabled = false;
-                pdfButton.innerHTML = `<i class="fa-solid fa-file-pdf me-1"></i> PDF`;
-            });
-        }
-    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>
 </html>

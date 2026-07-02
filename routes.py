@@ -1,0 +1,96 @@
+from flask import render_template, jsonify, request
+from utils.network import validate_ip, validate_port
+from utils.scanner import run_arp_scan, ping_once, tcp_connect
+from utils.packet_capture import get_session
+from utils.wifi_scanner import scan_nearby_networks
+
+
+def register_routes(app):
+
+    @app.route("/")
+    def index():
+        return render_template("index.html")
+
+    # ── Mevcut API'ler ────────────────────────────────────────
+
+    @app.route("/api/scan")
+    def network_scan():
+        try:
+            result = run_arp_scan()
+            return jsonify({
+                "status":   "success",
+                "data":     result["devices"],
+                "range":    result["subnet"],
+                "local_ip": result["local_ip"],
+            })
+        except Exception as e:
+            return jsonify({"status": "error", "message": str(e)}), 500
+
+    @app.route("/api/ping", methods=["POST"])
+    def ping_device():
+        data = request.get_json(silent=True) or {}
+        ip = data.get("ip", "")
+        if not validate_ip(ip):
+            return jsonify({"status": "error", "output": "Invalid IP address."}), 400
+        return jsonify(ping_once(ip))
+
+    @app.route("/api/telnet", methods=["POST"])
+    def telnet_device():
+        data = request.get_json(silent=True) or {}
+        ip   = data.get("ip", "")
+        port = data.get("port", 23)
+        if not validate_ip(ip) or not validate_port(port):
+            return jsonify({"status": "error", "output": "Invalid parameters."}), 400
+        return jsonify(tcp_connect(ip, int(port)))
+
+    # ── Paket Analiz Sayfası ──────────────────────────────────
+
+    @app.route("/analyzer/<ip>")
+    def analyzer(ip):
+        if not validate_ip(ip):
+            return "Invalid IP", 400
+        return render_template("analyzer.html", target_ip=ip)
+
+    @app.route("/api/analyzer/<ip>/start", methods=["POST"])
+    def analyzer_start(ip):
+        if not validate_ip(ip):
+            return jsonify({"status": "error"}), 400
+        session = get_session(ip)
+        session.start()
+        return jsonify({"status": "started"})
+
+    @app.route("/api/analyzer/<ip>/stop", methods=["POST"])
+    def analyzer_stop(ip):
+        if not validate_ip(ip):
+            return jsonify({"status": "error"}), 400
+        session = get_session(ip)
+        session.stop()
+        return jsonify({"status": "stopped"})
+
+    @app.route("/api/analyzer/<ip>/clear", methods=["POST"])
+    def analyzer_clear(ip):
+        if not validate_ip(ip):
+            return jsonify({"status": "error"}), 400
+        session = get_session(ip)
+        session.clear()
+        return jsonify({"status": "cleared"})
+
+    @app.route("/api/analyzer/<ip>/data")
+    def analyzer_data(ip):
+        if not validate_ip(ip):
+            return jsonify({"status": "error"}), 400
+        session = get_session(ip)
+        return jsonify(session.snapshot())
+
+    @app.route('/wifi-scan')
+    def wifi_scan_page():
+        wifi_list = scan_nearby_networks()
+        return render_template('wifi_scan.html', networks=wifi_list)
+
+    @app.route('/api/wifi-scan')
+    def api_wifi_scan():
+        try:
+            wifi_list = scan_nearby_networks()
+            return jsonify({"status": "success", "networks": wifi_list})
+        except Exception as e:
+            return jsonify({"status": "error", "message": str(e), "networks": []}), 500

@@ -1,0 +1,377 @@
+/* ── Genel Sayfa Ayarları ── */
+body {
+    background-color: #21252e;
+    color: #ffffff;
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+    padding-bottom: 120px;
+}
+.custom-navbar {
+    background-color: #0d0f14;
+    border-bottom: 2px solid #ff0033;
+    padding: 15px 0;
+}
+.brand-text { font-weight: 700; letter-spacing: 1px; color: #ff0033 !important; }
+
+/* ── Ana Tablo Kartı ── */
+.main-card {
+    background-color: #0d0f14;
+    border: 1px solid #343a40;
+    border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+    overflow: hidden;
+}
+.table { color: #ffffff !important; margin-bottom: 0; }
+.table thead th {
+    background-color: #ff0033 !important;
+    color: #ffffff !important;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    padding: 14px;
+}
+.table tbody td {
+    color: #ffffff !important;
+    border-bottom: 1px solid #2a2f3d;
+    background-color: #0d0f14 !important;
+    padding: 16px 12px;
+}
+.clickable-row { cursor: pointer; transition: background-color 0.2s ease; }
+.clickable-row:hover td { background-color: #1a1e29 !important; }
+.clickable-row.active td { background-color: #1a1e29 !important; }
+
+/* 🚨 Güvensiz Cihaz Satırı */
+.table tbody tr.row-danger-alert td,
+.table tbody tr.row-danger-alert:not(:hover) td {
+    background-color: #3a161a !important;
+    color: #f87171 !important;
+    border-bottom: 1px solid #7a1f2d !important;
+}
+.table tbody tr.row-danger-alert:hover td {
+    background-color: #4c1d22 !important;
+}
+.table tbody tr.row-danger-alert .ip-badge {
+    background-color: #1a0a0c !important;
+    color: #ff8888 !important;
+    border: 1px solid #7a1f2d !important;
+    box-shadow: 0 0 6px rgba(255, 0, 51, 0.15);
+}
+
+/* 🍏 Güvenli Cihaz Satırı */
+.table tbody tr.row-success-alert td,
+.table tbody tr.row-success-alert:not(:hover) td {
+    background-color: #142c1b !important;
+    color: #86efac !important;
+    border-bottom: 1px solid #1f7a3a !important;
+}
+.table tbody tr.row-success-alert:hover td {
+    background-color: #1c3d26 !important;
+}
+.table tbody tr.row-success-alert .ip-badge {
+    background-color: #0a140e !important;
+    color: #a7f3d0 !important;
+    border: 1px solid #1f7a3a !important;
+}
+
+/* Metin renk sabitleme */
+.row-danger-alert .text-light, .row-danger-alert .fw-semibold, .row-danger-alert td span,
+.row-success-alert .text-light, .row-success-alert .fw-semibold, .row-success-alert td span {
+    color: #ffffff !important;
+}
+
+/* ── Detay Paneli ── */
+.detail-row td { padding: 0 !important; background-color: #07090d !important; }
+.detail-wrapper {
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease-in-out;
+}
+.detail-wrapper.open { max-height: 1500px; opacity: 1; padding: 24px; }
+
+/* 💻 CMD Terminal */
+.cmd-terminal {
+    background-color: #000000;
+    color: #00ff00;
+    font-family: 'Consolas', 'Courier New', monospace;
+    padding: 15px;
+    border-radius: 6px;
+    border: 1px solid #333333;
+    white-space: pre-wrap;
+    height: 220px;
+    overflow-y: auto;
+    margin-top: 10px;
+    font-size: 0.9rem;
+}
+
+/* Bilgi Kutuları */
+.feature-box {
+    background-color: #121620;
+    padding: 16px;
+    border-radius: 6px;
+    border: 1px solid #2c3242;
+    height: 100%;
+}
+.port-box {
+    background-color: #1a1215;
+    border: 1px solid #5c1a24;
+}
+.feature-title {
+    font-size: 0.75rem;
+    color: #94a3b8;
+    text-transform: uppercase;
+    font-weight: 700;
+    margin-bottom: 6px;
+    letter-spacing: 0.5px;
+}
+.feature-value { font-size: 1rem; font-weight: 600; }
+
+/* Badges & Buttons */
+.auto-scan-badge { background-color: transparent; color: #38bdf8; font-size: 0.8rem; font-weight: 600; }
+.my-ip-badge { background-color: #112211; color: #4ade80; border: 1px solid #22c55e; font-size: 0.8rem; }
+.btn-scan { background: #ff0033; color: #ffffff !important; border: 1px solid #ff0033; font-weight: 700; text-transform: uppercase; }
+.btn-scan:hover { background: #cc0029; box-shadow: 0 0 15px rgba(255,0,51,0.4); }
+.ip-badge { background-color: #ffffff !important; color: #000000 !important; font-weight: 700; }
+
+/* Auto-scan switch grubu */
+.scan-control-group {
+    background-color: #0d0f14 !important;
+    border: 1px solid #38bdf8;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    width: 210px;
+    justify-content: flex-start;
+}
+.scan-control-group.disabled-state { border-color: #475569 !important; }
+.switch-wrapper { background-color: rgba(255, 255, 255, 0.03); }
+.cursor-pointer { cursor: pointer; }
+
+/* Checkbox animasyonu */
+.form-check-input { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important; }
+.form-check-input:checked {
+    background-color: #ff0033;
+    border-color: #ff0033;
+    box-shadow: 0 0 8px rgba(255, 0, 51, 0.5);
+}
+
+/* Dönen ikon */
+.perfect-spin {
+    display: inline-block;
+    animation: custom-spin 1s linear infinite !important;
+}
+@keyframes custom-spin {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+}
+
+/* Search alanı */
+.search-icon-wrapper {
+    background-color: #121620 !important;
+    border-color: #343a40 !important;
+    color: #ff0033 !important;
+    font-size: 1rem;
+}
+.toggle-icon {
+    color: #ffffff !important;
+    font-size: 1.1rem;
+    text-shadow: 0 0 5px rgba(255,255,255,0.2);
+    transition: transform 0.3s ease, color 0.2s ease;
+}
+.toggle-icon.rotated { transform: rotate(180deg); color: #ff0033 !important; }
+
+.range-badge-custom {
+    background-color: #121620 !important;
+    color: #ffffff !important;
+    border: 1px solid #ff0033 !important;
+    font-weight: 600;
+}
+
+/* Port Badge'leri */
+.port-badge {
+    font-family: 'Consolas', monospace;
+    font-size: 0.85rem;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-weight: bold;
+}
+.port-critical {
+    background-color: rgba(255, 0, 51, 0.25) !important;
+    color: #ff4d66 !important;
+    border: 1px solid #ff0033 !important;
+    box-shadow: 0 0 8px rgba(255, 0, 51, 0.3);
+}
+.port-neutral {
+    background-color: rgba(148, 163, 184, 0.1) !important;
+    color: #cbd5e1 !important;
+    border: 1px solid #475569 !important;
+}
+
+/* Görünürlük yardımcıları */
+.na-text {
+    color: #cbd5e1 !important;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-shadow: 0 0 6px rgba(255, 255, 255, 0.2);
+}
+.port-none-detected {
+    color: #86efac !important;
+    font-weight: 700;
+    text-shadow: 0 0 12px rgba(134, 239, 172, 0.4);
+}
+.port-none-detected i { color: #4ade80 !important; }
+
+.vendor-text-wrapper {
+    color: #e2e8f0 !important;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+.vendor-text-wrapper i {
+    color: #ef4444 !important;
+    text-shadow: 0 0 6px rgba(239, 68, 68, 0.3);
+}
+
+/* ── Filtre Paneli ─────────────────────────────────────────── */
+.filter-panel {
+    background-color: #0a0c10;
+    border-bottom: 1px solid #1e2330;
+    padding: 14px 16px 12px;
+}
+.filter-top-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+.filter-panel-title {
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    color: #64748b;
+    text-transform: uppercase;
+}
+.filter-fields-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 10px;
+}
+@media (max-width: 1100px) { .filter-fields-grid { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 700px)  { .filter-fields-grid { grid-template-columns: repeat(2, 1fr); } }
+
+.filter-field-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.filter-label {
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: #64748b;
+    margin-bottom: 0;
+    white-space: nowrap;
+}
+.filter-input {
+    background-color: #111520 !important;
+    border: 1px solid #252b3a !important;
+    color: #e2e8f0 !important;
+    border-radius: 4px;
+    padding: 5px 9px;
+    font-size: 0.82rem;
+    height: 32px;
+    width: 100%;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    outline: none;
+}
+.filter-input:focus {
+    border-color: #ff0033 !important;
+    box-shadow: 0 0 0 2px rgba(255, 0, 51, 0.15) !important;
+    background-color: #141826 !important;
+}
+.filter-input:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+}
+.filter-input::placeholder { color: #3a4255 !important; }
+.filter-select {
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23ff0033'/%3E%3C/svg%3E") !important;
+    background-repeat: no-repeat !important;
+    background-position: right 9px center !important;
+    padding-right: 26px !important;
+    cursor: pointer;
+}
+.filter-select option { background-color: #111520; color: #e2e8f0; }
+
+/* Aktif filtre etiketleri */
+.active-filter-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid #1a1f2e;
+}
+.filter-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background-color: rgba(255, 0, 51, 0.12);
+    border: 1px solid rgba(255, 0, 51, 0.35);
+    color: #ff6680;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 3px;
+    font-family: 'Consolas', monospace;
+}
+.filter-tag .remove-tag {
+    cursor: pointer;
+    opacity: 0.6;
+    margin-left: 2px;
+    transition: opacity 0.15s ease;
+}
+.filter-tag .remove-tag:hover { opacity: 1; }
+
+/* ── Wi-Fi Radar Özel Buton Tasarımı ── */
+.btn-wifi-radar {
+    background-color: transparent !important;
+    color: #ff9900 !important;
+    border: 1px solid #ff9900 !important;
+    font-weight: 700;
+    text-transform: uppercase;
+    transition: all 0.2s ease-in-out;
+}
+.btn-wifi-radar:hover {
+    background-color: rgba(255, 153, 0, 0.1) !important;
+    box-shadow: 0 0 12px rgba(255, 153, 0, 0.4);
+    color: #ffb340 !important;
+}
+
+/* 📡 Wi-Fi Sinyal Seviyeleri (dBm) için Özel Göstergeler */
+.wifi-signal-good {
+    color: #00ff66 !important;
+    font-weight: bold;
+    text-shadow: 0 0 8px rgba(0, 255, 102, 0.4);
+}
+.wifi-signal-medium {
+    color: #ffcc00 !important;
+    font-weight: bold;
+    text-shadow: 0 0 8px rgba(255, 204, 0, 0.4);
+}
+.wifi-signal-poor {
+    color: #ff3300 !important;
+    font-weight: bold;
+    text-shadow: 0 0 8px rgba(255, 51, 0, 0.4);
+}
+
+/* Güvenlik Durumu Şablon Uyumu */
+.security-badge-wpa {
+    background-color: rgba(255, 0, 51, 0.15) !important;
+    color: #ff4d66 !important;
+    border: 1px solid #ff0033 !important;
+}
+.security-badge-open {
+    background-color: rgba(0, 255, 102, 0.15) !important;
+    color: #00ff66 !important;
+    border: 1px solid #00ff66 !important;
+}
