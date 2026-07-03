@@ -35,13 +35,30 @@
                     <i class="fa-solid fa-circle-nodes me-1"></i> Real-time Over-the-Air (OTA) Wi-Fi Scan
                 </span>
             </div>
-            <span class="badge range-badge-custom px-3 py-2 fs-6">
-                {{ networks|length }} Networks Detected
+            <span id="detectedCount" class="badge range-badge-custom px-3 py-2 fs-6">
+                Scanning Airspace...
             </span>
         </div>
 
         <div class="main-card">
-            <div class="table-responsive">
+
+            <div id="loadingZone" class="py-5 my-4">
+                <div class="text-center">
+                    <div class="d-flex justify-content-between align-items-center mx-auto mb-2" style="max-width: 500px;">
+                        <span class="text-danger fw-bold small" id="progressStatus">
+                            <i class="fa-solid fa-satellite-dish perfect-spin me-2"></i> [Stage 1/2] Initializing WLAN Interface...
+                        </span>
+                        <span class="text-light small font-monospace fw-bold" id="progressPercent">15%</span>
+                    </div>
+                    <div class="mx-auto" style="max-width: 500px;">
+                        <div class="progress bg-dark border border-secondary" style="height: 10px; border-radius: 4px;">
+                            <div id="progressBar" class="progress-bar progress-bar-striped progress-bar-animated bg-danger" role="progressbar" style="width: 15%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tableZone" class="table-responsive d-none">
                 <table class="table align-middle">
                     <thead>
                         <tr>
@@ -55,46 +72,7 @@
                             <th>Security Status</th>
                         </tr>
                     </thead>
-                    <tbody id="networksBody">
-                        {% for net in networks %}
-                        <tr class="clickable-row">
-                            <td class="fw-bold">
-                                {% if "Open" in net.security %}
-                                    <i class="fa-solid fa-unlock text-success me-2"></i>
-                                {% else %}
-                                    <i class="fa-solid fa-lock text-danger me-2"></i>
-                                {% endif %}
-                                {{ net.ssid }}
-                            </td>
-                            <td><span class="font-monospace text-warning small">{{ net.bssid }}</span></td>
-                            <td>
-                                <span class="{% if net.signal >= -60 %}wifi-signal-good{% elif net.signal >= -80 %}wifi-signal-medium{% else %}wifi-signal-poor{% endif %}">
-                                    <i class="fa-solid fa-signal me-1"></i> {{ net.signal }} dBm
-                                </span>
-                            </td>
-                            <td class="font-monospace text-info fw-bold">{{ net.channel }}</td>
-                            <td class="text-muted small">{{ net.frequency }} MHz</td>
-                            <td><span class="badge bg-secondary text-dark fw-bold font-monospace">{{ net.width }} MHz</span></td>
-                            <td>
-                                <span class="badge {% if '5' in net.band %}bg-primary{% else %}bg-dark border border-secondary{% endif %}">
-                                    {{ net.band }} GHz
-                                </span>
-                            </td>
-                            <td>
-                                <span class="badge port-badge {% if 'Open' in net.security %}security-badge-open{% else %}security-badge-wpa{% endif %}">
-                                    {{ net.security }}
-                                </span>
-                            </td>
-                        </tr>
-                        {% else %}
-                        <tr>
-                            <td colspan="8" class="text-center text-muted py-5">
-                                <i class="fa-solid fa-wifi d-block fs-1 mb-3 text-secondary"></i>
-                                No wireless airspace signatures captured. Verify your network adapter interface.
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
+                    <tbody id="networksBody"></tbody>
                 </table>
             </div>
         </div>
@@ -102,55 +80,139 @@
 
 </body>
 <script>
-document.getElementById('scanBtn').addEventListener('click', async function () {
-    const btn = this;
+async function loadNetworks(isManualClick = false) {
+    const btn = document.getElementById('scanBtn');
+    const tbody = document.getElementById('networksBody');
+    const loadingZone = document.getElementById('loadingZone');
+    const tableZone = document.getElementById('tableZone');
     const originalHtml = btn.innerHTML;
+
     btn.disabled = true;
     btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-1"></i> SCANNING...';
+
+    loadingZone.classList.remove('d-none');
+    tableZone.classList.add('d-none');
 
     try {
         const res = await fetch('/api/wifi-scan');
         const data = await res.json();
 
         if (data.status === 'error') {
-            alert('Tarama hatası: ' + data.message);
-            return;
-        }
-
-        const tbody = document.getElementById('networksBody');
-        if (!data.networks || data.networks.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="8" class="text-center text-danger py-5">
+                <i class="fa-solid fa-triangle-exclamation d-block fs-1 mb-3"></i>${data.message}</td></tr>`;
+        } else if (!data.networks || data.networks.length === 0) {
             tbody.innerHTML = `<tr><td colspan="8" class="text-center text-muted py-5">
                 <i class="fa-solid fa-wifi d-block fs-1 mb-3 text-secondary"></i>
                 No wireless airspace signatures captured. Verify your network adapter interface.</td></tr>`;
         } else {
-            tbody.innerHTML = data.networks.map(net => `
-                <tr class="clickable-row">
-                    <td class="fw-bold">
-                        <i class="fa-solid ${net.security.includes('Open') ? 'fa-unlock text-success' : 'fa-lock text-danger'} me-2"></i>
-                        ${net.ssid}
-                    </td>
-                    <td><span class="font-monospace text-warning small">${net.bssid}</span></td>
-                    <td>
-                        <span class="${net.signal >= -60 ? 'wifi-signal-good' : net.signal >= -80 ? 'wifi-signal-medium' : 'wifi-signal-poor'}">
-                            <i class="fa-solid fa-signal me-1"></i> ${net.signal} dBm
-                        </span>
-                    </td>
-                    <td class="font-monospace text-info fw-bold">${net.channel}</td>
-                    <td class="text-muted small">${net.frequency} MHz</td>
-                    <td><span class="badge bg-secondary text-dark fw-bold font-monospace">${net.width} MHz</span></td>
-                    <td><span class="badge ${net.band.includes('5') ? 'bg-primary' : 'bg-dark border border-secondary'}">${net.band} GHz</span></td>
-                    <td><span class="badge port-badge ${net.security.includes('Open') ? 'security-badge-open' : 'security-badge-wpa'}">${net.security}</span></td>
-                </tr>
-            `).join('');
+            renderGroupedTable(data.networks, tbody);
         }
 
-        document.querySelector('.range-badge-custom').textContent = data.networks.length + ' Networks Detected';
+        document.getElementById('detectedCount').textContent =
+            (data.networks ? data.networks.length : 0) + ' Networks Detected';
+
     } catch (err) {
-        alert('An error occurred during the scan: ' + err.message);
+        tbody.innerHTML = `<tr><td colspan="8" class="text-center text-danger py-5">
+            Tarama sırasında hata oluştu: ${err.message}</td></tr>`;
     } finally {
+        loadingZone.classList.add('d-none');
+        tableZone.classList.remove('d-none');
         btn.disabled = false;
         btn.innerHTML = originalHtml;
     }
-});
+}
+
+function networkRowHtml(net, extraClass = '') {
+    return `
+        <tr class="clickable-row ${extraClass}">
+            <td class="fw-bold">
+                <i class="fa-solid ${net.security.includes('Open') ? 'fa-unlock text-success' : 'fa-lock text-danger'} me-2"></i>
+                ${net.ssid}
+            </td>
+            <td><span class="font-monospace text-warning small">${net.bssid}</span></td>
+            <td>
+                <span class="${net.signal >= -60 ? 'wifi-signal-good' : net.signal >= -80 ? 'wifi-signal-medium' : 'wifi-signal-poor'}">
+                    <i class="fa-solid fa-signal me-1"></i> ${net.signal} dBm
+                </span>
+            </td>
+            <td class="font-monospace text-info fw-bold">${net.channel}</td>
+            <td class="text-muted small">${net.frequency} MHz</td>
+            <td><span class="badge bg-secondary text-dark fw-bold font-monospace">${net.width} MHz</span></td>
+            <td><span class="badge ${net.band.includes('5') ? 'bg-primary' : 'bg-dark border border-secondary'}">${net.band} GHz</span></td>
+            <td><span class="badge port-badge ${net.security.includes('Open') ? 'security-badge-open' : 'security-badge-wpa'}">${net.security}</span></td>
+        </tr>
+    `;
+}
+
+function renderGroupedTable(networks, tbody) {
+    const groups = {};
+    networks.forEach(net => {
+        if (!groups[net.ssid]) groups[net.ssid] = [];
+        groups[net.ssid].push(net);
+    });
+
+    tbody.innerHTML = '';
+
+    Object.entries(groups).forEach(([ssid, nets]) => {
+        if (nets.length === 1) {
+            tbody.insertAdjacentHTML('beforeend', networkRowHtml(nets[0]));
+            return;
+        }
+
+        const best = nets.reduce((a, b) => (a.signal > b.signal ? a : b));
+        const signalClass = best.signal >= -60 ? 'wifi-signal-good' : best.signal >= -80 ? 'wifi-signal-medium' : 'wifi-signal-poor';
+        const isOpen = best.security.includes('Open');
+
+        const parentRow = document.createElement('tr');
+        parentRow.className = 'clickable-row wifi-group-parent';
+        parentRow.innerHTML = `
+            <td colspan="8" class="p-0">
+                <div class="wifi-group-summary">
+                    <div class="wifi-group-left">
+                        <i class="fa-solid ${isOpen ? 'fa-unlock text-success' : 'fa-lock text-danger'} wifi-group-lock"></i>
+                        <span class="wifi-group-name">${ssid}</span>
+                        <span class="badge wifi-ap-count-badge">
+                            <i class="fa-solid fa-wifi me-1"></i>${nets.length} Access Points
+                        </span>
+                    </div>
+                    <div class="wifi-group-right">
+                        <span class="${signalClass} wifi-group-signal">
+                            <i class="fa-solid fa-signal me-1"></i>${best.signal} dBm
+                            <span class="text-muted small fw-normal">best</span>
+                        </span>
+                        <span class="badge port-badge ${isOpen ? 'security-badge-open' : 'security-badge-wpa'}">${best.security}</span>
+                        <i class="fa-solid fa-angle-down toggle-icon"></i>
+                    </div>
+                </div>
+            </td>
+        `;
+        tbody.appendChild(parentRow);
+
+        const childrenWrapper = document.createElement('tr');
+        childrenWrapper.className = 'wifi-group-children';
+        childrenWrapper.innerHTML = `
+            <td colspan="8" class="p-0">
+                <div class="wifi-children-collapse">
+                    <table class="table align-middle mb-0">
+                        <tbody>
+                            ${nets.map(n => networkRowHtml(n, 'wifi-child-row')).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            </td>
+        `;
+        tbody.appendChild(childrenWrapper);
+
+        const collapseEl = childrenWrapper.querySelector('.wifi-children-collapse');
+        parentRow.addEventListener('click', () => {
+            const isOpenNow = collapseEl.classList.contains('open');
+            collapseEl.classList.toggle('open', !isOpenNow);
+            parentRow.querySelector('.toggle-icon').classList.toggle('rotated', !isOpenNow);
+        });
+    });
+}
+
+document.addEventListener('DOMContentLoaded', () => loadNetworks());
+document.getElementById('scanBtn').addEventListener('click', () => loadNetworks(true));
 </script>
 </html>

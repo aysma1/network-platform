@@ -84,8 +84,8 @@ def register_routes(app):
 
     @app.route('/wifi-scan')
     def wifi_scan_page():
-        wifi_list = scan_nearby_networks()
-        return render_template('wifi_scan.html', networks=wifi_list)
+        # Artık burada scan_nearby_networks() ÇAĞRILMIYOR — sayfa anında açılır
+        return render_template('wifi_scan.html', networks=[])
 
     @app.route('/api/wifi-scan')
     def api_wifi_scan():
