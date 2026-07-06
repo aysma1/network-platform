@@ -332,21 +332,6 @@ body {
 }
 .filter-tag .remove-tag:hover { opacity: 1; }
 
-/* ── Wi-Fi Radar Özel Buton Tasarımı ── */
-.btn-wifi-radar {
-    background-color: transparent !important;
-    color: #ff9900 !important;
-    border: 1px solid #ff9900 !important;
-    font-weight: 700;
-    text-transform: uppercase;
-    transition: all 0.2s ease-in-out;
-}
-.btn-wifi-radar:hover {
-    background-color: rgba(255, 153, 0, 0.1) !important;
-    box-shadow: 0 0 12px rgba(255, 153, 0, 0.4);
-    color: #ffb340 !important;
-}
-
 /* 📡 Wi-Fi Sinyal Seviyeleri (dBm) için Özel Göstergeler */
 .wifi-signal-good {
     color: #00ff66 !important;
@@ -438,3 +423,48 @@ body {
 }
 .wifi-child-row:hover td { background-color: #10131a !important; }
 
+/* ── Bluetooth Radar Özel Buton Tasarımı ── */
+.btn-bluetooth-radar-custom {
+    background-color: transparent !important;
+    color: #00d2ff !important; /* Wi-Fi'ın canlı tonuna denk gelen parlak neon mavi */
+    border: 2px solid #00d2ff !important;
+    font-weight: 700;
+    text-transform: uppercase;
+    transition: all 0.2s ease-in-out;
+}
+
+.btn-bluetooth-radar-custom:hover {
+    background-color: rgba(0, 210, 255, 0.1) !important; /* Üzerine gelince soluk mavi dolgu */
+    box-shadow: 0 0 12px rgba(0, 210, 255, 0.4);       /* Wi-Fi ile aynı güçte neon parlama */
+    color: #4ce3ff !important;                         /* Hover durumunda biraz daha açık mavi */
+}
+
+/* ── Wi-Fi Radar Özel Buton Tasarımı ── */
+.btn-wifi-radar {
+    background-color: transparent !important;
+    color: #00ff66 !important;
+    border: 1px solid #00ff66 !important;
+    font-weight: 700;
+    text-transform: uppercase;
+    transition: all 0.2s ease-in-out;
+}
+.btn-wifi-radar:hover {
+    background-color: rgba(0, 255, 102, 0.1) !important;
+    box-shadow: 0 0 12px rgba(0, 255, 102, 0.4);
+    color: #4cff99 !important;
+}
+
+/* ── IP Radar Özel Canlı Yeşil Buton Tasarımı ── */
+.btn-ip-radar-custom {
+    background-color: transparent !important;
+    color: #ff0000 !important; /* Canlı neon yeşil */
+    border: 1px solid #ff0000 !important;
+    font-weight: 700;
+    text-transform: uppercase;
+    transition: all 0.2s ease-in-out;
+}
+.btn-ip-radar-custom:hover {
+    background-color: rgba(255, 0, 0, 0.1) !important;
+    box-shadow: 0 0 12px rgba(255, 0, 0, 0.4);
+    color: #ff4c4c !important;
+}

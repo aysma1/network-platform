@@ -3,6 +3,7 @@ from utils.network import validate_ip, validate_port
 from utils.scanner import run_arp_scan, ping_once, tcp_connect
 from utils.packet_capture import get_session
 from utils.wifi_scanner import scan_nearby_networks
+from utils.bluetooth_scanner import scan_bluetooth_sync
 
 
 def register_routes(app):
@@ -82,6 +83,8 @@ def register_routes(app):
         session = get_session(ip)
         return jsonify(session.snapshot())
 
+
+
     @app.route('/wifi-scan')
     def wifi_scan_page():
         # Artık burada scan_nearby_networks() ÇAĞRILMIYOR — sayfa anında açılır
@@ -94,3 +97,37 @@ def register_routes(app):
             return jsonify({"status": "success", "networks": wifi_list})
         except Exception as e:
             return jsonify({"status": "error", "message": str(e), "networks": []}), 500
+        
+
+
+
+    @app.route('/bluetooth')
+    def bluetooth_page():
+        """Renders the Bluetooth scanner page."""
+        return render_template('bluetooth.html')
+    
+    
+    @app.route('/api/bluetooth/scan')
+    def bluetooth_scan_api():
+        """
+        Runs a BLE scan and returns devices as JSON.
+    
+        Query params:
+            timeout   - seconds to scan (default 8)
+            min_rssi  - discard weaker signals (default -90)
+        """
+        timeout = request.args.get('timeout', default=8.0, type=float)
+        min_rssi = request.args.get('min_rssi', default=-90, type=int)
+    
+        try:
+            devices = scan_bluetooth_sync(timeout=timeout, min_rssi=min_rssi)
+            return jsonify({
+                "success": True,
+                "count": len(devices),
+                "devices": devices
+            })
+        except Exception as e:
+            return jsonify({
+                "success": False,
+                "error": str(e)
+            }), 500

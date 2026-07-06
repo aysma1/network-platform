@@ -16,11 +16,11 @@
                 <i class="fa-solid fa-satellite-dish me-2"></i> WIRELESS AIRSPACE RADAR
             </span>
             <div class="d-flex gap-2">
-                <button id="scanBtn" class="btn btn-sm btn-warning fw-bold">
-                    <i class="fa-solid fa-satellite-dish me-1"></i> SCAN NOW
-                </button>
-                <a href="/" class="btn btn-sm btn-outline-secondary fw-bold">
-                    <i class="fa-solid fa-arrow-left me-1"></i> BACK TO SUBNET
+                <a href="/" class="btn btn-sm btn-ip-radar-custom d-flex align-items-center gap-1 px-3 py-2 fw-bold">
+                    <i class="fa-solid fa-network-wired me-1"></i> IP RADAR
+                </a>
+                <a href="/bluetooth" class="btn btn-sm d-flex align-items-center gap-1 px-3 py-2 btn-bluetooth-radar-custom"">
+                    <i class="fa-brands fa-bluetooth"></i> BLUETOOTH RADAR
                 </a>
             </div>
         </div>
@@ -35,9 +35,14 @@
                     <i class="fa-solid fa-circle-nodes me-1"></i> Real-time Over-the-Air (OTA) Wi-Fi Scan
                 </span>
             </div>
-            <span id="detectedCount" class="badge range-badge-custom px-3 py-2 fs-6">
-                Scanning Airspace...
-            </span>
+            <div class="d-flex align-items-center gap-2">
+                <span id="detectedCount" class="badge range-badge-custom px-3 py-2 fs-6">
+                    Scanning Airspace...
+                </span>
+                <button id="scanBtn" class="btn btn-sm btn-scan fw-bold px-3 py-2 fs-6">
+                    <i class="fa-solid fa-satellite-dish me-1"></i> SCAN NOW
+                </button>
+            </div>
         </div>
 
         <div class="main-card">
