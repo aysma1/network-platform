@@ -3,158 +3,110 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Advanced Network Deep Diagnostic & Audit Radar</title>
+    <title>Network Platform</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
 </head>
 <body>
 
-    <nav class="navbar navbar-dark custom-navbar mb-4">
+    <nav class="navbar navbar-dark custom-navbar">
         <div class="container">
             <span class="navbar-brand mb-0 h1 brand-text">
-                <i class="fa-solid fa-shield-halved me-2"></i> DEEP AUDIT & DIAGNOSTIC RADAR
+                <i class="fa-solid fa-shield-halved me-2"></i> NETWORK PLATFORM
             </span>
-            <!-- d-flex yanına gap-2 eklendi, böylece butonlar arasında boşluk olacak -->
-            <div class="d-flex align-items-center gap-2">
-                <!-- Eğer bluetooth.html sayfasındaysan ek olarak bu buton da durabilir -->
-                <!-- <a href="/" class="btn btn-sm btn-outline-secondary text-light fw-bold px-3 py-2 me-1"><i class="fa-solid fa-house"></i> MAIN RADAR</a> -->
-                
-                <!-- Wi-Fi Radarı (Mevcut Şık Butonun) -->
-                <a href="/wifi-scan" class="btn btn-sm btn-wifi-radar d-flex align-items-center gap-1 px-3 py-2 fw-bold">
-                    <i class="fa-solid fa-wifi"></i> WI-FI RADAR
-                </a>
-
-                <!-- Güncellenmiş Bluetooth Radarı: Wi-Fi ile aynı stilde, sadece yazısı ve kenarlığı mavi -->
-                <a href="/bluetooth" class="btn btn-sm d-flex align-items-center gap-1 px-3 py-2 btn-bluetooth-radar-custom">
-                    <i class="fa-brands fa-bluetooth"></i> BLUETOOTH RADAR
-                </a>
-            </div>
+            <span class="text-secondary small font-monospace" id="local-time"></span>
         </div>
     </nav>
 
-    <div class="container">
-        <!-- BAŞLIK VE RADAR DURUM ALANI (Tablonun/Filtrenin Tamamen Dışında) -->
-        <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
-            <div>
-                <h2 class="h4 text-light mb-1 fw-bold">Deep Subnet Infrastructure</h2>
-                <span class="text-warning small" id="last-scan-time">
-                    <i class="fa-solid fa-history me-1"></i> Last Scan: Never
-                </span>
+    <div class="landing-hero">
+        <div class="hero-title"><span>DEEP</span> AUDIT & DIAGNOSTIC RADAR</div>
+        <div class="hero-sub">Select a module to begin scanning</div>
+    </div>
+
+    <div class="module-grid">
+
+        <a href="/ip-scan" class="module-card ip">
+            <div class="module-icon"><i class="fa-solid fa-network-wired"></i></div>
+            <div class="module-title">IP Radar</div>
+            <div class="module-desc">
+                ARP sweep, port scan, OS fingerprint, device classification and real-time latency monitoring.
             </div>
-            
-            <!-- Sağ Üst Köşedeki Ağ Durum Bilgileri -->
-            <div class="d-flex gap-2 align-items-center flex-wrap">
-                <span id="my-ip" class="badge my-ip-badge px-3 py-2">
-                    <i class="fa-solid fa-desktop me-1"></i> Your IP: Fetching...
-                </span>
-                <div id="scan-group-container" class="d-flex align-items-center scan-control-group rounded overflow-hidden p-0" style="height: 34px;">
-                    <div class="switch-wrapper px-3 h-100 d-flex align-items-center border-end border-secondary">
-                        <input class="form-check-input m-0 cursor-pointer" type="checkbox" id="auto-scan-toggle" checked>
-                    </div>
-                    <span id="auto-timer" class="badge auto-scan-badge border-0 rounded-0 px-3 py-2 h-100 d-flex align-items-center">
-                        <i class="fa-solid fa-clock perfect-spin me-1"></i> Auto-Scan: 120s
-                    </span>
-                </div>
-                <span id="ip-range" class="badge range-badge-custom px-3 py-2">Subnet: Waiting...</span>
+            <div class="module-tags">
+                <span class="module-tag">ARP Sweep</span>
+                <span class="module-tag">Port Scan</span>
+                <span class="module-tag">OS Detect</span>
+                <span class="module-tag">MAC Lookup</span>
             </div>
+            <span class="module-btn"><i class="fa-solid fa-arrow-right"></i> Launch</span>
+        </a>
+
+        <a href="/wifi-scan" class="module-card wifi">
+            <div class="module-icon"><i class="fa-solid fa-wifi"></i></div>
+            <div class="module-title">Wi-Fi Radar</div>
+            <div class="module-desc">
+                Scan nearby access points, signal strength, security protocols, channels and BSSID grouping.
+            </div>
+            <div class="module-tags">
+                <span class="module-tag">SSID Scan</span>
+                <span class="module-tag">RSSI</span>
+                <span class="module-tag">WPA/WPA2</span>
+                <span class="module-tag">Channel Map</span>
+            </div>
+            <span class="module-btn"><i class="fa-solid fa-arrow-right"></i> Launch</span>
+        </a>
+
+        <a href="/bluetooth-scan" class="module-card bluetooth">
+            <div class="module-icon"><i class="fa-brands fa-bluetooth-b"></i></div>
+            <div class="module-title">Bluetooth Radar</div>
+            <div class="module-desc">
+                Discover nearby BLE devices, manufacturer data, service UUIDs, signal levels and connectability.
+            </div>
+            <div class="module-tags">
+                <span class="module-tag">BLE Scan</span>
+                <span class="module-tag">RSSI</span>
+                <span class="module-tag">UUID</span>
+                <span class="module-tag">Vendor ID</span>
+            </div>
+            <span class="module-btn"><i class="fa-solid fa-arrow-right"></i> Launch</span>
+        </a>
+
+    </div>
+
+    <div class="status-bar">
+        <div class="status-chip">
+            <span class="dot online"></span> Platform Online
         </div>
-
-        <div class="main-card">
-
-            <!-- Filtre Paneli -->
-            <div class="filter-panel">
-                <div class="filter-top-bar">
-                    <div class="d-flex align-items-center gap-2">
-                        <i class="fa-solid fa-sliders text-danger"></i>
-                        <span class="filter-panel-title">FILTER & SEARCH</span>
-                        <span id="device-count" class="badge bg-danger ms-1" style="font-size:0.78rem;">0 Nodes</span>
-                    </div>
-                    <div class="d-flex gap-2">
-                        <button id="btn-filter-reset" class="btn btn-sm btn-outline-secondary fw-bold" onclick="resetFilters()" disabled>
-                            <i class="fa-solid fa-rotate-left me-1"></i> Reset
-                        </button>
-                        <button id="btn-pdf" class="btn btn-sm btn-outline-danger fw-bold" onclick="exportNetworkReport()" disabled>
-                            <i class="fa-solid fa-file-pdf me-1"></i> PDF
-                        </button>
-                        <button id="btn-scan" class="btn btn-sm btn-scan fw-bold">
-                            <i class="fa-solid fa-radar me-1"></i> SCAN NOW
-                        </button>
-                    </div>
-                </div>
-
-                <div class="filter-fields-grid">
-                    <div class="filter-field-group">
-                        <label class="filter-label"><i class="fa-solid fa-network-wired me-1 text-danger"></i> IP Address</label>
-                        <input type="text" id="filter-ip" class="filter-input" placeholder="e.g. 192.168.1" disabled>
-                    </div>
-                    <div class="filter-field-group">
-                        <label class="filter-label"><i class="fa-solid fa-tag me-1 text-danger"></i> Hostname</label>
-                        <input type="text" id="filter-hostname" class="filter-input" placeholder="e.g. desktop-pc" disabled>
-                    </div>
-                    <div class="filter-field-group">
-                        <label class="filter-label"><i class="fa-solid fa-fingerprint me-1 text-danger"></i> MAC Address</label>
-                        <input type="text" id="filter-mac" class="filter-input font-monospace" placeholder="e.g. aa:bb:cc" disabled>
-                    </div>
-                    <div class="filter-field-group">
-                        <label class="filter-label"><i class="fa-solid fa-microchip me-1 text-danger"></i> Hardware Vendor</label>
-                        <input type="text" id="filter-vendor" class="filter-input" placeholder="e.g. Intel, TP-Link" disabled>
-                    </div>
-                    <div class="filter-field-group">
-                        <label class="filter-label"><i class="fa-solid fa-shield-halved me-1 text-danger"></i> Security Status</label>
-                        <select id="filter-security" class="filter-input filter-select" disabled>
-                            <option value="all">All Nodes</option>
-                            <option value="danger">⚠ Critical Port Open</option>
-                            <option value="safe">✓ Secured</option>
-                        </select>
-                    </div>
-                    <div class="filter-field-group">
-                        <label class="filter-label"><i class="fa-solid fa-laptop me-1 text-danger"></i> Device Type</label>
-                        <select id="filter-devtype" class="filter-input filter-select" disabled>
-                            <option value="all">All Types</option>
-                            <option value="windows">Windows PC</option>
-                            <option value="linux">Linux Device</option>
-                            <option value="ios">iOS / macOS</option>
-                            <option value="android">Android</option>
-                            <option value="router">Router / Gateway</option>
-                            <option value="printer">Printer</option>
-                            <option value="camera">IP Camera</option>
-                            <option value="vm">Virtual Machine</option>
-                            <option value="iot">IoT / Unknown</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div id="active-filter-tags" class="active-filter-tags d-none"></div>
-            </div>
-
-            <div class="table-responsive">
-                <table class="table align-middle">
-                    <thead>
-                        <tr>
-                            <th style="width:5%">#</th>
-                            <th style="width:20%">IP Address</th>
-                            <th style="width:30%">Hostname</th>
-                            <th style="width:25%">MAC Address</th>
-                            <th style="width:15%">Hardware Vendor</th>
-                            <th style="width:5%" class="text-end">Details</th>
-                        </tr>
-                    </thead>
-                    <tbody id="device-table">
-                        <tr>
-                            <td colspan="6" class="text-center text-muted py-5">
-                                <i class="fa-solid fa-network-wired d-block fs-1 mb-3 text-secondary"></i>
-                                Radar standby mode. Click Scan or wait for auto-pulse.
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+        <div class="status-chip">
+            <i class="fa-solid fa-microchip" style="color:#334155;font-size:0.7rem;"></i>
+            <span id="hostname-chip">Initializing...</span>
+        </div>
+        <div class="status-chip">
+            <i class="fa-solid fa-network-wired" style="color:#334155;font-size:0.7rem;"></i>
+            <span id="ip-chip">--</span>
         </div>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script>
+        function updateTime() {
+            const now = new Date();
+            document.getElementById('local-time').textContent =
+                now.toLocaleTimeString('en-GB') + '   ' + now.toLocaleDateString('en-GB');
+        }
+        updateTime();
+        setInterval(updateTime, 1000);
+
+        fetch('/api/info')
+            .then(r => r.json())
+            .then(d => {
+                document.getElementById('hostname-chip').textContent = d.hostname || 'Unknown';
+                document.getElementById('ip-chip').textContent = 'IP: ' + (d.local_ip || '--');
+            })
+            .catch(() => {
+                document.getElementById('hostname-chip').textContent = 'Unavailable';
+            });
+    </script>
+
 </body>
 </html>

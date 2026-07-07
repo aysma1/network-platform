@@ -6,18 +6,22 @@
     <title>Bluetooth Airspace Audit Radar</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bluetooth.css') }}">
 </head>
 <body>
 
     <nav class="navbar navbar-dark custom-navbar mb-4">
         <div class="container">
-            <span class="navbar-brand mb-0 h1 brand-text">
+            <span class="navbar-brand mb-0 h1" style="color:#00d2ff; font-weight:700; letter-spacing:1px;">
                 <i class="fa-brands fa-bluetooth-b me-2"></i> BLUETOOTH AIRSPACE RADAR
             </span>
-            <div class="d-flex gap-2">
-                <a href="/" class="btn btn-sm btn-ip-radar-custom d-flex align-items-center gap-1 px-3 py-2 fw-bold">
-                    <i class="fa-solid fa-network-wired me-1"></i> IP RADAR
+            <div class="d-flex align-items-center gap-2">
+                <a href="/" class="btn btn-sm btn-main-menu d-flex align-items-center gap-1 px-3 py-2 fw-bold">
+                    <i class="fa-solid fa-house"></i> MAIN MENU
+                </a>
+                <a href="/ip-scan" class="btn btn-sm btn-ip-radar d-flex align-items-center gap-1 px-3 py-2 fw-bold">
+                    <i class="fa-solid fa-network-wired"></i> IP RADAR
                 </a>
                 <a href="/wifi-scan" class="btn btn-sm btn-wifi-radar d-flex align-items-center gap-1 px-3 py-2 fw-bold">
                     <i class="fa-solid fa-wifi"></i> WI-FI RADAR
@@ -50,7 +54,7 @@
                 <span id="detectedCount" class="badge range-badge-custom px-3 py-2 fs-6">
                     Scanning Airspace...
                 </span>
-                <button id="scanBtn" class="btn btn-sm btn-bluetooth-radar-custom fw-bold px-3 py-2 fs-6">
+                <button id="scanBtn" class="btn btn-sm btn-bluetooth-radar fw-bold px-3 py-2 fs-6">
                     <i class="fa-brands fa-bluetooth-b me-1"></i> SCAN NOW
                 </button>
             </div>
@@ -68,7 +72,8 @@
                     </div>
                     <div class="mx-auto" style="max-width: 500px;">
                         <div class="progress bg-dark border border-secondary" style="height: 10px; border-radius: 4px;">
-                            <div id="progressBar" class="progress-bar progress-bar-striped progress-bar-animated" style="width: 15%; background-color: #00d2ff;" role="progressbar"></div>
+                            <div id="progressBar" class="progress-bar progress-bar-striped progress-bar-animated"
+                                style="width: 15%; background-color: #00d2ff;" role="progressbar"></div>
                         </div>
                     </div>
                 </div>
@@ -94,12 +99,11 @@
 
         <div class="text-center text-muted small mt-3">
             <i class="fa-solid fa-circle-info me-1"></i>
-            <span class="bt-tag bt-tag-known" style="vertical-align: middle;">REPORTED</span> = data sent directly by the device.
-            <span class="bt-tag bt-tag-guessed ms-2" style="vertical-align: middle;">~ ESTIMATED</span> = best-effort guess from public reference data, not guaranteed accurate.
+            <span class="bt-tag bt-tag-known" style="vertical-align:middle;">REPORTED</span> = data sent directly by the device. &nbsp;
+            <span class="bt-tag bt-tag-guessed" style="vertical-align:middle;">~ ESTIMATED</span> = best-effort guess, not guaranteed accurate.
         </div>
     </div>
 
-</body>
 <script>
 async function loadDevices(isManualClick = false) {
     const btn = document.getElementById('scanBtn');
@@ -113,9 +117,9 @@ async function loadDevices(isManualClick = false) {
 
     btn.disabled = true;
     btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-1"></i> SCANNING...';
-
     loadingZone.classList.remove('d-none');
     tableZone.classList.add('d-none');
+
     document.getElementById('progressStatus').innerHTML =
         '<i class="fa-brands fa-bluetooth-b perfect-spin me-2"></i> [Stage 1/2] Initializing BLE Radio...';
     document.getElementById('progressBar').style.width = '15%';
@@ -138,7 +142,7 @@ async function loadDevices(isManualClick = false) {
         } else if (!data.devices || data.devices.length === 0) {
             tbody.innerHTML = `<tr><td colspan="7" class="text-center text-muted py-5">
                 <i class="fa-brands fa-bluetooth-b d-block fs-1 mb-3 text-secondary"></i>
-                No Bluetooth devices captured. Verify Bluetooth is enabled and Location Services permissions.</td></tr>`;
+                No Bluetooth devices captured.</td></tr>`;
         } else {
             tbody.innerHTML = data.devices.map(deviceRowHtml).join('');
         }
@@ -158,34 +162,32 @@ async function loadDevices(isManualClick = false) {
 }
 
 function sourceTag(source) {
-    if (source === 'known') return '<span class="bt-tag bt-tag-known">REPORTED</span>';
+    if (source === 'known')    return '<span class="bt-tag bt-tag-known">REPORTED</span>';
     if (source === 'inferred') return '<span class="bt-tag bt-tag-guessed">~ ESTIMATED</span>';
     return '<span class="bt-tag bt-tag-none">NO DATA</span>';
 }
 
 function signalClass(rssi) {
-    if (rssi >= -60) return 'wifi-signal-good';
-    if (rssi >= -80) return 'wifi-signal-medium';
-    return 'wifi-signal-poor';
+    if (rssi >= -60) return 'ble-signal-strong';
+    if (rssi >= -80) return 'ble-signal-medium';
+    return 'ble-signal-weak';
 }
 
 function deviceRowHtml(d) {
     const manufacturer = d.manufacturer_guess
         ? `<span class="bt-tag bt-tag-guessed">~ ${d.manufacturer_guess}</span>`
         : '<span class="na-text">N/A</span>';
-
     const deviceType = d.device_type_guess
         ? `<span class="bt-tag bt-tag-guessed">~ ${d.device_type_guess}</span>`
         : '<span class="na-text">N/A</span>';
-
     const services = (d.service_uuids && d.service_uuids.length > 0)
-        ? `<span class="badge port-neutral port-badge">${d.service_uuids.length} advertised</span>`
+        ? `<span class="badge ble-type-badge">${d.service_uuids.length} advertised</span>`
         : '<span class="port-none-detected"><i class="fa-solid fa-check"></i> None</span>';
 
     return `
         <tr class="clickable-row">
             <td class="fw-bold">
-                <i class="fa-brands fa-bluetooth-b me-2 text-info"></i>
+                <i class="fa-brands fa-bluetooth-b me-2" style="color:#00d2ff;"></i>
                 ${d.display_name}
                 <div class="mt-1">${sourceTag(d.name_source)}</div>
             </td>
@@ -208,4 +210,5 @@ document.getElementById('scanBtn').addEventListener('click', () => loadDevices(t
 document.getElementById('btScanTimeout').addEventListener('change', () => loadDevices(true));
 document.getElementById('btMinRssi').addEventListener('change', () => loadDevices(true));
 </script>
+</body>
 </html>

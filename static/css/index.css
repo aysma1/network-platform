@@ -1,0 +1,181 @@
+/* ════════════════════════════════════════════════════════════
+   INDEX.CSS  —  Sadece ana sayfa (landing) stilleri
+   ════════════════════════════════════════════════════════════ */
+
+.landing-hero {
+    text-align: center;
+    padding: 60px 24px 40px;
+}
+.landing-hero .hero-title {
+    font-size: 2rem;
+    font-weight: 800;
+    letter-spacing: 1px;
+    color: #ffffff;
+    margin-bottom: 8px;
+}
+.landing-hero .hero-title span { color: #ff0033; }
+.landing-hero .hero-sub {
+    font-size: 0.88rem;
+    color: #475569;
+    letter-spacing: 0.5px;
+}
+
+/* ── 3 Modül Kartı ── */
+.module-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 24px 60px;
+}
+@media (max-width: 800px) { .module-grid { grid-template-columns: 1fr; } }
+
+.module-card {
+    background-color: #0a0c10;
+    border: 1px solid #1a1f2e;
+    border-radius: 10px;
+    padding: 32px 24px 28px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    transition: transform 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
+    position: relative;
+    overflow: hidden;
+}
+.module-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 50% 0%, var(--card-glow) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+.module-card:hover::before { opacity: 1; }
+.module-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--card-accent);
+    box-shadow: 0 8px 32px var(--card-shadow);
+}
+
+/* IP Radar */
+.module-card.ip {
+    --card-accent:  #ff0033;
+    --card-glow:    rgba(255, 0, 51, 0.12);
+    --card-shadow:  rgba(255, 0, 51, 0.2);
+}
+/* Wi-Fi Radar */
+.module-card.wifi {
+    --card-accent:  #00ff66;
+    --card-glow:    rgba(0, 255, 102, 0.1);
+    --card-shadow:  rgba(0, 255, 102, 0.15);
+}
+/* Bluetooth */
+.module-card.bluetooth {
+    --card-accent:  #00d2ff;
+    --card-glow:    rgba(0, 210, 255, 0.1);
+    --card-shadow:  rgba(0, 210, 255, 0.15);
+}
+
+.module-icon {
+    font-size: 2.6rem;
+    margin-bottom: 18px;
+    color: var(--card-accent);
+    filter: drop-shadow(0 0 10px var(--card-glow));
+    position: relative;
+    z-index: 1;
+}
+.module-title {
+    font-size: 1rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: #ffffff;
+    margin-bottom: 10px;
+    position: relative;
+    z-index: 1;
+}
+.module-desc {
+    font-size: 0.78rem;
+    color: #475569;
+    line-height: 1.6;
+    margin-bottom: 24px;
+    position: relative;
+    z-index: 1;
+}
+.module-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    justify-content: center;
+    margin-bottom: 24px;
+    position: relative;
+    z-index: 1;
+}
+.module-tag {
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 3px 9px;
+    border-radius: 3px;
+    background-color: rgba(255,255,255,0.04);
+    border: 1px solid #1e2535;
+    color: #64748b;
+}
+.module-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 22px;
+    border-radius: 5px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    border: 1px solid var(--card-accent);
+    color: var(--card-accent);
+    background: transparent;
+    transition: background 0.2s ease, box-shadow 0.2s ease;
+    position: relative;
+    z-index: 1;
+    text-decoration: none;
+}
+.module-btn:hover {
+    background: rgba(255,255,255,0.05);
+    box-shadow: 0 0 14px var(--card-shadow);
+    color: var(--card-accent);
+}
+
+/* ── Durum çubuğu (alt) ── */
+.status-bar {
+    max-width: 960px;
+    margin: 0 auto 0;
+    padding: 0 24px;
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+.status-chip {
+    background: #0a0c10;
+    border: 1px solid #1a1f2e;
+    border-radius: 4px;
+    padding: 6px 14px;
+    font-size: 0.76rem;
+    color: #475569;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+}
+.status-chip .dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: #1e2535;
+}
+.status-chip .dot.online {
+    background: #22c55e;
+    box-shadow: 0 0 5px rgba(34,197,94,0.5);
+}

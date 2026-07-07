@@ -1,4 +1,7 @@
-/* ── Genel Sayfa Ayarları ── */
+/* ════════════════════════════════════════════════════════════
+   BASE.CSS — Tüm sayfalarda ortak stiller
+   ════════════════════════════════════════════════════════════ */
+
 body {
     background-color: #21252e;
     color: #ffffff;
@@ -39,45 +42,6 @@ body {
 .clickable-row:hover td { background-color: #1a1e29 !important; }
 .clickable-row.active td { background-color: #1a1e29 !important; }
 
-/* 🚨 Güvensiz Cihaz Satırı */
-.table tbody tr.row-danger-alert td,
-.table tbody tr.row-danger-alert:not(:hover) td {
-    background-color: #3a161a !important;
-    color: #f87171 !important;
-    border-bottom: 1px solid #7a1f2d !important;
-}
-.table tbody tr.row-danger-alert:hover td {
-    background-color: #4c1d22 !important;
-}
-.table tbody tr.row-danger-alert .ip-badge {
-    background-color: #1a0a0c !important;
-    color: #ff8888 !important;
-    border: 1px solid #7a1f2d !important;
-    box-shadow: 0 0 6px rgba(255, 0, 51, 0.15);
-}
-
-/* 🍏 Güvenli Cihaz Satırı */
-.table tbody tr.row-success-alert td,
-.table tbody tr.row-success-alert:not(:hover) td {
-    background-color: #142c1b !important;
-    color: #86efac !important;
-    border-bottom: 1px solid #1f7a3a !important;
-}
-.table tbody tr.row-success-alert:hover td {
-    background-color: #1c3d26 !important;
-}
-.table tbody tr.row-success-alert .ip-badge {
-    background-color: #0a140e !important;
-    color: #a7f3d0 !important;
-    border: 1px solid #1f7a3a !important;
-}
-
-/* Metin renk sabitleme */
-.row-danger-alert .text-light, .row-danger-alert .fw-semibold, .row-danger-alert td span,
-.row-success-alert .text-light, .row-success-alert .fw-semibold, .row-success-alert td span {
-    color: #ffffff !important;
-}
-
 /* ── Detay Paneli ── */
 .detail-row td { padding: 0 !important; background-color: #07090d !important; }
 .detail-wrapper {
@@ -88,7 +52,7 @@ body {
 }
 .detail-wrapper.open { max-height: 1500px; opacity: 1; padding: 24px; }
 
-/* 💻 CMD Terminal */
+/* ── CMD Terminal ── */
 .cmd-terminal {
     background-color: #000000;
     color: #00ff00;
@@ -103,17 +67,13 @@ body {
     font-size: 0.9rem;
 }
 
-/* Bilgi Kutuları */
+/* ── Feature Box ── */
 .feature-box {
     background-color: #121620;
     padding: 16px;
     border-radius: 6px;
     border: 1px solid #2c3242;
     height: 100%;
-}
-.port-box {
-    background-color: #1a1215;
-    border: 1px solid #5c1a24;
 }
 .feature-title {
     font-size: 0.75rem;
@@ -125,14 +85,18 @@ body {
 }
 .feature-value { font-size: 1rem; font-weight: 600; }
 
-/* Badges & Buttons */
+/* ── Ortak Badge & Buton ── */
 .auto-scan-badge { background-color: transparent; color: #38bdf8; font-size: 0.8rem; font-weight: 600; }
 .my-ip-badge { background-color: #112211; color: #4ade80; border: 1px solid #22c55e; font-size: 0.8rem; }
-.btn-scan { background: #ff0033; color: #ffffff !important; border: 1px solid #ff0033; font-weight: 700; text-transform: uppercase; }
-.btn-scan:hover { background: #cc0029; box-shadow: 0 0 15px rgba(255,0,51,0.4); }
 .ip-badge { background-color: #ffffff !important; color: #000000 !important; font-weight: 700; }
+.range-badge-custom {
+    background-color: #121620 !important;
+    color: #ffffff !important;
+    border: 1px solid #ff0033 !important;
+    font-weight: 600;
+}
 
-/* Auto-scan switch grubu */
+/* ── Auto-scan switch ── */
 .scan-control-group {
     background-color: #0d0f14 !important;
     border: 1px solid #38bdf8;
@@ -144,7 +108,7 @@ body {
 .switch-wrapper { background-color: rgba(255, 255, 255, 0.03); }
 .cursor-pointer { cursor: pointer; }
 
-/* Checkbox animasyonu */
+/* ── Checkbox ── */
 .form-check-input { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important; }
 .form-check-input:checked {
     background-color: #ff0033;
@@ -152,7 +116,7 @@ body {
     box-shadow: 0 0 8px rgba(255, 0, 51, 0.5);
 }
 
-/* Dönen ikon */
+/* ── Dönen ikon ── */
 .perfect-spin {
     display: inline-block;
     animation: custom-spin 1s linear infinite !important;
@@ -162,13 +126,7 @@ body {
     to   { transform: rotate(360deg); }
 }
 
-/* Search alanı */
-.search-icon-wrapper {
-    background-color: #121620 !important;
-    border-color: #343a40 !important;
-    color: #ff0033 !important;
-    font-size: 1rem;
-}
+/* ── Toggle ikon ── */
 .toggle-icon {
     color: #ffffff !important;
     font-size: 1.1rem;
@@ -177,47 +135,21 @@ body {
 }
 .toggle-icon.rotated { transform: rotate(180deg); color: #ff0033 !important; }
 
-.range-badge-custom {
+/* ── Search ── */
+.search-icon-wrapper {
     background-color: #121620 !important;
-    color: #ffffff !important;
-    border: 1px solid #ff0033 !important;
-    font-weight: 600;
+    border-color: #343a40 !important;
+    color: #ff0033 !important;
+    font-size: 1rem;
 }
 
-/* Port Badge'leri */
-.port-badge {
-    font-family: 'Consolas', monospace;
-    font-size: 0.85rem;
-    padding: 4px 8px;
-    border-radius: 4px;
-    font-weight: bold;
-}
-.port-critical {
-    background-color: rgba(255, 0, 51, 0.25) !important;
-    color: #ff4d66 !important;
-    border: 1px solid #ff0033 !important;
-    box-shadow: 0 0 8px rgba(255, 0, 51, 0.3);
-}
-.port-neutral {
-    background-color: rgba(148, 163, 184, 0.1) !important;
-    color: #cbd5e1 !important;
-    border: 1px solid #475569 !important;
-}
-
-/* Görünürlük yardımcıları */
+/* ── Görünürlük ── */
 .na-text {
     color: #cbd5e1 !important;
     font-weight: 700;
     letter-spacing: 0.5px;
     text-shadow: 0 0 6px rgba(255, 255, 255, 0.2);
 }
-.port-none-detected {
-    color: #86efac !important;
-    font-weight: 700;
-    text-shadow: 0 0 12px rgba(134, 239, 172, 0.4);
-}
-.port-none-detected i { color: #4ade80 !important; }
-
 .vendor-text-wrapper {
     color: #e2e8f0 !important;
     font-weight: 600;
@@ -228,7 +160,7 @@ body {
     text-shadow: 0 0 6px rgba(239, 68, 68, 0.3);
 }
 
-/* ── Filtre Paneli ─────────────────────────────────────────── */
+/* ── Filtre Paneli (tüm sayfalarda ortak) ── */
 .filter-panel {
     background-color: #0a0c10;
     border-bottom: 1px solid #1e2330;
@@ -239,6 +171,8 @@ body {
     align-items: center;
     justify-content: space-between;
     margin-bottom: 12px;
+    flex-wrap: wrap;
+    gap: 8px;
 }
 .filter-panel-title {
     font-size: 0.72rem;
@@ -255,11 +189,7 @@ body {
 @media (max-width: 1100px) { .filter-fields-grid { grid-template-columns: repeat(3, 1fr); } }
 @media (max-width: 700px)  { .filter-fields-grid { grid-template-columns: repeat(2, 1fr); } }
 
-.filter-field-group {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
+.filter-field-group { display: flex; flex-direction: column; gap: 4px; }
 .filter-label {
     font-size: 0.68rem;
     font-weight: 700;
@@ -286,10 +216,7 @@ body {
     box-shadow: 0 0 0 2px rgba(255, 0, 51, 0.15) !important;
     background-color: #141826 !important;
 }
-.filter-input:disabled {
-    opacity: 0.35;
-    cursor: not-allowed;
-}
+.filter-input:disabled { opacity: 0.35; cursor: not-allowed; }
 .filter-input::placeholder { color: #3a4255 !important; }
 .filter-select {
     appearance: none;
@@ -302,7 +229,6 @@ body {
 }
 .filter-select option { background-color: #111520; color: #e2e8f0; }
 
-/* Aktif filtre etiketleri */
 .active-filter-tags {
     display: flex;
     flex-wrap: wrap;
@@ -332,121 +258,46 @@ body {
 }
 .filter-tag .remove-tag:hover { opacity: 1; }
 
-/* 📡 Wi-Fi Sinyal Seviyeleri (dBm) için Özel Göstergeler */
-.wifi-signal-good {
-    color: #00ff66 !important;
-    font-weight: bold;
-    text-shadow: 0 0 8px rgba(0, 255, 102, 0.4);
-}
-.wifi-signal-medium {
-    color: #ffcc00 !important;
-    font-weight: bold;
-    text-shadow: 0 0 8px rgba(255, 204, 0, 0.4);
-}
-.wifi-signal-poor {
-    color: #ff3300 !important;
-    font-weight: bold;
-    text-shadow: 0 0 8px rgba(255, 51, 0, 0.4);
-}
-
-/* Güvenlik Durumu Şablon Uyumu */
-.security-badge-wpa {
-    background-color: rgba(255, 0, 51, 0.15) !important;
-    color: #ff4d66 !important;
-    border: 1px solid #ff0033 !important;
-}
-.security-badge-open {
-    background-color: rgba(0, 255, 102, 0.15) !important;
-    color: #00ff66 !important;
-    border: 1px solid #00ff66 !important;
-}
-
-/* ── Wi-Fi Grup Özet Kartı (kaydırılabilir/açılabilir) ── */
-
-.wifi-group-parent { background-color: transparent !important; }
-.wifi-group-parent td { padding: 0 !important; border-bottom: 1px solid #2a2f3d !important; }
-
-.wifi-group-summary {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 16px 24px;
-    background-color: #0d0f14;
-    transition: background-color 0.2s ease;
-    min-height: 60px;
-}
-.wifi-group-parent:hover .wifi-group-summary { background-color: #1a1e29; }
-
-.wifi-group-left {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    flex-wrap: wrap;
-}
-.wifi-group-lock { font-size: 1.05rem; }
-.wifi-group-name { font-size: 1rem; font-weight: 700; color: #ffffff; }
-
-.wifi-ap-count-badge {
-    background-color: rgba(255, 153, 0, 0.12) !important;
-    color: #ff9900 !important;
-    border: 1px solid rgba(255, 153, 0, 0.4) !important;
-    font-size: 0.7rem;
-    font-weight: 700;
-    padding: 5px 10px;
-    text-transform: uppercase;
-    letter-spacing: 0.3px;
-    display: inline-flex;
-    align-items: center;
-    white-space: nowrap;
-}
-
-.wifi-group-right {
-    display: flex;
-    align-items: center;
-    gap: 18px;
-    flex-shrink: 0;
-}
-.wifi-group-signal { font-weight: bold; white-space: nowrap; }
-
-.wifi-group-children td { padding: 0 !important; background-color: #07090d !important; }
-.wifi-children-collapse {
-    max-height: 0;
-    overflow: hidden;
-    opacity: 0;
-    transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.25s ease-in-out;
-}
-.wifi-children-collapse.open { max-height: 800px; opacity: 1; }
-.wifi-child-row td {
-    background-color: #07090d !important;
-    padding-left: 44px !important;
-    border-bottom: 1px solid #1a1e29 !important;
-}
-.wifi-child-row:hover td { background-color: #10131a !important; }
-
-/* ── Bluetooth Radar Özel Buton Tasarımı ── */
-.btn-bluetooth-radar-custom {
+/* ── Navbar modül butonları ── */
+.btn-main-menu {
     background-color: transparent !important;
-    color: #00d2ff !important; /* Wi-Fi'ın canlı tonuna denk gelen parlak neon mavi */
-    border: 2px solid #00d2ff !important;
+    color: #f59e0b !important;
+    border: 1px solid #f59e0b !important;
     font-weight: 700;
     text-transform: uppercase;
-    transition: all 0.2s ease-in-out;
+    letter-spacing: 0.5px;
+    transition: all 0.2s ease;
+    text-decoration: none;
+}
+.btn-main-menu:hover {
+    background-color: rgba(245, 158, 11, 0.1) !important;
+    box-shadow: 0 0 10px rgba(245, 158, 11, 0.3);
+    color: #fcd34d !important;
 }
 
-.btn-bluetooth-radar-custom:hover {
-    background-color: rgba(0, 210, 255, 0.1) !important; /* Üzerine gelince soluk mavi dolgu */
-    box-shadow: 0 0 12px rgba(0, 210, 255, 0.4);       /* Wi-Fi ile aynı güçte neon parlama */
-    color: #4ce3ff !important;                         /* Hover durumunda biraz daha açık mavi */
+.btn-ip-radar {
+    background-color: transparent !important;
+    color: #ff0033 !important;
+    border: 1px solid #ff0033 !important;
+    font-weight: 700;
+    text-transform: uppercase;
+    transition: all 0.2s ease;
+    text-decoration: none;
+}
+.btn-ip-radar:hover {
+    background-color: rgba(255, 0, 51, 0.1) !important;
+    box-shadow: 0 0 12px rgba(255, 0, 51, 0.4);
+    color: #ff4c4c !important;
 }
 
-/* ── Wi-Fi Radar Özel Buton Tasarımı ── */
 .btn-wifi-radar {
     background-color: transparent !important;
     color: #00ff66 !important;
     border: 1px solid #00ff66 !important;
     font-weight: 700;
     text-transform: uppercase;
-    transition: all 0.2s ease-in-out;
+    transition: all 0.2s ease;
+    text-decoration: none;
 }
 .btn-wifi-radar:hover {
     background-color: rgba(0, 255, 102, 0.1) !important;
@@ -454,17 +305,17 @@ body {
     color: #4cff99 !important;
 }
 
-/* ── IP Radar Özel Canlı Yeşil Buton Tasarımı ── */
-.btn-ip-radar-custom {
+.btn-bluetooth-radar {
     background-color: transparent !important;
-    color: #ff0000 !important; /* Canlı neon yeşil */
-    border: 1px solid #ff0000 !important;
+    color: #00d2ff !important;
+    border: 1px solid #00d2ff !important;
     font-weight: 700;
     text-transform: uppercase;
-    transition: all 0.2s ease-in-out;
+    transition: all 0.2s ease;
+    text-decoration: none;
 }
-.btn-ip-radar-custom:hover {
-    background-color: rgba(255, 0, 0, 0.1) !important;
-    box-shadow: 0 0 12px rgba(255, 0, 0, 0.4);
-    color: #ff4c4c !important;
+.btn-bluetooth-radar:hover {
+    background-color: rgba(0, 210, 255, 0.1) !important;
+    box-shadow: 0 0 12px rgba(0, 210, 255, 0.4);
+    color: #4ce3ff !important;
 }

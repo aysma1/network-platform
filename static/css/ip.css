@@ -1,0 +1,76 @@
+/* ════════════════════════════════════════════════════════════
+   IP_SCAN.CSS — Sadece IP Radar sayfasına özel
+   base.css her zaman önce yüklenmeli
+   ════════════════════════════════════════════════════════════ */
+
+/* ── Güvensiz satır ── */
+.table tbody tr.row-danger-alert td,
+.table tbody tr.row-danger-alert:not(:hover) td {
+    background-color: #3a161a !important;
+    color: #f87171 !important;
+    border-bottom: 1px solid #7a1f2d !important;
+}
+.table tbody tr.row-danger-alert:hover td { background-color: #4c1d22 !important; }
+.table tbody tr.row-danger-alert .ip-badge {
+    background-color: #1a0a0c !important;
+    color: #ff8888 !important;
+    border: 1px solid #7a1f2d !important;
+    box-shadow: 0 0 6px rgba(255, 0, 51, 0.15);
+}
+
+/* ── Güvenli satır ── */
+.table tbody tr.row-success-alert td,
+.table tbody tr.row-success-alert:not(:hover) td {
+    background-color: #142c1b !important;
+    color: #86efac !important;
+    border-bottom: 1px solid #1f7a3a !important;
+}
+.table tbody tr.row-success-alert:hover td { background-color: #1c3d26 !important; }
+.table tbody tr.row-success-alert .ip-badge {
+    background-color: #0a140e !important;
+    color: #a7f3d0 !important;
+    border: 1px solid #1f7a3a !important;
+}
+
+/* Metin renk sabitleme */
+.row-danger-alert .text-light, .row-danger-alert .fw-semibold, .row-danger-alert td span,
+.row-success-alert .text-light, .row-success-alert .fw-semibold, .row-success-alert td span {
+    color: #ffffff !important;
+}
+
+/* ── Scan butonu ── */
+.btn-scan {
+    background: #ff0033;
+    color: #ffffff !important;
+    border: 1px solid #ff0033;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+.btn-scan:hover { background: #cc0029; box-shadow: 0 0 15px rgba(255,0,51,0.4); }
+
+/* ── Port badge'leri ── */
+.port-box { background-color: #1a1215; border: 1px solid #5c1a24; }
+.port-badge {
+    font-family: 'Consolas', monospace;
+    font-size: 0.85rem;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-weight: bold;
+}
+.port-critical {
+    background-color: rgba(255, 0, 51, 0.25) !important;
+    color: #ff4d66 !important;
+    border: 1px solid #ff0033 !important;
+    box-shadow: 0 0 8px rgba(255, 0, 51, 0.3);
+}
+.port-neutral {
+    background-color: rgba(148, 163, 184, 0.1) !important;
+    color: #cbd5e1 !important;
+    border: 1px solid #475569 !important;
+}
+.port-none-detected {
+    color: #86efac !important;
+    font-weight: 700;
+    text-shadow: 0 0 12px rgba(134, 239, 172, 0.4);
+}
+.port-none-detected i { color: #4ade80 !important; }
