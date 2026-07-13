@@ -16,16 +16,42 @@
             <span class="navbar-brand mb-0 h1" style="color:#00d2ff; font-weight:700; letter-spacing:1px;">
                 <i class="fa-brands fa-bluetooth-b me-2"></i> BLUETOOTH AIRSPACE RADAR
             </span>
-            <div class="d-flex align-items-center gap-2">
-                <a href="/" class="btn btn-sm btn-main-menu d-flex align-items-center gap-1 px-3 py-2 fw-bold">
-                    <i class="fa-solid fa-house"></i> MAIN MENU
-                </a>
-                <a href="/ip-scan" class="btn btn-sm btn-ip-radar d-flex align-items-center gap-1 px-3 py-2 fw-bold">
-                    <i class="fa-solid fa-network-wired"></i> IP RADAR
-                </a>
-                <a href="/wifi-scan" class="btn btn-sm btn-wifi-radar d-flex align-items-center gap-1 px-3 py-2 fw-bold">
-                    <i class="fa-solid fa-wifi"></i> WI-FI RADAR
-                </a>
+            <div class="d-flex align-items-center">
+                <div class="module-dropdown" id="moduleDropdown">
+                <button class="module-dropdown-btn" onclick="toggleModuleMenu()">
+                    <i class="fa-solid fa-th-large"></i>
+                    MODULES
+                    <i class="fa-solid fa-chevron-down chevron"></i>
+                </button>
+                <div class="module-dropdown-menu">
+                    <div class="module-dropdown-header">Navigate to</div>
+                    <a href="/" class="module-dropdown-item" data-module="home">
+                        <span class="item-dot"></span>
+                        <i class="fa-solid fa-house item-icon"></i>
+                        Main Menu
+                    </a>
+                    <a href="/ip-scan" class="module-dropdown-item" data-module="ip">
+                        <span class="item-dot"></span>
+                        <i class="fa-solid fa-network-wired item-icon"></i>
+                        IP Radar
+                    </a>
+                    <a href="/wifi-scan" class="module-dropdown-item" data-module="wifi">
+                        <span class="item-dot"></span>
+                        <i class="fa-solid fa-wifi item-icon"></i>
+                        Wi-Fi Radar
+                    </a>
+                    <a href="/bluetooth-scan" class="module-dropdown-item active" data-module="bluetooth">
+                        <span class="item-dot"></span>
+                        <i class="fa-brands fa-bluetooth-b item-icon"></i>
+                        Bluetooth Radar
+                    </a>
+                    <a href="/internet-tools" class="module-dropdown-item" data-module="internet">
+                        <span class="item-dot"></span>
+                        <i class="fa-solid fa-globe item-icon"></i>
+                        Internet Tools
+                    </a>
+                </div>
+            </div>
             </div>
         </div>
     </nav>
@@ -54,6 +80,11 @@
                 <span id="detectedCount" class="badge range-badge-custom px-3 py-2 fs-6">
                     Scanning Airspace...
                 </span>
+                <button id="btn-pdf" class="btn btn-sm fw-bold px-3 py-2"
+                    style="background:transparent;color:#00d2ff;border:1px solid #00d2ff;"
+                    onclick="exportBluetoothReport()" disabled>
+                    <i class="fa-solid fa-file-pdf me-1"></i> PDF
+                </button>
                 <button id="scanBtn" class="btn btn-sm btn-bluetooth-radar fw-bold px-3 py-2 fs-6">
                     <i class="fa-brands fa-bluetooth-b me-1"></i> SCAN NOW
                 </button>
@@ -104,111 +135,15 @@
         </div>
     </div>
 
-<script>
-async function loadDevices(isManualClick = false) {
-    const btn = document.getElementById('scanBtn');
-    const tbody = document.getElementById('devicesBody');
-    const loadingZone = document.getElementById('loadingZone');
-    const tableZone = document.getElementById('tableZone');
-    const originalHtml = btn.innerHTML;
-
-    const timeout = document.getElementById('btScanTimeout').value;
-    const minRssi = document.getElementById('btMinRssi').value;
-
-    btn.disabled = true;
-    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-1"></i> SCANNING...';
-    loadingZone.classList.remove('d-none');
-    tableZone.classList.add('d-none');
-
-    document.getElementById('progressStatus').innerHTML =
-        '<i class="fa-brands fa-bluetooth-b perfect-spin me-2"></i> [Stage 1/2] Initializing BLE Radio...';
-    document.getElementById('progressBar').style.width = '15%';
-    document.getElementById('progressPercent').textContent = '15%';
-
-    setTimeout(() => {
-        document.getElementById('progressStatus').innerHTML =
-            '<i class="fa-brands fa-bluetooth-b perfect-spin me-2"></i> [Stage 2/2] Listening for Advertisements...';
-        document.getElementById('progressBar').style.width = '70%';
-        document.getElementById('progressPercent').textContent = '70%';
-    }, 600);
-
-    try {
-        const res = await fetch(`/api/bluetooth-scan?timeout=${timeout}&min_rssi=${minRssi}`);
-        const data = await res.json();
-
-        if (!data.success) {
-            tbody.innerHTML = `<tr><td colspan="7" class="text-center text-danger py-5">
-                <i class="fa-solid fa-triangle-exclamation d-block fs-1 mb-3"></i>${data.error}</td></tr>`;
-        } else if (!data.devices || data.devices.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="7" class="text-center text-muted py-5">
-                <i class="fa-brands fa-bluetooth-b d-block fs-1 mb-3 text-secondary"></i>
-                No Bluetooth devices captured.</td></tr>`;
-        } else {
-            tbody.innerHTML = data.devices.map(deviceRowHtml).join('');
+    <script src="{{ url_for('static', filename='js/bluetooth.js') }}"></script>
+    <script>
+        function toggleModuleMenu() {
+            document.getElementById('moduleDropdown').classList.toggle('open');
         }
-
-        document.getElementById('detectedCount').textContent =
-            (data.devices ? data.devices.length : 0) + ' Devices Detected';
-
-    } catch (err) {
-        tbody.innerHTML = `<tr><td colspan="7" class="text-center text-danger py-5">
-            Scan failed: ${err.message}</td></tr>`;
-    } finally {
-        loadingZone.classList.add('d-none');
-        tableZone.classList.remove('d-none');
-        btn.disabled = false;
-        btn.innerHTML = originalHtml;
-    }
-}
-
-function sourceTag(source) {
-    if (source === 'known')    return '<span class="bt-tag bt-tag-known">REPORTED</span>';
-    if (source === 'inferred') return '<span class="bt-tag bt-tag-guessed">~ ESTIMATED</span>';
-    return '<span class="bt-tag bt-tag-none">NO DATA</span>';
-}
-
-function signalClass(rssi) {
-    if (rssi >= -60) return 'ble-signal-strong';
-    if (rssi >= -80) return 'ble-signal-medium';
-    return 'ble-signal-weak';
-}
-
-function deviceRowHtml(d) {
-    const manufacturer = d.manufacturer_guess
-        ? `<span class="bt-tag bt-tag-guessed">~ ${d.manufacturer_guess}</span>`
-        : '<span class="na-text">N/A</span>';
-    const deviceType = d.device_type_guess
-        ? `<span class="bt-tag bt-tag-guessed">~ ${d.device_type_guess}</span>`
-        : '<span class="na-text">N/A</span>';
-    const services = (d.service_uuids && d.service_uuids.length > 0)
-        ? `<span class="badge ble-type-badge">${d.service_uuids.length} advertised</span>`
-        : '<span class="port-none-detected"><i class="fa-solid fa-check"></i> None</span>';
-
-    return `
-        <tr class="clickable-row">
-            <td class="fw-bold">
-                <i class="fa-brands fa-bluetooth-b me-2" style="color:#00d2ff;"></i>
-                ${d.display_name}
-                <div class="mt-1">${sourceTag(d.name_source)}</div>
-            </td>
-            <td><span class="font-monospace text-warning small">${d.address}</span></td>
-            <td>
-                <span class="${signalClass(d.rssi)}">
-                    <i class="fa-solid fa-signal me-1"></i> ${d.rssi} dBm
-                </span>
-            </td>
-            <td class="text-muted small fst-italic">~ ${d.signal_estimate}</td>
-            <td>${manufacturer}</td>
-            <td>${deviceType}</td>
-            <td>${services}</td>
-        </tr>
-    `;
-}
-
-document.addEventListener('DOMContentLoaded', () => loadDevices());
-document.getElementById('scanBtn').addEventListener('click', () => loadDevices(true));
-document.getElementById('btScanTimeout').addEventListener('change', () => loadDevices(true));
-document.getElementById('btMinRssi').addEventListener('change', () => loadDevices(true));
-</script>
+        document.addEventListener('click', function(e) {
+            const dd = document.getElementById('moduleDropdown');
+            if (dd && !dd.contains(e.target)) dd.classList.remove('open');
+        });
+    </script>
 </body>
 </html>

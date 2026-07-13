@@ -8,7 +8,33 @@ from config import PORT_TIMEOUT, ARP_TIMEOUT, MAX_WORKERS, TARGET_PORTS, IS_WIND
 from utils.network import get_local_ip_details, get_vendor, resolve_hostname
 from utils.classifier import classify_device
 
-conf.sniff_promisc = False
+# get_windows_if_list farklı Scapy sürümlerinde farklı yerlerde olabiliyor
+try:
+    from scapy.all import get_windows_if_list
+except ImportError:
+    try:
+        from scapy.arch.windows import get_windows_if_list
+    except ImportError:
+        get_windows_if_list = None
+
+
+def get_scapy_iface_by_ip(local_ip: str):
+    """
+    Verilen local IP'ye sahip doğru Scapy/Npcap interface adını bul.
+    Windows'ta birden fazla adaptör (Wi-Fi, Ethernet, VPN, Virtual vs.)
+    olabildiği için Scapy'nin varsayılan seçtiği interface çoğu zaman
+    gerçek aktif bağlantı olmayabilir. Bu fonksiyon local_ip'ye göre
+    doğru kartı bulup ARP paketlerinin doğru yerden çıkmasını sağlar.
+    """
+    if not IS_WINDOWS or get_windows_if_list is None:
+        return None
+    try:
+        for iface in get_windows_if_list():
+            if local_ip in (iface.get('ips') or []):
+                return iface.get('name')
+    except Exception:
+        pass
+    return None
 
 
 def get_ttl(ip: str) -> str:
@@ -117,9 +143,11 @@ def run_arp_scan() -> dict:
     2. ThreadPoolExecutor ile tüm cihazları paralel işle
     """
     local_ip, subnet = get_local_ip_details()
+    iface_name = get_scapy_iface_by_ip(local_ip)
+
     pkt = Ether(dst="ff:ff:ff:ff:ff:ff") / ARP(pdst=subnet)
 
-    result = srp(pkt, timeout=ARP_TIMEOUT, verbose=False)[0]
+    result = srp(pkt, timeout=ARP_TIMEOUT, verbose=False, iface=iface_name)[0]
 
     tasks = [
         (i, received.psrc, received.hwsrc)

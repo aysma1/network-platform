@@ -16,16 +16,42 @@
             <span class="navbar-brand mb-0 h1" style="color:#00ff66; font-weight:700; letter-spacing:1px;">
                 <i class="fa-solid fa-satellite-dish me-2"></i> WIRELESS AIRSPACE RADAR
             </span>
-            <div class="d-flex align-items-center gap-2">
-                <a href="/" class="btn btn-sm btn-main-menu d-flex align-items-center gap-1 px-3 py-2 fw-bold">
-                    <i class="fa-solid fa-house"></i> MAIN MENU
-                </a>
-                <a href="/ip-scan" class="btn btn-sm btn-ip-radar d-flex align-items-center gap-1 px-3 py-2 fw-bold">
-                    <i class="fa-solid fa-network-wired"></i> IP RADAR
-                </a>
-                <a href="/bluetooth-scan" class="btn btn-sm btn-bluetooth-radar d-flex align-items-center gap-1 px-3 py-2 fw-bold">
-                    <i class="fa-brands fa-bluetooth"></i> BLUETOOTH
-                </a>
+            <div class="d-flex align-items-center">
+                <div class="module-dropdown" id="moduleDropdown">
+                <button class="module-dropdown-btn" onclick="toggleModuleMenu()">
+                    <i class="fa-solid fa-th-large"></i>
+                    MODULES
+                    <i class="fa-solid fa-chevron-down chevron"></i>
+                </button>
+                <div class="module-dropdown-menu">
+                    <div class="module-dropdown-header">Navigate to</div>
+                    <a href="/" class="module-dropdown-item" data-module="home">
+                        <span class="item-dot"></span>
+                        <i class="fa-solid fa-house item-icon"></i>
+                        Main Menu
+                    </a>
+                    <a href="/ip-scan" class="module-dropdown-item" data-module="ip">
+                        <span class="item-dot"></span>
+                        <i class="fa-solid fa-network-wired item-icon"></i>
+                        IP Radar
+                    </a>
+                    <a href="/wifi-scan" class="module-dropdown-item active" data-module="wifi">
+                        <span class="item-dot"></span>
+                        <i class="fa-solid fa-wifi item-icon"></i>
+                        Wi-Fi Radar
+                    </a>
+                    <a href="/bluetooth-scan" class="module-dropdown-item" data-module="bluetooth">
+                        <span class="item-dot"></span>
+                        <i class="fa-brands fa-bluetooth-b item-icon"></i>
+                        Bluetooth Radar
+                    </a>
+                    <a href="/internet-tools" class="module-dropdown-item" data-module="internet">
+                        <span class="item-dot"></span>
+                        <i class="fa-solid fa-globe item-icon"></i>
+                        Internet Tools
+                    </a>
+                </div>
+            </div>
             </div>
         </div>
     </nav>
@@ -43,6 +69,9 @@
                 <span id="detectedCount" class="badge range-badge-custom px-3 py-2 fs-6">
                     Scanning Airspace...
                 </span>
+                <button id="btn-pdf" class="btn btn-sm btn-outline-success fw-bold px-3 py-2" onclick="exportWifiReport()" disabled>
+                    <i class="fa-solid fa-file-pdf me-1"></i> PDF
+                </button>
                 <button id="scanBtn" class="btn btn-sm btn-wifi-radar fw-bold px-3 py-2 fs-6">
                     <i class="fa-solid fa-satellite-dish me-1"></i> SCAN NOW
                 </button>
@@ -87,138 +116,15 @@
         </div>
     </div>
 
-<script>
-async function loadNetworks(isManualClick = false) {
-    const btn = document.getElementById('scanBtn');
-    const tbody = document.getElementById('networksBody');
-    const loadingZone = document.getElementById('loadingZone');
-    const tableZone = document.getElementById('tableZone');
-    const originalHtml = btn.innerHTML;
-
-    btn.disabled = true;
-    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-1"></i> SCANNING...';
-    loadingZone.classList.remove('d-none');
-    tableZone.classList.add('d-none');
-
-    try {
-        const res = await fetch('/api/wifi-scan');
-        const data = await res.json();
-
-        if (data.status === 'error') {
-            tbody.innerHTML = `<tr><td colspan="8" class="text-center text-danger py-5">
-                <i class="fa-solid fa-triangle-exclamation d-block fs-1 mb-3"></i>${data.message}</td></tr>`;
-        } else if (!data.networks || data.networks.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="8" class="text-center text-muted py-5">
-                <i class="fa-solid fa-wifi d-block fs-1 mb-3 text-secondary"></i>
-                No wireless airspace signatures captured.</td></tr>`;
-        } else {
-            renderGroupedTable(data.networks, tbody);
+    <script src="{{ url_for('static', filename='js/wifi.js') }}"></script>
+    <script>
+        function toggleModuleMenu() {
+            document.getElementById('moduleDropdown').classList.toggle('open');
         }
-
-        document.getElementById('detectedCount').textContent =
-            (data.networks ? data.networks.length : 0) + ' Networks Detected';
-
-    } catch (err) {
-        tbody.innerHTML = `<tr><td colspan="8" class="text-center text-danger py-5">
-            Scan error: ${err.message}</td></tr>`;
-    } finally {
-        loadingZone.classList.add('d-none');
-        tableZone.classList.remove('d-none');
-        btn.disabled = false;
-        btn.innerHTML = originalHtml;
-    }
-}
-
-function networkRowHtml(net, extraClass = '') {
-    return `
-        <tr class="clickable-row ${extraClass}">
-            <td class="fw-bold">
-                <i class="fa-solid ${net.security.includes('Open') ? 'fa-unlock text-success' : 'fa-lock text-danger'} me-2"></i>
-                ${net.ssid}
-            </td>
-            <td><span class="font-monospace text-warning small">${net.bssid}</span></td>
-            <td>
-                <span class="${net.signal >= -60 ? 'wifi-signal-good' : net.signal >= -80 ? 'wifi-signal-medium' : 'wifi-signal-poor'}">
-                    <i class="fa-solid fa-signal me-1"></i> ${net.signal} dBm
-                </span>
-            </td>
-            <td class="font-monospace text-info fw-bold">${net.channel}</td>
-            <td class="text-muted small">${net.frequency} MHz</td>
-            <td><span class="badge bg-secondary text-dark fw-bold font-monospace">${net.width} MHz</span></td>
-            <td><span class="badge ${net.band.includes('5') ? 'bg-primary' : 'bg-dark border border-secondary'}">${net.band} GHz</span></td>
-            <td><span class="badge port-badge ${net.security.includes('Open') ? 'security-badge-open' : 'security-badge-wpa'}">${net.security}</span></td>
-        </tr>
-    `;
-}
-
-function renderGroupedTable(networks, tbody) {
-    const groups = {};
-    networks.forEach(net => {
-        if (!groups[net.ssid]) groups[net.ssid] = [];
-        groups[net.ssid].push(net);
-    });
-
-    tbody.innerHTML = '';
-
-    Object.entries(groups).forEach(([ssid, nets]) => {
-        if (nets.length === 1) {
-            tbody.insertAdjacentHTML('beforeend', networkRowHtml(nets[0]));
-            return;
-        }
-
-        const best = nets.reduce((a, b) => (a.signal > b.signal ? a : b));
-        const signalClass = best.signal >= -60 ? 'wifi-signal-good' : best.signal >= -80 ? 'wifi-signal-medium' : 'wifi-signal-poor';
-        const isOpen = best.security.includes('Open');
-
-        const parentRow = document.createElement('tr');
-        parentRow.className = 'clickable-row wifi-group-parent';
-        parentRow.innerHTML = `
-            <td colspan="8" class="p-0">
-                <div class="wifi-group-summary">
-                    <div class="wifi-group-left">
-                        <i class="fa-solid ${isOpen ? 'fa-unlock text-success' : 'fa-lock text-danger'} wifi-group-lock"></i>
-                        <span class="wifi-group-name">${ssid}</span>
-                        <span class="badge wifi-ap-count-badge">
-                            <i class="fa-solid fa-wifi me-1"></i>${nets.length} Access Points
-                        </span>
-                    </div>
-                    <div class="wifi-group-right">
-                        <span class="${signalClass} wifi-group-signal">
-                            <i class="fa-solid fa-signal me-1"></i>${best.signal} dBm
-                            <span class="text-muted small fw-normal">best</span>
-                        </span>
-                        <span class="badge port-badge ${isOpen ? 'security-badge-open' : 'security-badge-wpa'}">${best.security}</span>
-                        <i class="fa-solid fa-angle-down toggle-icon"></i>
-                    </div>
-                </div>
-            </td>
-        `;
-        tbody.appendChild(parentRow);
-
-        const childrenWrapper = document.createElement('tr');
-        childrenWrapper.className = 'wifi-group-children';
-        childrenWrapper.innerHTML = `
-            <td colspan="8" class="p-0">
-                <div class="wifi-children-collapse">
-                    <table class="table align-middle mb-0">
-                        <tbody>${nets.map(n => networkRowHtml(n, 'wifi-child-row')).join('')}</tbody>
-                    </table>
-                </div>
-            </td>
-        `;
-        tbody.appendChild(childrenWrapper);
-
-        const collapseEl = childrenWrapper.querySelector('.wifi-children-collapse');
-        parentRow.addEventListener('click', () => {
-            const isOpenNow = collapseEl.classList.contains('open');
-            collapseEl.classList.toggle('open', !isOpenNow);
-            parentRow.querySelector('.toggle-icon').classList.toggle('rotated', !isOpenNow);
+        document.addEventListener('click', function(e) {
+            const dd = document.getElementById('moduleDropdown');
+            if (dd && !dd.contains(e.target)) dd.classList.remove('open');
         });
-    });
-}
-
-document.addEventListener('DOMContentLoaded', () => loadNetworks());
-document.getElementById('scanBtn').addEventListener('click', () => loadNetworks(true));
-</script>
+    </script>
 </body>
 </html>

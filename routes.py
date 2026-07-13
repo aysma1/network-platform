@@ -5,6 +5,7 @@ from utils.scanner import run_arp_scan, ping_once, tcp_connect
 from utils.packet_capture import get_session
 from utils.wifi_scanner import scan_nearby_networks
 from utils.bluetooth_scanner import scan_bluetooth_sync
+from utils.internet_tools import query_whois, query_dns, query_ip_info
 
 
 def register_routes(app):
@@ -118,3 +119,31 @@ def register_routes(app):
         if not validate_ip(ip):
             return jsonify({"status": "error"}), 400
         return jsonify(get_session(ip).snapshot())
+
+    # ── Internet Tools ────────────────────────────────────────
+    @app.route("/internet-tools")
+    def internet_tools():
+        return render_template("internet_tools.html")
+
+    @app.route("/api/whois")
+    def api_whois():
+        target = request.args.get("target", "").strip()
+        if not target:
+            return jsonify({"error": "target parametresi gerekli"}), 400
+        return jsonify(query_whois(target))
+
+    @app.route("/api/dns")
+    def api_dns():
+        target = request.args.get("target", "").strip()
+        types  = request.args.get("types", "").strip()
+        if not target:
+            return jsonify({"error": "target parametresi gerekli"}), 400
+        record_types = [t.strip().upper() for t in types.split(",")] if types else None
+        return jsonify(query_dns(target, record_types))
+
+    @app.route("/api/ip-info")
+    def api_ip_info():
+        ip = request.args.get("ip", "").strip()
+        if not ip:
+            return jsonify({"error": "ip parametresi gerekli"}), 400
+        return jsonify(query_ip_info(ip))

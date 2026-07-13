@@ -23,13 +23,14 @@
 /* ── 3 Modül Kartı ── */
 .module-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 20px;
-    max-width: 960px;
+    max-width: 1200px;
     margin: 0 auto;
     padding: 0 24px 60px;
 }
-@media (max-width: 800px) { .module-grid { grid-template-columns: 1fr; } }
+@media (max-width: 1000px) { .module-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 600px)  { .module-grid { grid-template-columns: 1fr; } }
 
 .module-card {
     background-color: #0a0c10;
@@ -78,6 +79,12 @@
     --card-accent:  #00d2ff;
     --card-glow:    rgba(0, 210, 255, 0.1);
     --card-shadow:  rgba(0, 210, 255, 0.15);
+}
+/* Internet Tools */
+.module-card.internet {
+    --card-accent:  #a78bfa;
+    --card-glow:    rgba(167, 139, 250, 0.1);
+    --card-shadow:  rgba(167, 139, 250, 0.15);
 }
 
 .module-icon {

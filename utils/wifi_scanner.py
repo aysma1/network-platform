@@ -70,10 +70,6 @@ def _resolve_channel_band(freq_value):
 
 
 def _decode_ssid(raw_ssid):
-    """
-    Resolves encoding issues for Turkish characters in Wi-Fi SSIDs.
-    Ensures names like 'İnternet', 'Türk Telekom', 'Ayşegül' render correctly.
-    """
     if not raw_ssid:
         return "[Hidden SSID]"
     

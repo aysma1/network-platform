@@ -258,64 +258,123 @@ body {
 }
 .filter-tag .remove-tag:hover { opacity: 1; }
 
-/* ── Navbar modül butonları ── */
-.btn-main-menu {
+/* ── Navbar modül butonları (eski tekil butonlar — geriye dönük uyumluluk) ── */
+.btn-main-menu, .btn-ip-radar, .btn-wifi-radar,
+.btn-bluetooth-radar, .btn-internet-tools {
     background-color: transparent !important;
-    color: #f59e0b !important;
-    border: 1px solid #f59e0b !important;
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
     transition: all 0.2s ease;
     text-decoration: none;
-}
-.btn-main-menu:hover {
-    background-color: rgba(245, 158, 11, 0.1) !important;
-    box-shadow: 0 0 10px rgba(245, 158, 11, 0.3);
-    color: #fcd34d !important;
 }
 
-.btn-ip-radar {
-    background-color: transparent !important;
-    color: #ff0033 !important;
-    border: 1px solid #ff0033 !important;
-    font-weight: 700;
-    text-transform: uppercase;
-    transition: all 0.2s ease;
-    text-decoration: none;
-}
-.btn-ip-radar:hover {
-    background-color: rgba(255, 0, 51, 0.1) !important;
-    box-shadow: 0 0 12px rgba(255, 0, 51, 0.4);
-    color: #ff4c4c !important;
+/* ── Modül Dropdown Menüsü ── */
+.module-dropdown {
+    position: relative;
+    display: inline-block;
 }
 
-.btn-wifi-radar {
-    background-color: transparent !important;
-    color: #00ff66 !important;
-    border: 1px solid #00ff66 !important;
+.module-dropdown-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 16px;
+    background: transparent;
+    border: 1px solid #334155;
+    border-radius: 5px;
+    color: #94a3b8;
+    font-size: 0.8rem;
     font-weight: 700;
     text-transform: uppercase;
+    letter-spacing: 0.6px;
+    cursor: pointer;
     transition: all 0.2s ease;
-    text-decoration: none;
+    white-space: nowrap;
 }
-.btn-wifi-radar:hover {
-    background-color: rgba(0, 255, 102, 0.1) !important;
-    box-shadow: 0 0 12px rgba(0, 255, 102, 0.4);
-    color: #4cff99 !important;
+.module-dropdown-btn:hover,
+.module-dropdown.open .module-dropdown-btn {
+    border-color: #475569;
+    color: #e2e8f0;
+    background: rgba(255,255,255,0.03);
+}
+.module-dropdown-btn .chevron {
+    font-size: 0.7rem;
+    transition: transform 0.2s ease;
+}
+.module-dropdown.open .chevron {
+    transform: rotate(180deg);
 }
 
-.btn-bluetooth-radar {
-    background-color: transparent !important;
-    color: #00d2ff !important;
-    border: 1px solid #00d2ff !important;
-    font-weight: 700;
+/* Dropdown panel */
+.module-dropdown-menu {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: calc(100% + 6px);
+    min-width: 210px;
+    background: #07090d;
+    border: 1px solid #1a1f2e;
+    border-radius: 7px;
+    box-shadow: 0 12px 32px rgba(0,0,0,0.6);
+    z-index: 9999;
+    overflow: hidden;
+    animation: dropdown-in 0.15s ease;
+}
+@keyframes dropdown-in {
+    from { opacity: 0; transform: translateY(-6px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+.module-dropdown.open .module-dropdown-menu {
+    display: block;
+}
+
+/* Menü başlığı */
+.module-dropdown-header {
+    padding: 8px 14px 6px;
+    font-size: 0.62rem;
+    font-weight: 800;
     text-transform: uppercase;
-    transition: all 0.2s ease;
+    letter-spacing: 1.2px;
+    color: #334155;
+    border-bottom: 1px solid #0f1420;
+}
+
+/* Menü öğeleri */
+.module-dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
     text-decoration: none;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #64748b;
+    transition: background 0.15s ease, color 0.15s ease;
+    border-left: 2px solid transparent;
 }
-.btn-bluetooth-radar:hover {
-    background-color: rgba(0, 210, 255, 0.1) !important;
-    box-shadow: 0 0 12px rgba(0, 210, 255, 0.4);
-    color: #4ce3ff !important;
+.module-dropdown-item:hover {
+    background: rgba(255,255,255,0.03);
+    color: #e2e8f0;
 }
+.module-dropdown-item.active {
+    color: #e2e8f0;
+    background: rgba(255,255,255,0.04);
+}
+
+/* Her modülün rengi */
+.module-dropdown-item .item-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+.module-dropdown-item[data-module="home"]      { --mc: #f59e0b; }
+.module-dropdown-item[data-module="ip"]        { --mc: #ff0033; }
+.module-dropdown-item[data-module="wifi"]      { --mc: #00ff66; }
+.module-dropdown-item[data-module="bluetooth"] { --mc: #00d2ff; }
+.module-dropdown-item[data-module="internet"]  { --mc: #a78bfa; }
+
+.module-dropdown-item .item-dot  { background: var(--mc); box-shadow: 0 0 5px var(--mc); }
+.module-dropdown-item:hover      { border-left-color: var(--mc); color: var(--mc); }
+.module-dropdown-item.active     { border-left-color: var(--mc); color: var(--mc) !important; background: rgba(255,255,255,0.04); }
+.module-dropdown-item .item-icon { font-size: 0.85rem; width: 16px; text-align: center; }
