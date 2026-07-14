@@ -1,4 +1,4 @@
-// ── Sekme Yönetimi ───────────────────────────────────────
+// ── Tab Management ────────────────────────────────────────
 function switchTab(name) {
     document.querySelectorAll('.it-tab').forEach(t => t.classList.remove('active'));
     document.querySelectorAll('.it-panel').forEach(p => p.classList.remove('active'));
@@ -13,7 +13,7 @@ function quickQuery(tab, value) {
     if (tab === 'ipinfo') { document.getElementById('ipinfo-input').value = value; runIpInfo(); }
 }
 
-// ── DNS tip pill toggle ───────────────────────────────────
+// ── DNS type pill toggle ──────────────────────────────────
 document.querySelectorAll('.it-type-pill[data-type]').forEach(pill => {
     pill.addEventListener('click', () => pill.classList.toggle('selected'));
 });
@@ -23,12 +23,12 @@ function getSelectedTypes() {
         .map(p => p.dataset.type);
 }
 
-// ── Loading / Error yardımcıları ──────────────────────────
+// ── Loading / Error helpers ───────────────────────────────
 function showLoading(container) {
     document.getElementById(container).innerHTML = `
         <div class="it-loading">
             <div class="it-spinner"></div>
-            <span>Sorgulanıyor...</span>
+            <span>Querying...</span>
         </div>`;
 }
 
@@ -61,13 +61,11 @@ async function runWhois() {
 
         if (data.error) { showError('whois-result', data.error); return; }
 
-        // Status pilleri
         const statusHtml = (data.status || []).length
             ? `<div class="it-pill-list">${data.status.map(s =>
                 `<span class="it-status-pill">${s.split(' ')[0]}</span>`).join('')}</div>`
             : '<span style="color:#334155;">—</span>';
 
-        // Nameserver pilleri
         const nsHtml = (data.name_servers || []).length
             ? `<div class="it-pill-list">${data.name_servers.map(n =>
                 `<span class="it-ns-pill">${n}</span>`).join('')}</div>`
@@ -75,18 +73,18 @@ async function runWhois() {
 
         document.getElementById('whois-result').innerHTML = `
             <div class="it-whois-grid">
-                ${fieldHtml('Domain Adı',      data.domain_name,      true)}
-                ${fieldHtml('Kayıt Şirketi',   data.registrar)}
-                ${fieldHtml('WHOIS Sunucusu',  data.whois_server)}
-                ${fieldHtml('Kayıt Tarihi',    data.creation_date)}
-                ${fieldHtml('Son Kullanma',    data.expiration_date)}
-                ${fieldHtml('Güncelleme',      data.updated_date)}
-                ${fieldHtml('Ülke',            data.country)}
-                ${fieldHtml('Şehir',           data.city)}
-                ${fieldHtml('Org / Sahip',     data.org || data.name)}
-                ${fieldHtml('DNSSEC',          data.dnssec)}
+                ${fieldHtml('Domain Name',      data.domain_name,      true)}
+                ${fieldHtml('Registrar',        data.registrar)}
+                ${fieldHtml('WHOIS Server',     data.whois_server)}
+                ${fieldHtml('Created',          data.creation_date)}
+                ${fieldHtml('Expires',          data.expiration_date)}
+                ${fieldHtml('Updated',          data.updated_date)}
+                ${fieldHtml('Country',          data.country)}
+                ${fieldHtml('City',             data.city)}
+                ${fieldHtml('Org / Owner',      data.org || data.name)}
+                ${fieldHtml('DNSSEC',           data.dnssec)}
                 <div class="it-field">
-                    <div class="it-field-label">Durum</div>
+                    <div class="it-field-label">Status</div>
                     ${statusHtml}
                 </div>
                 <div class="it-field full">
@@ -95,7 +93,7 @@ async function runWhois() {
                 </div>
             </div>`;
     } catch (err) {
-        showError('whois-result', `İstek başarısız: ${err.message}`);
+        showError('whois-result', `Request failed: ${err.message}`);
     } finally {
         btn.disabled = false;
     }
@@ -123,21 +121,27 @@ async function runDns() {
             document.getElementById('dns-result').innerHTML = `
                 <div class="it-empty">
                     <i class="fa-solid fa-circle-question"></i>
-                    <p>'${data.query}' için seçili tiplerde kayıt bulunamadı.</p>
+                    <p>No records found for <strong>${data.query}</strong> with the selected types.</p>
                 </div>`;
             return;
         }
 
-        // Her kayıt tipi için section oluştur
         const typeIcons = {
             A: 'fa-arrow-right', AAAA: 'fa-arrow-right', MX: 'fa-envelope',
             NS: 'fa-server', TXT: 'fa-file-lines', CNAME: 'fa-link',
             SOA: 'fa-gear', SRV: 'fa-wrench', CAA: 'fa-certificate', PTR: 'fa-rotate-left',
         };
 
-        let html = `<div style="margin-bottom:8px; font-size:0.78rem; color:#334155;">
-            <i class="fa-solid fa-check-circle me-1" style="color:#a78bfa;"></i>
-            <strong style="color:#a78bfa;">${data.total}</strong> kayıt bulundu — <span style="font-family:monospace;">${data.query}</span>
+        const resolverBadge = data.resolver_used
+            ? `<span style="font-size:0.7rem;background:rgba(167,139,250,0.1);border:1px solid rgba(167,139,250,0.25);color:#a78bfa;padding:3px 9px;border-radius:3px;font-family:monospace;margin-left:8px;">
+                <i class="fa-solid fa-server me-1"></i>via ${data.resolver_used}</span>`
+            : '';
+
+        let html = `<div style="margin-bottom:12px;font-size:0.78rem;color:#334155;display:flex;align-items:center;flex-wrap:wrap;gap:6px;">
+            <i class="fa-solid fa-check-circle" style="color:#a78bfa;"></i>
+            <strong style="color:#a78bfa;">${data.total}</strong> records found for
+            <span style="font-family:monospace;color:#e2e8f0;">${data.query}</span>
+            ${resolverBadge}
         </div>`;
 
         for (const [rtype, recs] of Object.entries(records)) {
@@ -148,37 +152,23 @@ async function runDns() {
                 <div class="it-dns-section">
                     <div class="it-dns-type-header">
                         <span class="it-dns-type-badge"><i class="fa-solid ${icon} me-1"></i>${rtype}</span>
-                        <span class="it-dns-count">${list.length} kayıt</span>
+                        <span class="it-dns-count">${list.length} record${list.length > 1 ? 's' : ''}</span>
                     </div>
                     ${list.map(r => {
-                        if (typeof r === 'string') {
-                            return `<div class="it-dns-record"><span>${r}</span></div>`;
-                        }
-                        if (rtype === 'MX') {
-                            return `<div class="it-dns-record">
-                                <span class="key">priority</span><span>${r.priority}</span>
-                                &nbsp;&nbsp;<span class="key">exchange</span><span>${r.exchange}</span>
-                            </div>`;
-                        }
-                        if (rtype === 'SOA') {
-                            return `<div class="it-dns-record">
-                                <span class="key">mname</span><span>${r.mname}</span>
-                                &nbsp;&nbsp;<span class="key">serial</span><span>${r.serial}</span>
-                                &nbsp;&nbsp;<span class="key">refresh</span><span>${r.refresh}s</span>
-                            </div>`;
-                        }
-                        if (rtype === 'SRV') {
-                            return `<div class="it-dns-record">
-                                <span class="key">target</span><span>${r.target}</span>
-                                &nbsp;&nbsp;<span class="key">port</span><span>${r.port}</span>
-                                &nbsp;&nbsp;<span class="key">priority</span><span>${r.priority}</span>
-                            </div>`;
-                        }
-                        if (rtype === 'CAA') {
-                            return `<div class="it-dns-record">
-                                <span class="key">${r.tag}</span><span>${r.value}</span>
-                            </div>`;
-                        }
+                        if (typeof r === 'string') return `<div class="it-dns-record"><span>${r}</span></div>`;
+                        if (rtype === 'MX') return `<div class="it-dns-record">
+                            <span class="key">priority</span><span>${r.priority}</span>
+                            &nbsp;&nbsp;<span class="key">exchange</span><span>${r.exchange}</span></div>`;
+                        if (rtype === 'SOA') return `<div class="it-dns-record">
+                            <span class="key">mname</span><span>${r.mname}</span>
+                            &nbsp;&nbsp;<span class="key">serial</span><span>${r.serial}</span>
+                            &nbsp;&nbsp;<span class="key">refresh</span><span>${r.refresh}s</span></div>`;
+                        if (rtype === 'SRV') return `<div class="it-dns-record">
+                            <span class="key">target</span><span>${r.target}</span>
+                            &nbsp;&nbsp;<span class="key">port</span><span>${r.port}</span>
+                            &nbsp;&nbsp;<span class="key">priority</span><span>${r.priority}</span></div>`;
+                        if (rtype === 'CAA') return `<div class="it-dns-record">
+                            <span class="key">${r.tag}</span><span>${r.value}</span></div>`;
                         return `<div class="it-dns-record"><span>${JSON.stringify(r)}</span></div>`;
                     }).join('')}
                 </div>`;
@@ -186,7 +176,7 @@ async function runDns() {
 
         document.getElementById('dns-result').innerHTML = html;
     } catch (err) {
-        showError('dns-result', `İstek başarısız: ${err.message}`);
+        showError('dns-result', `Request failed: ${err.message}`);
     } finally {
         btn.disabled = false;
     }
@@ -208,27 +198,27 @@ async function runIpInfo() {
 
         document.getElementById('ipinfo-result').innerHTML = `
             <div class="it-ip-grid">
-                ${fieldHtml('IP Adresi',   data.ip, true)}
-                ${fieldHtml('Ülke',        data.country ? `${data.country} (${data.country_code})` : null)}
-                ${fieldHtml('Bölge / Şehir', [data.region, data.city].filter(Boolean).join(' / ') || null)}
-                ${fieldHtml('Posta Kodu',  data.zip)}
-                ${fieldHtml('Timezone',    data.timezone)}
-                ${fieldHtml('Koordinatlar', data.lat && data.lon ? `${data.lat}, ${data.lon}` : null)}
-                ${fieldHtml('ISP',         data.isp)}
-                ${fieldHtml('Org',         data.org)}
-                ${fieldHtml('AS',          data.as)}
+                ${fieldHtml('IP Address',    data.ip, true)}
+                ${fieldHtml('Country',       data.country ? `${data.country} (${data.country_code})` : null)}
+                ${fieldHtml('Region / City', [data.region, data.city].filter(Boolean).join(' / ') || null)}
+                ${fieldHtml('Postal Code',   data.zip)}
+                ${fieldHtml('Timezone',      data.timezone)}
+                ${fieldHtml('Coordinates',   data.lat && data.lon ? `${data.lat}, ${data.lon}` : null)}
+                ${fieldHtml('ISP',           data.isp)}
+                ${fieldHtml('Organization',  data.org)}
+                ${fieldHtml('AS Number',     data.as)}
             </div>
             ${data.lat && data.lon ? `
             <div class="mt-3">
                 <a href="https://www.openstreetmap.org/?mlat=${data.lat}&mlon=${data.lon}&zoom=10"
                    target="_blank" rel="noopener"
-                   style="font-size:0.78rem; color:#a78bfa; text-decoration:none;">
+                   style="font-size:0.78rem;color:#a78bfa;text-decoration:none;">
                     <i class="fa-solid fa-map-location-dot me-1"></i>
-                    OpenStreetMap'te Görüntüle (${data.lat}, ${data.lon})
+                    View on OpenStreetMap (${data.lat}, ${data.lon})
                 </a>
             </div>` : ''}`;
     } catch (err) {
-        showError('ipinfo-result', `İstek başarısız: ${err.message}`);
+        showError('ipinfo-result', `Request failed: ${err.message}`);
     } finally {
         btn.disabled = false;
     }

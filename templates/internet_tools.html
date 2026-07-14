@@ -18,40 +18,40 @@
             </a>
             <div class="d-flex align-items-center">
                 <div class="module-dropdown" id="moduleDropdown">
-                <button class="module-dropdown-btn" onclick="toggleModuleMenu()">
-                    <i class="fa-solid fa-th-large"></i>
-                    MODULES
-                    <i class="fa-solid fa-chevron-down chevron"></i>
-                </button>
-                <div class="module-dropdown-menu">
-                    <div class="module-dropdown-header">Navigate to</div>
-                    <a href="/" class="module-dropdown-item" data-module="home">
-                        <span class="item-dot"></span>
-                        <i class="fa-solid fa-house item-icon"></i>
-                        Main Menu
-                    </a>
-                    <a href="/ip-scan" class="module-dropdown-item" data-module="ip">
-                        <span class="item-dot"></span>
-                        <i class="fa-solid fa-network-wired item-icon"></i>
-                        IP Radar
-                    </a>
-                    <a href="/wifi-scan" class="module-dropdown-item" data-module="wifi">
-                        <span class="item-dot"></span>
-                        <i class="fa-solid fa-wifi item-icon"></i>
-                        Wi-Fi Radar
-                    </a>
-                    <a href="/bluetooth-scan" class="module-dropdown-item" data-module="bluetooth">
-                        <span class="item-dot"></span>
-                        <i class="fa-brands fa-bluetooth-b item-icon"></i>
-                        Bluetooth Radar
-                    </a>
-                    <a href="/internet-tools" class="module-dropdown-item active" data-module="internet">
-                        <span class="item-dot"></span>
-                        <i class="fa-solid fa-globe item-icon"></i>
-                        Internet Tools
-                    </a>
+                    <button class="module-dropdown-btn" onclick="toggleModuleMenu()">
+                        <i class="fa-solid fa-th-large"></i>
+                        MODULES
+                        <i class="fa-solid fa-chevron-down chevron"></i>
+                    </button>
+                    <div class="module-dropdown-menu">
+                        <div class="module-dropdown-header">Navigate to</div>
+                        <a href="/" class="module-dropdown-item" data-module="home">
+                            <span class="item-dot"></span>
+                            <i class="fa-solid fa-house item-icon"></i>
+                            Main Menu
+                        </a>
+                        <a href="/ip-scan" class="module-dropdown-item" data-module="ip">
+                            <span class="item-dot"></span>
+                            <i class="fa-solid fa-network-wired item-icon"></i>
+                            IP Radar
+                        </a>
+                        <a href="/wifi-scan" class="module-dropdown-item" data-module="wifi">
+                            <span class="item-dot"></span>
+                            <i class="fa-solid fa-wifi item-icon"></i>
+                            Wi-Fi Radar
+                        </a>
+                        <a href="/bluetooth-scan" class="module-dropdown-item" data-module="bluetooth">
+                            <span class="item-dot"></span>
+                            <i class="fa-brands fa-bluetooth-b item-icon"></i>
+                            Bluetooth Radar
+                        </a>
+                        <a href="/internet-tools" class="module-dropdown-item active" data-module="internet">
+                            <span class="item-dot"></span>
+                            <i class="fa-solid fa-globe item-icon"></i>
+                            Internet Tools
+                        </a>
+                    </div>
                 </div>
-            </div>
             </div>
         </div>
     </nav>
@@ -61,13 +61,13 @@
             <h2 class="h4 fw-bold mb-1" style="color:#fff;">Internet Domain & IP Tools</h2>
             <span class="small" style="color:#475569;">
                 <i class="fa-solid fa-circle-info me-1"></i>
-                WHOIS · DNS Lookup · IP Geolocation — ücretsiz, API key gerektirmez
+                WHOIS · DNS Lookup · IP Geolocation — free, no API key required
             </span>
         </div>
 
         <div class="main-card">
 
-            <!-- Sekme çubuğu -->
+            <!-- Tab bar -->
             <div class="it-tab-bar">
                 <button class="it-tab active" onclick="switchTab('whois')">
                     <i class="fa-solid fa-magnifying-glass me-1"></i> WHOIS
@@ -80,24 +80,23 @@
                 </button>
             </div>
 
-            <!-- WHOIS Paneli -->
+            <!-- WHOIS Panel -->
             <div id="panel-whois" class="it-panel active">
                 <div class="it-query-box">
                     <span class="it-query-label">
                         <i class="fa-solid fa-magnifying-glass me-1" style="color:#a78bfa;"></i>
-                        Domain veya IP Adresi
+                        Domain or IP Address
                     </span>
                     <div class="it-input-row">
                         <input type="text" id="whois-input" class="it-input"
-                            placeholder="örn: google.com, github.com, 8.8.8.8"
+                            placeholder="e.g. google.com, github.com, 8.8.8.8"
                             onkeydown="if(event.key==='Enter') runWhois()">
                         <button class="it-btn-query" onclick="runWhois()" id="whois-btn">
-                            <i class="fa-solid fa-magnifying-glass me-1"></i> Sorgula
+                            <i class="fa-solid fa-magnifying-glass me-1"></i> Query
                         </button>
                     </div>
-                    <!-- Hızlı örnekler -->
-                    <div class="mt-2 d-flex gap-2 flex-wrap">
-                        <span class="small" style="color:#334155;">Örnek:</span>
+                    <div class="mt-2 d-flex gap-2 flex-wrap align-items-center">
+                        <span class="small" style="color:#334155;">Quick:</span>
                         <span class="it-type-pill" onclick="quickQuery('whois','google.com')">google.com</span>
                         <span class="it-type-pill" onclick="quickQuery('whois','github.com')">github.com</span>
                         <span class="it-type-pill" onclick="quickQuery('whois','8.8.8.8')">8.8.8.8</span>
@@ -107,29 +106,28 @@
                 <div id="whois-result" class="it-result-area">
                     <div class="it-empty">
                         <i class="fa-solid fa-globe"></i>
-                        <p>Sorgulamak istediğiniz domain veya IP'yi girin</p>
+                        <p>Enter a domain or IP address to query WHOIS data</p>
                     </div>
                 </div>
             </div>
 
-            <!-- DNS Lookup Paneli -->
+            <!-- DNS Lookup Panel -->
             <div id="panel-dns" class="it-panel">
                 <div class="it-query-box">
                     <span class="it-query-label">
                         <i class="fa-solid fa-server me-1" style="color:#a78bfa;"></i>
-                        Domain Adı
+                        Domain Name
                     </span>
                     <div class="it-input-row">
                         <input type="text" id="dns-input" class="it-input"
-                            placeholder="örn: google.com, mail.example.com"
+                            placeholder="e.g. google.com, mail.example.com"
                             onkeydown="if(event.key==='Enter') runDns()">
                         <button class="it-btn-query" onclick="runDns()" id="dns-btn">
-                            <i class="fa-solid fa-server me-1"></i> Sorgula
+                            <i class="fa-solid fa-server me-1"></i> Query
                         </button>
                     </div>
-                    <!-- Kayıt tipi seçici -->
                     <div class="mt-3">
-                        <span class="it-query-label mb-2">Kayıt Tipleri</span>
+                        <span class="it-query-label mb-2">Record Types</span>
                         <div class="it-type-pills" id="dns-type-pills">
                             <span class="it-type-pill selected" data-type="A">A</span>
                             <span class="it-type-pill selected" data-type="AAAA">AAAA</span>
@@ -143,8 +141,8 @@
                             <span class="it-type-pill" data-type="PTR">PTR</span>
                         </div>
                     </div>
-                    <div class="mt-2 d-flex gap-2 flex-wrap">
-                        <span class="small" style="color:#334155;">Örnek:</span>
+                    <div class="mt-2 d-flex gap-2 flex-wrap align-items-center">
+                        <span class="small" style="color:#334155;">Quick:</span>
                         <span class="it-type-pill" onclick="quickQuery('dns','google.com')">google.com</span>
                         <span class="it-type-pill" onclick="quickQuery('dns','github.com')">github.com</span>
                         <span class="it-type-pill" onclick="quickQuery('dns','cloudflare.com')">cloudflare.com</span>
@@ -153,28 +151,28 @@
                 <div id="dns-result" class="it-result-area">
                     <div class="it-empty">
                         <i class="fa-solid fa-server"></i>
-                        <p>DNS kayıtlarını sorgulamak için domain girin</p>
+                        <p>Enter a domain to query its DNS records</p>
                     </div>
                 </div>
             </div>
 
-            <!-- IP Geolocation Paneli -->
+            <!-- IP Geolocation Panel -->
             <div id="panel-ipinfo" class="it-panel">
                 <div class="it-query-box">
                     <span class="it-query-label">
                         <i class="fa-solid fa-location-dot me-1" style="color:#a78bfa;"></i>
-                        IP Adresi
+                        IP Address
                     </span>
                     <div class="it-input-row">
                         <input type="text" id="ipinfo-input" class="it-input"
-                            placeholder="örn: 8.8.8.8, 1.1.1.1, 185.60.216.35"
+                            placeholder="e.g. 8.8.8.8, 1.1.1.1, 185.60.216.35"
                             onkeydown="if(event.key==='Enter') runIpInfo()">
                         <button class="it-btn-query" onclick="runIpInfo()" id="ipinfo-btn">
-                            <i class="fa-solid fa-location-dot me-1"></i> Sorgula
+                            <i class="fa-solid fa-location-dot me-1"></i> Query
                         </button>
                     </div>
-                    <div class="mt-2 d-flex gap-2 flex-wrap">
-                        <span class="small" style="color:#334155;">Örnek:</span>
+                    <div class="mt-2 d-flex gap-2 flex-wrap align-items-center">
+                        <span class="small" style="color:#334155;">Quick:</span>
                         <span class="it-type-pill" onclick="quickQuery('ipinfo','8.8.8.8')">8.8.8.8 (Google)</span>
                         <span class="it-type-pill" onclick="quickQuery('ipinfo','1.1.1.1')">1.1.1.1 (Cloudflare)</span>
                         <span class="it-type-pill" onclick="quickQuery('ipinfo','208.67.222.222')">208.67.222.222 (OpenDNS)</span>
@@ -183,7 +181,7 @@
                 <div id="ipinfo-result" class="it-result-area">
                     <div class="it-empty">
                         <i class="fa-solid fa-location-dot"></i>
-                        <p>IP adresi girerek konum ve ISP bilgisini öğrenin</p>
+                        <p>Enter an IP address to look up its location and ISP info</p>
                     </div>
                 </div>
             </div>
