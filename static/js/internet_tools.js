@@ -223,3 +223,70 @@ async function runIpInfo() {
         btn.disabled = false;
     }
 }
+
+// ── Tab Management (Yeni Eklemeyi Destekleyecek Şekilde Güncelleme) ──
+// quickQuery fonksiyonunu yeni sekmemiz için eğitiyoruz:
+function quickQuery(tab, value) {
+    switchTab(tab);
+    if (tab === 'whois')  { document.getElementById('whois-input').value = value;  runWhois(); }
+    if (tab === 'dns')    { document.getElementById('dns-input').value = value;    runDns(); }
+    if (tab === 'ipinfo') { document.getElementById('ipinfo-input').value = value; runIpInfo(); }
+    if (tab === 'ssl')    { document.getElementById('ssl-input').value = value;    runSsl(); }
+}
+
+// ── SSL Checker Query ─────────────────────────────────────
+async function runSsl() {
+    const target = document.getElementById('ssl-input').value.trim();
+    if (!target) return;
+    const btn = document.getElementById('ssl-btn');
+    btn.disabled = true;
+    showLoading('ssl-result');
+
+    try {
+        const res = await fetch(`/api/ssl?target=${encodeURIComponent(target)}`);
+        const data = await res.json();
+
+        if (data.error) { showError('ssl-result', data.error); return; }
+
+        const statusText = data.is_valid 
+            ? `<span class="it-status-pill" style="background:rgba(34,197,94,0.12); border-color:#22c55e; color:#4ade80;"><i class="fa-solid fa-circle-check me-1"></i>Active / Valid</span>`
+            : `<span class="it-status-pill" style="background:rgba(220,38,38,0.12); border-color:#ef4444; color:#f87171;"><i class="fa-solid fa-circle-xmark me-1"></i>Expired / Invalid</span>`;
+
+        let dayColor = "#4ade80"; 
+        if (data.days_left <= 15) dayColor = "#facc15"; 
+        if (data.days_left <= 3 || !data.is_valid) dayColor = "#f87171"; 
+
+        const sansHtml = (data.sans || []).length
+            ? `<div class="it-pill-list">${data.sans.map(n => `<span class="it-ns-pill">${n}</span>`).join('')}</div>`
+            : '<span style="color:#334155;">—</span>';
+
+        document.getElementById('ssl-result').innerHTML = `
+            <div class="it-whois-grid">
+                ${fieldHtml('Domain (Target)', data.domain, true)}
+                ${fieldHtml('Common Name (CN)', data.common_name)}
+                <div class="it-field">
+                    <div class="it-field-label">Status</div>
+                    <div>${statusText}</div>
+                </div>
+                ${fieldHtml('Issuer Organization', data.issuer)}
+                ${fieldHtml('Issuer Common Name', data.issuer_common_name)}
+                <div class="it-field">
+                    <div class="it-field-label">Time Remaining</div>
+                    <div class="it-field-value" style="color: ${dayColor}; font-weight: bold;">
+                        <i class="fa-regular fa-clock me-1"></i> ${data.days_left} Days Left
+                    </div>
+                </div>
+                ${fieldHtml('Valid From', data.not_before)}
+                ${fieldHtml('Valid To', data.not_after)}
+                ${fieldHtml('Serial Number', data.serial_number)}
+                <div class="it-field full">
+                    <div class="it-field-label">Subject Alternative Names (SANs)</div>
+                    ${sansHtml}
+                </div>
+            </div>`;
+    } catch (err) {
+        showError('ssl-result', `Request failed: ${err.message}`);
+    } finally {
+        btn.disabled = false;
+    }
+}

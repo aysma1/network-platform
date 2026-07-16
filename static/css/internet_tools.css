@@ -300,3 +300,15 @@
     box-shadow: 0 0 10px rgba(167,139,250,0.3);
     color: #c4b5fd !important;
 }
+
+/* SSL Jenerik İyileştirmeler */
+.it-error-pill {
+    background: rgba(239, 68, 68, 0.08);
+    border: 1px solid rgba(239, 68, 68, 0.25);
+    color: #f87171;
+    font-size: 0.7rem;
+    font-family: 'Consolas', monospace;
+    padding: 3px 8px;
+    border-radius: 3px;
+    word-break: break-all;
+}

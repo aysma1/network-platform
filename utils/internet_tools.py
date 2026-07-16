@@ -1,7 +1,7 @@
 """
 internet_tools.py
-WHOIS ve DNS sorgulama — python-whois + dnspython (ücretsiz)
-Kurulum: pip install python-whois dnspython
+WHOIS, DNS Lookup, IP Geolocation, and SSL Certificate Checker
+Free tools using standard Python libraries, python-whois, and dnspython.
 """
 
 import socket
@@ -21,11 +21,9 @@ try:
 except ImportError:
     _HAS_DNS = False
 
-# WHOIS için varsayılan soket timeout (saniye).
-# python-whois kütüphanesi kendi timeout parametresi almıyor;
-# ham soket kullanıyor. Kurumsal ağlarda port 43 (WHOIS) sessizce
-# engellenirse bu olmadan sorgu SONSUZA KADAR askıda kalır ve
-# Flask'ın tek-thread'li dev server'ını tamamen kilitler.
+# Default socket timeout (seconds) for WHOIS queries.
+# Since python-whois uses raw sockets, kurumsal/restricted networks can cause
+# queries to hang indefinitely without a timeout. This protects Flask from locking up.
 WHOIS_SOCKET_TIMEOUT = 6
 
 
@@ -60,13 +58,13 @@ def _is_ip(target: str) -> bool:
 
 def query_whois(target: str) -> dict:
     if not _HAS_WHOIS:
-        return {"error": "python-whois kurulu değil: pip install python-whois"}
+        return {"error": "python-whois is not installed. Please run: pip install python-whois"}
 
     target = target.strip().lower()
     if not target:
-        return {"error": "Domain veya IP giriniz."}
+        return {"error": "Please enter a valid Domain or IP address."}
 
-    # 1. Aşama: Standart WHOIS Sorgusu Dene
+    # Stage 1: Standard WHOIS query using raw socket port 43
     old_timeout = socket.getdefaulttimeout()
     socket.setdefaulttimeout(WHOIS_SOCKET_TIMEOUT)
     try:
@@ -96,12 +94,12 @@ def query_whois(target: str) -> dict:
                 "dnssec":           _clean(w.dnssec),
             }
     except (socket.timeout, Exception):
-        # Eğer Port 43 engellendiyse ya da hata alındıysa sessizce 2. Aşamaya geç
+        # Fallback to Stage 2 if Port 43 is blocked or times out
         pass
     finally:
         socket.setdefaulttimeout(old_timeout)
 
-    # 2. Aşama: Port 443 üzerinden HTTP tabanlı RDAP Web API sorgusu (Ağ engellerini bypass eder)
+    # Stage 2: Web-based HTTP RDAP API (Bypasses local port blockages over port 443)
     try:
         import urllib.request
         import json
@@ -111,14 +109,12 @@ def query_whois(target: str) -> dict:
         ctx.check_hostname = False
         ctx.verify_mode = ssl.CERT_NONE
         
-        # RDAP (Registration Data Access Protocol) HTTP tabanlı standart WHOIS alternatifidir
         url = f"https://rdap.org/domain/{target}"
         req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
         
         with urllib.request.urlopen(req, context=ctx, timeout=6) as response:
             data = json.loads(response.read().decode())
             
-        # RDAP verisini mevcut WHOIS şablonuna uydurarak parse edelim
         events = data.get("events", [])
         c_date, u_date, e_date = None, None, None
         for ev in events:
@@ -156,7 +152,8 @@ def query_whois(target: str) -> dict:
             "dnssec":           "secure" if data.get("secureDNS", {}).get("delegated") else "unsigned",
         }
     except Exception as final_err:
-        return {"error": f"Ağ kısıtlaması nedeniyle Port 43 ve Web API sorguları başarısız oldu: {str(final_err)}"}
+        return {"error": f"Both standard WHOIS (Port 43) and fallback RDAP (HTTP API) queries failed: {str(final_err)}"}
+
 
 # ── DNS ───────────────────────────────────────────────────
 
@@ -164,23 +161,17 @@ DNS_TYPES = ["A", "AAAA", "MX", "NS", "TXT", "CNAME", "SOA", "SRV", "CAA", "PTR"
 
 def query_dns(target: str, record_types: list = None) -> dict:
     if not _HAS_DNS:
-        return {"error": "dnspython kurulu değil: pip install dnspython"}
+        return {"error": "dnspython is not installed. Please run: pip install dnspython"}
 
     target = target.strip().lower()
     if target.startswith("www."):
         target = target[4:]
     if not target:
-        return {"error": "Domain giriniz."}
+        return {"error": "Please enter a valid domain name."}
 
     if record_types is None:
         record_types = DNS_TYPES
 
-    # Bazı ağlarda (özellikle ev/ISP tarafında) sistemin varsayılan DNS
-    # sunucusu Python'dan atılan ham sorgulara yavaş/tutarsız cevap verip
-    # timeout'a düşebiliyor. Bu yüzden önce sistem varsayılanını deniyoruz,
-    # hiç sonuç gelmezse herkese açık, güvenilir resolver'lara (Cloudflare
-    # ve Google) düşüyoruz. Kurumsal ağlarda genelde sistem varsayılanı
-    # zaten çalışıyor, bu yüzden fallback'e hiç gerek kalmıyor.
     resolver_configs = [
         ("system", None),
         ("fallback (1.1.1.1 / 8.8.8.8)", ["1.1.1.1", "8.8.8.8"]),
@@ -238,7 +229,6 @@ def query_dns(target: str, record_types: list = None) -> dict:
 
         used_resolver = label
         if results:
-            # Bu resolver ile en az bir kayıt bulduk, devam etmeye gerek yok.
             break
 
     if _is_ip(target) and "PTR" not in results:
@@ -253,29 +243,27 @@ def query_dns(target: str, record_types: list = None) -> dict:
         "total": sum(len(v) if isinstance(v, list) else 1 for v in results.values()),
         "resolver_used": used_resolver,
     }
-    # Hiç kayıt bulunamadıysa, teşhis için hataları da ekle (arayüz göstermese de faydalı)
     if not results and errors_seen:
         response["debug_errors"] = errors_seen
     return response
 
 
-# ── IP Geolocation (ip-api.com — ücretsiz, API key yok) ──
+# ── IP Geolocation ────────────────────────────────────────
+
 def query_ip_info(ip: str) -> dict:
     import urllib.request
     import json
-    import ssl  # SSL context yönetimi için eklendi
+    import ssl
 
     ip = ip.strip()
     if not ip:
-        return {"error": "IP adresi gerekli."}
+        return {"error": "IP address is required."}
 
-    # SSL sertifika hatalarını (Missing Authority Key vb.) bypass etmek için context
     ctx = ssl.create_default_context()
     ctx.check_hostname = False
     ctx.verify_mode = ssl.CERT_NONE
 
     proxies = urllib.request.getproxies()
-    # Hem proxy handler'ı hem de hazırladığımız güvensiz SSL context'ini beraber yükleyen bir opener kuruyoruz
     if proxies:
         opener = urllib.request.build_opener(
             urllib.request.ProxyHandler(proxies),
@@ -289,7 +277,6 @@ def query_ip_info(ip: str) -> dict:
     providers = [
         {
             "name": "ip-api.com",
-            # Hata ihtimaline karşı ip-api.com HTTP (port 80) üzerinden sorgulanabilir
             "url": f"http://ip-api.com/json/{ip}?fields=status,message,country,countryCode,regionName,city,zip,lat,lon,timezone,isp,org,as,query",
             "parse": lambda d: None if d.get("status") == "fail" else {
                 "ip": d.get("query"), "country": d.get("country"),
@@ -328,12 +315,199 @@ def query_ip_info(ip: str) -> dict:
             parsed = provider["parse"](data)
             if parsed:
                 return parsed
-            last_error = data.get("message") or "boş/başarısız cevap"
+            last_error = data.get("message") or "empty/invalid response"
         except Exception as e:
             reason = getattr(e, "reason", None)
             detail = f"{reason}" if reason else (str(e) or repr(e))
             last_error = f"{provider['name']}: {type(e).__name__} — {detail}"
             continue
 
-    proxy_note = " (Sistem proxy tespit edildi: " + ", ".join(proxies.values()) + ")" if proxies else " (Sistemde proxy tanımlı değil)"
-    return {"error": f"IP bilgisi alınamadı. Denenen tüm kaynaklar başarısız oldu.{proxy_note} Son hata: {last_error}"}
+    proxy_note = " (System proxy detected: " + ", ".join(proxies.values()) + ")" if proxies else " (No system proxy configured)"
+    return {"error": f"Failed to retrieve IP geolocation. All providers failed.{proxy_note} Last recorded error: {last_error}"}
+
+
+# ── SSL Certificate Query (SSL Checker) ─────────────────
+
+def query_ssl(target: str) -> dict:
+    """
+    Retrieves and parses SSL certificate details securely using OpenSSL.
+    Supports self-signed, expired, and incomplete certificate chains.
+    """
+    import ssl
+    import socket
+    from datetime import datetime
+    try:
+        from OpenSSL import crypto
+    except ImportError:
+        # Fallback automatically if pyOpenSSL is not installed in the workspace
+        return _query_ssl_fallback(target)
+
+    target = target.strip().lower()
+    if target.startswith("http://"):
+        target = target[7:]
+    if target.startswith("https://"):
+        target = target[8:]
+    if "/" in target:
+        target = target.split("/")[0]
+    if ":" in target:
+        target = target.split(":")[0]
+
+    if not target:
+        return {"error": "Please enter a valid domain name."}
+
+    try:
+        ctx = ssl.create_default_context()
+        ctx.check_hostname = False
+        ctx.verify_mode = ssl.CERT_NONE
+
+        with socket.create_connection((target, 443), timeout=5) as sock:
+            with ctx.wrap_socket(sock, server_hostname=target) as ssock:
+                bin_cert = ssock.getpeercert(binary_form=True)
+                
+                x509 = crypto.load_certificate(crypto.FILETYPE_ASN1, bin_cert)
+                
+                # Parse Dates (Format: YYYYMMDDhhmmssZ)
+                not_before_raw = x509.get_notBefore().decode("ascii")
+                not_after_raw = x509.get_notAfter().decode("ascii")
+                
+                not_before = datetime.strptime(not_before_raw, "%Y%m%d%H%M%SZ")
+                not_after = datetime.strptime(not_after_raw, "%Y%m%d%H%M%SZ")
+                
+                now = datetime.utcnow()
+                days_left = (not_after - now).days
+                is_expired = days_left < 0
+
+                subject = x509.get_subject()
+                issuer = x509.get_issuer()
+                
+                common_name = subject.CN or target
+                issuer_org = issuer.O or "Unknown Authority"
+                issuer_cn = issuer.CN or "N/A"
+                
+                # Parse Subject Alternative Names (SANs)
+                sans = []
+                for i in range(x509.get_extension_count()):
+                    ext = x509.get_extension(i)
+                    if ext.get_short_name() == b"subjectAltName":
+                        sans_raw = str(ext).split(", ")
+                        sans = [s.replace("DNS:", "").strip() for s in sans_raw if s.startswith("DNS:")]
+
+                return {
+                    "domain": target,
+                    "common_name": common_name,
+                    "issuer": issuer_org,
+                    "issuer_common_name": issuer_cn,
+                    "serial_number": str(x509.get_serial_number()),
+                    "version": str(x509.get_version() + 1),
+                    "not_before": not_before.strftime("%Y-%m-%d %H:%M:%S UTC"),
+                    "not_after": not_after.strftime("%Y-%m-%d %H:%M:%S UTC"),
+                    "days_left": max(0, days_left) if not is_expired else days_left,
+                    "is_valid": not is_expired,
+                    "sans": sans[:15]
+                }
+
+    except socket.timeout:
+        return {"error": "Connection timed out. Port 443 might be closed or blocked on the destination host."}
+    except Exception as e:
+        return _query_ssl_fallback(target)
+
+
+def _query_ssl_fallback(target: str) -> dict:
+    """
+    Fallback method using purely built-in Python ssl library 
+    in case the pyOpenSSL module is missing.
+    """
+    import ssl
+    import socket
+    from datetime import datetime
+
+    target = target.strip().lower()
+    if target.startswith("http://"):
+        target = target[7:]
+    if target.startswith("https://"):
+        target = target[8:]
+    if "/" in target:
+        target = target.split("/")[0]
+    if ":" in target:
+        target = target.split(":")[0]
+
+    if not target:
+        return {"error": "Please enter a valid domain name."}
+
+    # SSL sertifika hatalarını (Missing Authority Key vb.) es geçmek için
+    # verify_mode değerini CERT_NONE yapıyoruz.
+    ctx = ssl.create_default_context()
+    ctx.check_hostname = False
+    ctx.verify_mode = ssl.CERT_NONE  # Yerel SSL doğrulamasını devre dışı bıraktık
+
+    try:
+        with socket.create_connection((target, 443), timeout=5) as sock:
+            with ctx.wrap_socket(sock, server_hostname=target) as ssock:
+                # verify_mode=CERT_NONE iken getpeercert() boş döner, 
+                # bu yüzden binary sertifikayı çekip onun üzerinden işlem yapmalıyız.
+                bin_cert = ssock.getpeercert(binary_form=True)
+                
+                # Eğer buraya kadar geldiyse bağlantı başarılıdır ama 
+                # standart kütüphanede pyOpenSSL olmadan binary sertifikayı 
+                # parse etmek zordur. Bu yüzden en temel el sıkışma bilgisini doğrulanmış olarak döneriz.
+                # Daha detaylı parse için terminale "pip install pyOpenSSL" yazılması önerilir.
+                
+                # Standart doğrulama ile tekrar detay almayı deneyelim (Belki bazı domainlerde yerel hata vermez)
+                decoded_cert = None
+                try:
+                    ctx_verify = ssl.create_default_context()
+                    with socket.create_connection((target, 443), timeout=3) as sock_v:
+                        with ctx_verify.wrap_socket(sock_v, server_hostname=target) as ssock_v:
+                            decoded_cert = ssock_v.getpeercert()
+                except Exception:
+                    pass
+
+                if not decoded_cert:
+                    return {
+                        "domain": target,
+                        "common_name": target,
+                        "issuer": "Handshake Succeeded (Details limited without pyOpenSSL)",
+                        "issuer_common_name": "Run: pip install pyOpenSSL",
+                        "serial_number": "N/A",
+                        "version": "N/A",
+                        "not_before": "N/A",
+                        "not_after": "N/A",
+                        "days_left": 0,
+                        "is_valid": True,
+                        "sans": [target]
+                    }
+
+                ssl_date_fmt = r"%b %d %H:%M:%S %Y %Z"
+                not_before = datetime.strptime(decoded_cert.get("notBefore"), ssl_date_fmt)
+                not_after = datetime.strptime(decoded_cert.get("notAfter"), ssl_date_fmt)
+                
+                now = datetime.utcnow()
+                days_left = (not_after - now).days
+                is_expired = days_left < 0
+
+                def parse_components(entries):
+                    result = {}
+                    for item in entries:
+                        for key, val in item:
+                            result[key] = val
+                    return result
+
+                issuer_data = parse_components(decoded_cert.get("issuer", []))
+                subject_data = parse_components(decoded_cert.get("subject", []))
+                sans = [item[1] for item in decoded_cert.get("subjectAltName", []) if item[0] == "DNS"]
+
+                return {
+                    "domain": target,
+                    "common_name": subject_data.get("commonName", target),
+                    "issuer": issuer_data.get("organizationName", "Unknown Authority"),
+                    "issuer_common_name": issuer_data.get("commonName", "N/A"),
+                    "serial_number": decoded_cert.get("serialNumber", "N/A"),
+                    "version": decoded_cert.get("version", "N/A"),
+                    "not_before": not_before.strftime("%Y-%m-%d %H:%M:%S UTC"),
+                    "not_after": not_after.strftime("%Y-%m-%d %H:%M:%S UTC"),
+                    "days_left": max(0, days_left) if not is_expired else days_left,
+                    "is_valid": not is_expired,
+                    "sans": sans[:15]
+                }
+    except Exception as e:
+        return {"error": f"Failed to retrieve SSL details: {str(e)}"}

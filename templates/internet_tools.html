@@ -89,6 +89,9 @@
                 <button class="it-tab" onclick="switchTab('ipinfo')">
                     <i class="fa-solid fa-location-dot me-1"></i> IP Geolocation
                 </button>
+                <button class="it-tab" onclick="switchTab('ssl')">
+                    <i class="fa-solid fa-shield-halved me-1"></i> SSL Checker
+                </button>
             </div>
 
             <!-- WHOIS Panel -->
@@ -193,6 +196,36 @@
                     <div class="it-empty">
                         <i class="fa-solid fa-location-dot"></i>
                         <p>Enter an IP address to look up its location and ISP info</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SSL Checker Panel -->
+            <div id="panel-ssl" class="it-panel">
+                <div class="it-query-box">
+                    <span class="it-query-label">
+                        <i class="fa-solid fa-shield-halved me-1" style="color:#a78bfa;"></i>
+                        Domain Name (HTTPS)
+                    </span>
+                    <div class="it-input-row">
+                        <input type="text" id="ssl-input" class="it-input"
+                            placeholder="e.g. google.com, github.com"
+                            onkeydown="if(event.key==='Enter') runSsl()">
+                        <button class="it-btn-query" onclick="runSsl()" id="ssl-btn">
+                            <i class="fa-solid fa-shield-halved me-1"></i> Check SSL
+                        </button>
+                    </div>
+                    <div class="mt-2 d-flex gap-2 flex-wrap align-items-center">
+                        <span class="small" style="color:#334155;">Quick:</span>
+                        <span class="it-type-pill" onclick="quickQuery('ssl','google.com')">google.com</span>
+                        <span class="it-type-pill" onclick="quickQuery('ssl','cloudflare.com')">cloudflare.com</span>
+                        <span class="it-type-pill" onclick="quickQuery('ssl','self-signed.badssl.com')">self-signed (badssl)</span>
+                    </div>
+                </div>
+                <div id="ssl-result" class="it-result-area">
+                    <div class="it-empty">
+                        <i class="fa-solid fa-shield-halved"></i>
+                        <p>Enter a domain to check its SSL certificate status</p>
                     </div>
                 </div>
             </div>

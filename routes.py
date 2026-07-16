@@ -5,7 +5,7 @@ from utils.scanner import run_arp_scan, ping_once, tcp_connect
 from utils.packet_capture import get_session
 from utils.wifi_scanner import scan_nearby_networks
 from utils.bluetooth_scanner import scan_bluetooth_sync
-from utils.internet_tools import query_whois, query_dns, query_ip_info
+from utils.internet_tools import query_whois, query_dns, query_ip_info, query_ssl
 from utils.speed_test import run_speed_test, get_speed_history
 from utils.topology import get_topology
 
@@ -149,6 +149,13 @@ def register_routes(app):
         if not ip:
             return jsonify({"error": "ip parametresi gerekli"}), 400
         return jsonify(query_ip_info(ip))
+    
+    @app.route("/api/ssl")
+    def api_ssl():
+        target = request.args.get("target", "").strip()
+        if not target:
+            return jsonify({"error": "target parametresi gerekli"}), 400
+        return jsonify(query_ssl(target))
 
 # ── Speed Test ────────────────────────────────────────────
     @app.route("/speed-test")
