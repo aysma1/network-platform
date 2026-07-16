@@ -1,65 +1,160 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Speed Test</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}" />
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/speed_test.css') }}" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Speed Test — Network Platform</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/speed_test.css') }}">
 </head>
 <body>
 
-  <div class="page-title">Speed Test</div>
+    <nav class="navbar navbar-dark custom-navbar mb-4">
+        <div class="container">
+            <span class="navbar-brand mb-0 h1 speed-brand">
+                <i class="fa-solid fa-gauge-high me-2"></i> SPEED TEST
+            </span>
+            <div class="d-flex align-items-center">
+                <div class="module-dropdown" id="moduleDropdown">
+                    <button class="module-dropdown-btn" onclick="toggleModuleMenu()">
+                        <i class="fa-solid fa-th-large"></i>
+                        MODULES
+                        <i class="fa-solid fa-chevron-down chevron"></i>
+                    </button>
+                    <div class="module-dropdown-menu">
+                        <div class="module-dropdown-header">Navigate to</div>
+                        <a href="/" class="module-dropdown-item" data-module="home">
+                            <span class="item-dot"></span>
+                            <i class="fa-solid fa-house item-icon"></i>
+                            Main Menu
+                        </a>
+                        <a href="/ip-scan" class="module-dropdown-item" data-module="ip">
+                            <span class="item-dot"></span>
+                            <i class="fa-solid fa-network-wired item-icon"></i>
+                            IP Radar
+                        </a>
+                        <a href="/wifi-scan" class="module-dropdown-item" data-module="wifi">
+                            <span class="item-dot"></span>
+                            <i class="fa-solid fa-wifi item-icon"></i>
+                            Wi-Fi Radar
+                        </a>
+                        <a href="/bluetooth-scan" class="module-dropdown-item" data-module="bluetooth">
+                            <span class="item-dot"></span>
+                            <i class="fa-brands fa-bluetooth-b item-icon"></i>
+                            Bluetooth Radar
+                        </a>
+                        <a href="/internet-tools" class="module-dropdown-item" data-module="internet">
+                            <span class="item-dot"></span>
+                            <i class="fa-solid fa-globe item-icon"></i>
+                            Internet Tools
+                        </a>
+                        <a href="/speed-test" class="module-dropdown-item active" data-module="speed">
+                            <span class="item-dot"></span>
+                            <i class="fa-solid fa-gauge-high item-icon"></i>
+                            Speed Test
+                        </a>
+                        <a href="/topology" class="module-dropdown-item" data-module="topology">
+                            <span class="item-dot"></span>
+                            <i class="fa-solid fa-diagram-project item-icon"></i>
+                            Network Topology
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
 
-  <div class="panel">
-    <div class="gauge-wrap">
-      <canvas id="gauge-canvas" width="320" height="200"></canvas>
+    <div class="container">
+
+        <!-- Gauge + Controls Panel -->
+        <div class="speed-panel">
+            <div class="speed-section-title">
+                <i class="fa-solid fa-gauge-high"></i>
+                Connection Speed
+            </div>
+
+            <div class="gauge-wrap">
+                <canvas id="gauge-canvas" width="320" height="200"></canvas>
+            </div>
+
+            <div class="gauge-value">
+                <span class="num" id="gauge-num">0.0</span>
+                <span class="unit">Mbps download</span>
+            </div>
+
+            <div class="speed-controls">
+                <button class="btn-speed-run" id="run-test-btn" onclick="runSpeedTest()">
+                    <i class="fa-solid fa-play me-1"></i> START TEST
+                </button>
+                <div class="speed-status" id="status-text">Ready.</div>
+            </div>
+
+            <div class="metrics-row">
+                <div class="metric-card download">
+                    <div class="mc-label"><i class="fa-solid fa-arrow-down me-1"></i> Download</div>
+                    <div class="mc-value"><span id="val-download">—</span></div>
+                    <div class="mc-unit">Mbps</div>
+                </div>
+                <div class="metric-card upload">
+                    <div class="mc-label"><i class="fa-solid fa-arrow-up me-1"></i> Upload</div>
+                    <div class="mc-value"><span id="val-upload">—</span></div>
+                    <div class="mc-unit">Mbps</div>
+                </div>
+                <div class="metric-card ping">
+                    <div class="mc-label"><i class="fa-solid fa-clock me-1"></i> Ping</div>
+                    <div class="mc-value"><span id="val-ping">—</span></div>
+                    <div class="mc-unit">ms</div>
+                </div>
+                <div class="metric-card jitter">
+                    <div class="mc-label"><i class="fa-solid fa-wave-square me-1"></i> Jitter</div>
+                    <div class="mc-value"><span id="val-jitter">—</span></div>
+                    <div class="mc-unit">ms</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- History Panel -->
+        <div class="speed-panel">
+            <div class="speed-section-title">
+                <i class="fa-solid fa-clock-rotate-left"></i>
+                Test History
+            </div>
+            <div class="table-responsive">
+                <table class="speed-history-table">
+                    <thead>
+                        <tr>
+                            <th>Timestamp</th>
+                            <th>Download (Mbps)</th>
+                            <th>Upload (Mbps)</th>
+                            <th>Ping (ms)</th>
+                            <th>Jitter (ms)</th>
+                            <th>Server</th>
+                        </tr>
+                    </thead>
+                    <tbody id="history-body">
+                        <tr>
+                            <td colspan="6" style="text-align:center;color:#334155;padding:24px;">
+                                No test history yet
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
     </div>
-    <div class="gauge-value">
-      <span class="num" id="gauge-num">0.0</span>
-      <span class="unit">Mbps indirme</span>
-    </div>
 
-    <div style="text-align:center; margin: 16px 0;">
-      <button class="primary-btn" id="run-test-btn">Testi Baslat</button>
-      <div class="status-text" id="status-text">Hazir.</div>
-    </div>
-
-    <div class="metrics-row">
-      <div class="metric-card download">
-        <div class="label">Indirme</div>
-        <div class="value"><span id="val-download">-</span> Mbps</div>
-      </div>
-      <div class="metric-card upload">
-        <div class="label">Yukleme</div>
-        <div class="value"><span id="val-upload">-</span> Mbps</div>
-      </div>
-      <div class="metric-card ping">
-        <div class="label">Ping</div>
-        <div class="value"><span id="val-ping">-</span> ms</div>
-      </div>
-      <div class="metric-card jitter">
-        <div class="label">Jitter</div>
-        <div class="value"><span id="val-jitter">-</span> ms</div>
-      </div>
-    </div>
-  </div>
-
-  <div class="panel">
-    <div class="page-title" style="font-size:12px; margin-bottom:10px;">Gecmis Testler</div>
-    <table class="history-table">
-      <thead>
-        <tr>
-          <th>Tarih</th>
-          <th>Indirme (Mbps)</th>
-          <th>Yukleme (Mbps)</th>
-          <th>Ping (ms)</th>
-          <th>Jitter (ms)</th>
-        </tr>
-      </thead>
-      <tbody id="history-body"></tbody>
-    </table>
-  </div>
-
-  <script src="{{ url_for('static', filename='js/speed_test.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/speed_test.js') }}"></script>
+    <script>
+        function toggleModuleMenu() {
+            document.getElementById('moduleDropdown').classList.toggle('open');
+        }
+        document.addEventListener('click', function(e) {
+            const dd = document.getElementById('moduleDropdown');
+            if (dd && !dd.contains(e.target)) dd.classList.remove('open');
+        });
+    </script>
 </body>
 </html>

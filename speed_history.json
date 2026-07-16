@@ -1,0 +1,65 @@
+[
+  {
+    "success": true,
+    "download": 74.76,
+    "upload": 130.43,
+    "ping": 93.15,
+    "jitter": 0,
+    "server": "Wien Energie Superschnell (Vienna)",
+    "timestamp": "2026-07-16T14:33:10.889151"
+  },
+  {
+    "success": true,
+    "download": 84.08,
+    "upload": 167.03,
+    "ping": 55.97,
+    "jitter": 0,
+    "server": "Wien Energie Superschnell (Vienna)",
+    "timestamp": "2026-07-16T14:39:06.553881"
+  },
+  {
+    "success": true,
+    "download": 119.58,
+    "upload": 151.73,
+    "ping": 54.41,
+    "jitter": 0,
+    "server": "Wien Energie Superschnell (Vienna)",
+    "timestamp": "2026-07-16T14:41:38.848422"
+  },
+  {
+    "success": true,
+    "download": 27.43,
+    "upload": 179.74,
+    "ping": 54.76,
+    "jitter": 0.0,
+    "server": "Wien Energie Superschnell (Vienna)",
+    "timestamp": "2026-07-16T14:44:04.723019"
+  },
+  {
+    "success": true,
+    "download": 54.34,
+    "upload": 90.72,
+    "ping": 76.89,
+    "jitter": 5.41,
+    "server": "Net-connect s.r.o. (Hodon\u00edn)",
+    "timestamp": "2026-07-16T14:45:35.735994"
+  },
+  {
+    "success": true,
+    "download": 102.86,
+    "upload": 168.22,
+    "ping": 57.47,
+    "jitter": 6.85,
+    "server": "Wien Energie Superschnell (Vienna)",
+    "timestamp": "2026-07-16T14:51:17.019088"
+  },
+  {
+    "success": true,
+    "download": 109.55,
+    "upload": 169.46,
+    "ping": 47.99,
+    "jitter": 21.05,
+    "server": "Wien Energie Superschnell (Vienna)",
+    "timestamp": "2026-07-16T14:59:10.705055"
+  }
+]

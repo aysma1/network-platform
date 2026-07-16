@@ -1,35 +1,128 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Network Topology</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}" />
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/topology.css') }}" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Network Topology — Network Platform</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/topology.css') }}">
 </head>
 <body>
 
-  <div class="page-title">Network Topology</div>
+    <nav class="navbar navbar-dark custom-navbar mb-4">
+        <div class="container">
+            <span class="navbar-brand mb-0 h1 topo-brand">
+                <i class="fa-solid fa-diagram-project me-2"></i> NETWORK TOPOLOGY
+            </span>
+            <div class="d-flex align-items-center">
+                <div class="module-dropdown" id="moduleDropdown">
+                    <button class="module-dropdown-btn" onclick="toggleModuleMenu()">
+                        <i class="fa-solid fa-th-large"></i>
+                        MODULES
+                        <i class="fa-solid fa-chevron-down chevron"></i>
+                    </button>
+                    <div class="module-dropdown-menu">
+                        <div class="module-dropdown-header">Navigate to</div>
+                        <a href="/" class="module-dropdown-item" data-module="home">
+                            <span class="item-dot"></span>
+                            <i class="fa-solid fa-house item-icon"></i>
+                            Main Menu
+                        </a>
+                        <a href="/ip-scan" class="module-dropdown-item" data-module="ip">
+                            <span class="item-dot"></span>
+                            <i class="fa-solid fa-network-wired item-icon"></i>
+                            IP Radar
+                        </a>
+                        <a href="/wifi-scan" class="module-dropdown-item" data-module="wifi">
+                            <span class="item-dot"></span>
+                            <i class="fa-solid fa-wifi item-icon"></i>
+                            Wi-Fi Radar
+                        </a>
+                        <a href="/bluetooth-scan" class="module-dropdown-item" data-module="bluetooth">
+                            <span class="item-dot"></span>
+                            <i class="fa-brands fa-bluetooth-b item-icon"></i>
+                            Bluetooth Radar
+                        </a>
+                        <a href="/internet-tools" class="module-dropdown-item" data-module="internet">
+                            <span class="item-dot"></span>
+                            <i class="fa-solid fa-globe item-icon"></i>
+                            Internet Tools
+                        </a>
+                        <a href="/speed-test" class="module-dropdown-item" data-module="speed">
+                            <span class="item-dot"></span>
+                            <i class="fa-solid fa-gauge-high item-icon"></i>
+                            Speed Test
+                        </a>
+                        <a href="/topology" class="module-dropdown-item active" data-module="topology">
+                            <span class="item-dot"></span>
+                            <i class="fa-solid fa-diagram-project item-icon"></i>
+                            Network Topology
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
 
-  <div class="panel">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-      <div class="status-text" id="topo-status">Hazir.</div>
-      <button class="primary-btn" id="scan-btn">Agi Tara</button>
+    <div class="container">
+
+        <!-- Topology Canvas Panel -->
+        <div class="topo-panel">
+            <div class="topo-header">
+                <div>
+                    <div class="topo-section-title">
+                        <i class="fa-solid fa-diagram-project"></i>
+                        Live Network Map
+                    </div>
+                    <div class="topo-status" id="topo-status">
+                        <i class="fa-solid fa-circle-dot me-1"></i> Ready — click Scan to map your network
+                    </div>
+                </div>
+                <button class="btn-topo-scan" id="scan-btn" onclick="scanNetwork()">
+                    <i class="fa-solid fa-satellite-dish me-1"></i> SCAN NETWORK
+                </button>
+            </div>
+
+            <canvas id="topology-canvas"></canvas>
+
+            <div class="topo-legend">
+                <span><span class="topo-dot router"></span>Router / Gateway</span>
+                <span><span class="topo-dot self"></span>This Device</span>
+                <span><span class="topo-dot device"></span>Other Devices</span>
+            </div>
+        </div>
+
+        <!-- Device List Panel -->
+        <div class="topo-panel">
+            <div class="topo-section-title mb-3">
+                <i class="fa-solid fa-list-ul"></i>
+                Discovered Devices
+                <span id="device-count" class="badge ms-2"
+                    style="background:rgba(56,189,248,0.1);border:1px solid rgba(56,189,248,0.25);color:#818cf8;font-size:0.7rem;">
+                    0
+                </span>
+            </div>
+            <div class="topo-device-grid" id="device-list">
+                <div style="color:#334155;font-size:0.82rem;grid-column:1/-1;text-align:center;padding:24px 0;">
+                    <i class="fa-solid fa-diagram-project d-block mb-2" style="font-size:1.8rem;color:#1a1f2e;"></i>
+                    No devices yet — run a scan first
+                </div>
+            </div>
+        </div>
+
     </div>
 
-    <canvas id="topology-canvas"></canvas>
-
-    <div class="legend">
-      <span><span class="dot purple"></span>Router / Gateway</span>
-      <span><span class="dot green"></span>Bu Cihaz</span>
-      <span><span class="dot cyan"></span>Diger Cihazlar</span>
-    </div>
-  </div>
-
-  <div class="panel">
-    <div class="page-title" style="font-size:12px; margin-bottom:10px;">Bulunan Cihazlar</div>
-    <div class="device-list" id="device-list"></div>
-  </div>
-
-  <script src="{{ url_for('static', filename='js/topology.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/topology.js') }}"></script>
+    <script>
+        function toggleModuleMenu() {
+            document.getElementById('moduleDropdown').classList.toggle('open');
+        }
+        document.addEventListener('click', function(e) {
+            const dd = document.getElementById('moduleDropdown');
+            if (dd && !dd.contains(e.target)) dd.classList.remove('open');
+        });
+    </script>
 </body>
 </html>

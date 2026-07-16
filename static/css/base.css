@@ -13,6 +13,7 @@ body {
     border-bottom: 2px solid #ff0033;
     padding: 15px 0;
 }
+.brand-text { font-weight: 700; letter-spacing: 1px; color: #ff0033 !important; }
 
 /* ── Ana Tablo Kartı ── */
 .main-card {
@@ -367,13 +368,13 @@ body {
     border-radius: 50%;
     flex-shrink: 0;
 }
-.module-dropdown-item[data-module="home"]      { --mc: #f59e0b; }
+.module-dropdown-item[data-module="home"]      { --mc: #e879f9; }
 .module-dropdown-item[data-module="ip"]        { --mc: #ff0033; }
 .module-dropdown-item[data-module="wifi"]      { --mc: #00ff66; }
 .module-dropdown-item[data-module="bluetooth"] { --mc: #00d2ff; }
 .module-dropdown-item[data-module="internet"]  { --mc: #a78bfa; }
-.module-dropdown-item[data-module="speed"]     { --mc: #fb923c; }
-.module-dropdown-item[data-module="topology"]  { --mc: #60a5fa; }
+.module-dropdown-item[data-module="speed"]     { --mc: #f97316; }
+.module-dropdown-item[data-module="topology"]  { --mc: #818cf8; }
 
 .module-dropdown-item .item-dot  { background: var(--mc); box-shadow: 0 0 5px var(--mc); }
 .module-dropdown-item:hover      { border-left-color: var(--mc); color: var(--mc); }

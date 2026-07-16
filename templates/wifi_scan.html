@@ -13,9 +13,9 @@
 
     <nav class="navbar navbar-dark custom-navbar mb-4">
         <div class="container">
-            <a href="/" class="navbar-brand mb-0 h1" style="color:#00ff66; font-weight:700; letter-spacing:1px;">
+            <span class="navbar-brand mb-0 h1" style="color:#00ff66; font-weight:700; letter-spacing:1px;">
                 <i class="fa-solid fa-satellite-dish me-2"></i> WIRELESS AIRSPACE RADAR
-            </a>
+            </span>
             <div class="d-flex align-items-center">
                 <div class="module-dropdown" id="moduleDropdown">
                 <button class="module-dropdown-btn" onclick="toggleModuleMenu()">
@@ -50,16 +50,16 @@
                         <i class="fa-solid fa-globe item-icon"></i>
                         Internet Tools
                     </a>
-                    <a href="/speed-test" class="module-dropdown-item" data-module="speed">
-                        <span class="item-dot"></span>
-                        <i class="fa-solid fa-gauge-high item-icon"></i>
-                        Speed Test
-                    </a>
-                    <a href="/topology" class="module-dropdown-item" data-module="topology">
-                        <span class="item-dot"></span>
-                        <i class="fa-solid fa-diagram-project item-icon"></i>
-                        Topology
-                    </a>
+                        <a href="/speed-test" class="module-dropdown-item" data-module="speed">
+                            <span class="item-dot"></span>
+                            <i class="fa-solid fa-gauge-high item-icon"></i>
+                            Speed Test
+                        </a>
+                        <a href="/topology" class="module-dropdown-item" data-module="topology">
+                            <span class="item-dot"></span>
+                            <i class="fa-solid fa-diagram-project item-icon"></i>
+                            Network Topology
+                        </a>
                 </div>
             </div>
             </div>
@@ -82,7 +82,7 @@
                 <button id="btn-pdf" class="btn btn-sm btn-outline-success fw-bold px-3 py-2" onclick="exportWifiReport()" disabled>
                     <i class="fa-solid fa-file-pdf me-1"></i> PDF
                 </button>
-                <button id="btn-scan" class="btn btn-sm btn-wifi-radar fw-bold px-3 py-2 fs-6">
+                <button id="scanBtn" class="btn btn-sm btn-wifi-radar fw-bold px-3 py-2 fs-6">
                     <i class="fa-solid fa-satellite-dish me-1"></i> SCAN NOW
                 </button>
             </div>

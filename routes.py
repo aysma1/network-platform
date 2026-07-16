@@ -150,7 +150,7 @@ def register_routes(app):
             return jsonify({"error": "ip parametresi gerekli"}), 400
         return jsonify(query_ip_info(ip))
 
-    # ── Speed Test ────────────────────────────────────────────
+# ── Speed Test ────────────────────────────────────────────
     @app.route("/speed-test")
     def speed_test_page():
         return render_template("speed_test.html")
@@ -159,13 +159,76 @@ def register_routes(app):
     def api_speed_test():
         try:
             result = run_speed_test()
-            return jsonify({"status": "success", "data": result})
+            
+            # Eğer hız testi başarısız olduysa hata fırlatalım
+            if not result.get("success", False):
+                return jsonify({"status": "error", "message": result.get("error", "Hız testi başarısız oldu.")}), 500
+            
+            # Sunucu ismini ve lokasyonunu JS'in beklediği gibi ayırıyoruz (Örn: "Turkcell (Istanbul)" -> name: Turkcell, location: Istanbul)
+            server_raw = result.get("server", "N/A")
+            server_name = server_raw
+            server_location = "N/A"
+            
+            if "(" in server_raw:
+                parts = server_raw.split("(")
+                server_name = parts[0].strip()
+                server_location = parts[1].replace(")", "").strip()
+
+            # JS kodunun tam olarak beklediği veri yapısı (data.download_mbps vb.)
+            formatted_data = {
+                "download_mbps": result.get("download"),
+                "upload_mbps": result.get("upload"),
+                "ping_ms": result.get("ping"),
+                "jitter_ms": result.get("jitter", 0),
+                "timestamp": result.get("timestamp"),
+                "server": {
+                    "name": server_name,
+                    "location": server_location
+                }
+            }
+            
+            return jsonify({
+                "status": "success",
+                "data": formatted_data
+            })
+            
         except Exception as e:
             return jsonify({"status": "error", "message": str(e)}), 500
 
     @app.route("/api/speed-test/history")
     def api_speed_test_history():
-        return jsonify({"status": "success", "data": get_speed_history()})
+        try:
+            history = get_speed_history()
+            formatted_history = []
+            
+            # Geçmiş kayıtları da JS'in beklediği formata dönüştürüyoruz
+            for item in history:
+                server_raw = item.get("server", "N/A")
+                server_name = server_raw
+                server_location = "N/A"
+                if "(" in server_raw:
+                    parts = server_raw.split("(")
+                    server_name = parts[0].strip()
+                    server_location = parts[1].replace(")", "").strip()
+
+                formatted_history.append({
+                    "timestamp": item.get("timestamp", "").split(".")[0].replace("T", " "), # Daha okunabilir tarih
+                    "download_mbps": item.get("download"),
+                    "upload_mbps": item.get("upload"),
+                    "ping_ms": item.get("ping"),
+                    "jitter_ms": item.get("jitter", 0),
+                    "server": {
+                        "name": server_name,
+                        "location": server_location
+                    }
+                })
+                
+            return jsonify({
+                "status": "success",
+                "data": formatted_history
+            })
+        except Exception as e:
+            return jsonify({"status": "error", "message": str(e)}), 500
 
     # ── Network Topology ──────────────────────────────────────
     @app.route("/topology")
