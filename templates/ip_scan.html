@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IP Radar — Network Platform</title>
+    <title>Subnet Radar</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
@@ -13,8 +13,8 @@
 
     <nav class="navbar navbar-dark custom-navbar mb-4">
         <div class="container">
-            <a href="/" class="navbar-brand mb-0 h1 brand-text">
-                <i class="fa-solid fa-shield-halved me-2"></i> DEEP AUDIT & DIAGNOSTIC RADAR
+            <a href="/" class="navbar-brand mb-0 h1" style="color: #ff0033; font-weight: 700; letter-spacing: 1px;">
+                <i class="fa-solid fa-shield-halved me-2"></i> SUBNET RADAR
             </a>
             <div class="d-flex align-items-center">
                 <div class="module-dropdown" id="moduleDropdown">
@@ -49,6 +49,16 @@
                         <span class="item-dot"></span>
                         <i class="fa-solid fa-globe item-icon"></i>
                         Internet Tools
+                    </a>
+                    <a href="/speed-test" class="module-dropdown-item" data-module="speed">
+                        <span class="item-dot"></span>
+                        <i class="fa-solid fa-gauge-high item-icon"></i>
+                        Speed Test
+                    </a>
+                    <a href="/topology" class="module-dropdown-item" data-module="topology">
+                        <span class="item-dot"></span>
+                        <i class="fa-solid fa-diagram-project item-icon"></i>
+                        Topology
                     </a>
                 </div>
             </div>

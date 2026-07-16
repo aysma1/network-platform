@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Speed Test</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/speed_test.css') }}" />
+</head>
+<body>
+
+  <div class="page-title">Speed Test</div>
+
+  <div class="panel">
+    <div class="gauge-wrap">
+      <canvas id="gauge-canvas" width="320" height="200"></canvas>
+    </div>
+    <div class="gauge-value">
+      <span class="num" id="gauge-num">0.0</span>
+      <span class="unit">Mbps indirme</span>
+    </div>
+
+    <div style="text-align:center; margin: 16px 0;">
+      <button class="primary-btn" id="run-test-btn">Testi Baslat</button>
+      <div class="status-text" id="status-text">Hazir.</div>
+    </div>
+
+    <div class="metrics-row">
+      <div class="metric-card download">
+        <div class="label">Indirme</div>
+        <div class="value"><span id="val-download">-</span> Mbps</div>
+      </div>
+      <div class="metric-card upload">
+        <div class="label">Yukleme</div>
+        <div class="value"><span id="val-upload">-</span> Mbps</div>
+      </div>
+      <div class="metric-card ping">
+        <div class="label">Ping</div>
+        <div class="value"><span id="val-ping">-</span> ms</div>
+      </div>
+      <div class="metric-card jitter">
+        <div class="label">Jitter</div>
+        <div class="value"><span id="val-jitter">-</span> ms</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="page-title" style="font-size:12px; margin-bottom:10px;">Gecmis Testler</div>
+    <table class="history-table">
+      <thead>
+        <tr>
+          <th>Tarih</th>
+          <th>Indirme (Mbps)</th>
+          <th>Yukleme (Mbps)</th>
+          <th>Ping (ms)</th>
+          <th>Jitter (ms)</th>
+        </tr>
+      </thead>
+      <tbody id="history-body"></tbody>
+    </table>
+  </div>
+
+  <script src="{{ url_for('static', filename='js/speed_test.js') }}"></script>
+</body>
+</html>

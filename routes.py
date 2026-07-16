@@ -6,6 +6,8 @@ from utils.packet_capture import get_session
 from utils.wifi_scanner import scan_nearby_networks
 from utils.bluetooth_scanner import scan_bluetooth_sync
 from utils.internet_tools import query_whois, query_dns, query_ip_info
+from utils.speed_test import run_speed_test, get_speed_history
+from utils.topology import get_topology
 
 
 def register_routes(app):
@@ -147,3 +149,33 @@ def register_routes(app):
         if not ip:
             return jsonify({"error": "ip parametresi gerekli"}), 400
         return jsonify(query_ip_info(ip))
+
+    # ── Speed Test ────────────────────────────────────────────
+    @app.route("/speed-test")
+    def speed_test_page():
+        return render_template("speed_test.html")
+
+    @app.route("/api/speed-test")
+    def api_speed_test():
+        try:
+            result = run_speed_test()
+            return jsonify({"status": "success", "data": result})
+        except Exception as e:
+            return jsonify({"status": "error", "message": str(e)}), 500
+
+    @app.route("/api/speed-test/history")
+    def api_speed_test_history():
+        return jsonify({"status": "success", "data": get_speed_history()})
+
+    # ── Network Topology ──────────────────────────────────────
+    @app.route("/topology")
+    def topology_page():
+        return render_template("topology.html")
+
+    @app.route("/api/topology")
+    def api_topology():
+        try:
+            result = get_topology()
+            return jsonify({"status": "success", "data": result})
+        except Exception as e:
+            return jsonify({"status": "error", "message": str(e)}), 500

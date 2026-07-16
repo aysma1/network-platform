@@ -13,14 +13,14 @@
     color: #ffffff;
     margin-bottom: 8px;
 }
-.landing-hero .hero-title span { color: #ff0033; }
+.landing-hero .hero-title span { color: #f59e0b; }
 .landing-hero .hero-sub {
     font-size: 0.88rem;
     color: #475569;
     letter-spacing: 0.5px;
 }
 
-/* ── 3 Modül Kartı ── */
+/* ── Modül Kartları ── */
 .module-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -85,6 +85,18 @@
     --card-accent:  #a78bfa;
     --card-glow:    rgba(167, 139, 250, 0.1);
     --card-shadow:  rgba(167, 139, 250, 0.15);
+}
+/* Speed Test */
+.module-card.speed {
+    --card-accent:  #fb923c;
+    --card-glow:    rgba(251, 146, 60, 0.1);
+    --card-shadow:  rgba(251, 146, 60, 0.15);
+}
+/* Network Topology */
+.module-card.topology {
+    --card-accent:  #60a5fa;
+    --card-glow:    rgba(96, 165, 250, 0.1);
+    --card-shadow:  rgba(96, 165, 250, 0.15);
 }
 
 .module-icon {

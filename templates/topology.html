@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Network Topology</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/topology.css') }}" />
+</head>
+<body>
+
+  <div class="page-title">Network Topology</div>
+
+  <div class="panel">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+      <div class="status-text" id="topo-status">Hazir.</div>
+      <button class="primary-btn" id="scan-btn">Agi Tara</button>
+    </div>
+
+    <canvas id="topology-canvas"></canvas>
+
+    <div class="legend">
+      <span><span class="dot purple"></span>Router / Gateway</span>
+      <span><span class="dot green"></span>Bu Cihaz</span>
+      <span><span class="dot cyan"></span>Diger Cihazlar</span>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="page-title" style="font-size:12px; margin-bottom:10px;">Bulunan Cihazlar</div>
+    <div class="device-list" id="device-list"></div>
+  </div>
+
+  <script src="{{ url_for('static', filename='js/topology.js') }}"></script>
+</body>
+</html>
