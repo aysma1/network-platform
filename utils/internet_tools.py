@@ -22,7 +22,7 @@ except ImportError:
     _HAS_DNS = False
 
 # Default socket timeout (seconds) for WHOIS queries.
-# Since python-whois uses raw sockets, kurumsal/restricted networks can cause
+# Since python-whois uses raw sockets, corporate/restricted networks can cause
 # queries to hang indefinitely without a timeout. This protects Flask from locking up.
 WHOIS_SOCKET_TIMEOUT = 6
 
@@ -57,12 +57,20 @@ def _is_ip(target: str) -> bool:
 # ── WHOIS ─────────────────────────────────────────────────
 
 def query_whois(target: str) -> dict:
-    if not _HAS_WHOIS:
-        return {"error": "python-whois is not installed. Please run: pip install python-whois"}
-
     target = target.strip().lower()
     if not target:
         return {"error": "Please enter a valid Domain or IP address."}
+
+    # IP addresses and domains need entirely different lookup strategies
+    # (different WHOIS servers, different RDAP endpoints, different result schemas).
+    if _is_ip(target):
+        return _query_ip_whois(target)
+    return _query_domain_whois(target)
+
+
+def _query_domain_whois(target: str) -> dict:
+    if not _HAS_WHOIS:
+        return {"error": "python-whois is not installed. Please run: pip install python-whois"}
 
     # Stage 1: Standard WHOIS query using raw socket port 43
     old_timeout = socket.getdefaulttimeout()
@@ -72,8 +80,8 @@ def query_whois(target: str) -> dict:
         if w and w.domain_name:
             ns = w.name_servers
             ns = sorted({str(n).lower() for n in ns if n}) if isinstance(ns, (list, set)) else ([str(ns).lower()] if ns else [])
-            emails = [emails] if isinstance(w.emails, str) else (sorted({str(e).lower() for e in w.emails if e}) if isinstance(w.emails, (list, set)) else [])
-            
+            emails = [w.emails] if isinstance(w.emails, str) else (sorted({str(e).lower() for e in w.emails if e}) if isinstance(w.emails, (list, set)) else [])
+
             return {
                 "query":            target,
                 "domain_name":      _clean(w.domain_name),
@@ -104,17 +112,17 @@ def query_whois(target: str) -> dict:
         import urllib.request
         import json
         import ssl
-        
+
         ctx = ssl.create_default_context()
         ctx.check_hostname = False
         ctx.verify_mode = ssl.CERT_NONE
-        
+
         url = f"https://rdap.org/domain/{target}"
         req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
-        
+
         with urllib.request.urlopen(req, context=ctx, timeout=6) as response:
             data = json.loads(response.read().decode())
-            
+
         events = data.get("events", [])
         c_date, u_date, e_date = None, None, None
         for ev in events:
@@ -153,6 +161,79 @@ def query_whois(target: str) -> dict:
         }
     except Exception as final_err:
         return {"error": f"Both standard WHOIS (Port 43) and fallback RDAP (HTTP API) queries failed: {str(final_err)}"}
+
+
+def _query_ip_whois(target: str) -> dict:
+    """
+    IP address WHOIS via RDAP bootstrap. Unlike domain WHOIS, IP RDAP
+    responses come from Regional Internet Registries (ARIN, RIPE, APNIC,
+    LACNIC, AFRINIC) and use a different schema: network "handle"/"name"
+    instead of domain_name, "startAddress"/"endAddress" instead of a
+    single registrable name, and usually no nameservers/registrar entity.
+    """
+    try:
+        import urllib.request
+        import json
+        import ssl
+
+        ctx = ssl.create_default_context()
+        ctx.check_hostname = False
+        ctx.verify_mode = ssl.CERT_NONE
+
+        # rdap.org auto-routes to the correct RIR for the given IP
+        url = f"https://rdap.org/ip/{target}"
+        req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
+
+        with urllib.request.urlopen(req, context=ctx, timeout=6) as response:
+            data = json.loads(response.read().decode())
+
+        events = data.get("events", [])
+        c_date, u_date, e_date = None, None, None
+        for ev in events:
+            action = ev.get("eventAction")
+            date_str = ev.get("eventDate", "").replace("Z", " UTC")
+            if action == "registration": c_date = date_str
+            elif action == "last changed": u_date = date_str
+            elif action == "expiration": e_date = date_str
+
+        # Try to pull an org/holder name out of the entities list (vcard fn)
+        org_name = None
+        for entity in data.get("entities", []):
+            vcard = entity.get("vcardArray", [None, []])
+            vcard = vcard[1] if len(vcard) > 1 else []
+            for prop in vcard:
+                if isinstance(prop, list) and len(prop) > 3 and prop[0] == "fn":
+                    org_name = prop[3]
+                    break
+            if org_name:
+                break
+
+        block_name = data.get("name") or data.get("handle") or target
+        address_range = None
+        if data.get("startAddress") and data.get("endAddress"):
+            address_range = f"{data['startAddress']} - {data['endAddress']}"
+
+        return {
+            "query":            target,
+            "domain_name":      block_name,
+            "registrar":        org_name or "Regional Internet Registry (RIR)",
+            "whois_server":     "https://rdap.org",
+            "creation_date":    c_date,
+            "expiration_date":  e_date,
+            "updated_date":     u_date,
+            "status":           data.get("status", []),
+            "name_servers":     [],
+            "emails":           [],
+            "name":             block_name,
+            "org":              org_name,
+            "country":          data.get("country"),
+            "state":            None,
+            "city":             None,
+            "address":          address_range,
+            "dnssec":           None,
+        }
+    except Exception as err:
+        return {"error": f"IP RDAP lookup failed for {target}: {str(err)}"}
 
 
 # ── DNS ───────────────────────────────────────────────────
@@ -363,27 +444,27 @@ def query_ssl(target: str) -> dict:
         with socket.create_connection((target, 443), timeout=5) as sock:
             with ctx.wrap_socket(sock, server_hostname=target) as ssock:
                 bin_cert = ssock.getpeercert(binary_form=True)
-                
+
                 x509 = crypto.load_certificate(crypto.FILETYPE_ASN1, bin_cert)
-                
+
                 # Parse Dates (Format: YYYYMMDDhhmmssZ)
                 not_before_raw = x509.get_notBefore().decode("ascii")
                 not_after_raw = x509.get_notAfter().decode("ascii")
-                
+
                 not_before = datetime.strptime(not_before_raw, "%Y%m%d%H%M%SZ")
                 not_after = datetime.strptime(not_after_raw, "%Y%m%d%H%M%SZ")
-                
+
                 now = datetime.utcnow()
                 days_left = (not_after - now).days
                 is_expired = days_left < 0
 
                 subject = x509.get_subject()
                 issuer = x509.get_issuer()
-                
+
                 common_name = subject.CN or target
                 issuer_org = issuer.O or "Unknown Authority"
                 issuer_cn = issuer.CN or "N/A"
-                
+
                 # Parse Subject Alternative Names (SANs)
                 sans = []
                 for i in range(x509.get_extension_count()):
