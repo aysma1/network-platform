@@ -266,10 +266,12 @@ function renderTable(dataList) {
                                 <div class="feature-title">Link Speed / RSSI</div>
                                 <div class="feature-value text-light fs-6">${device.properties.connection_type}</div>
                             </div></div>
-                            <div class="col-md-3"><div class="feature-box" style="background-color:#111827;border-color:#1f2937;">
-                                <div class="feature-title text-info"><i class="fa-solid fa-gauge-high me-1"></i> Current Latency</div>
-                                <div class="feature-value text-info font-monospace fs-6">${device.properties.latency}</div>
-                            </div></div>
+                            <div class="col-md-3">
+                                <div class="feature-box" style="background-color:#111827;border-color:#1f2937;">
+                                    <div class="feature-title" style="color: #00e5ff !important;"><i class="fa-solid fa-gauge-high me-1"></i> Current Latency</div>
+                                    <div class="feature-value font-monospace fs-6" style="color: #00ffff !important; font-weight: bold;">${device.properties.latency}</div>
+                                </div>
+                            </div>
                         </div>
                         <div class="w-100">
                             <div class="feature-box port-box" style="${portBoxStyle}">

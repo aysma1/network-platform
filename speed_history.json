@@ -61,5 +61,23 @@
     "jitter": 21.05,
     "server": "Wien Energie Superschnell (Vienna)",
     "timestamp": "2026-07-16T14:59:10.705055"
+  },
+  {
+    "success": true,
+    "download": 62.09,
+    "upload": 207.38,
+    "ping": 109.49,
+    "jitter": 13.87,
+    "server": "Wingo AG (Lausanne)",
+    "timestamp": "2026-07-17T15:53:30.994319"
+  },
+  {
+    "success": true,
+    "download": 91.69,
+    "upload": 184.41,
+    "ping": 57.88,
+    "jitter": 8.3,
+    "server": "Wingo AG (Lausanne)",
+    "timestamp": "2026-07-17T15:54:39.106833"
   }
 ]
