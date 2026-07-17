@@ -414,12 +414,14 @@ def query_ssl(target: str) -> dict:
 
 def _query_ssl_fallback(target: str) -> dict:
     """
-    Fallback method using purely built-in Python ssl library 
-    in case the pyOpenSSL module is missing.
+    Fallback method using the 'cryptography' library to parse the certificate
+    from a single TLS handshake (no second verified connection needed).
     """
     import ssl
     import socket
     from datetime import datetime
+    from cryptography import x509
+    from cryptography.hazmat.backends import default_backend
 
     target = target.strip().lower()
     if target.startswith("http://"):
@@ -434,80 +436,55 @@ def _query_ssl_fallback(target: str) -> dict:
     if not target:
         return {"error": "Please enter a valid domain name."}
 
-    # SSL sertifika hatalarını (Missing Authority Key vb.) es geçmek için
-    # verify_mode değerini CERT_NONE yapıyoruz.
     ctx = ssl.create_default_context()
     ctx.check_hostname = False
-    ctx.verify_mode = ssl.CERT_NONE  # Yerel SSL doğrulamasını devre dışı bıraktık
+    ctx.verify_mode = ssl.CERT_NONE
 
     try:
         with socket.create_connection((target, 443), timeout=5) as sock:
             with ctx.wrap_socket(sock, server_hostname=target) as ssock:
-                # verify_mode=CERT_NONE iken getpeercert() boş döner, 
-                # bu yüzden binary sertifikayı çekip onun üzerinden işlem yapmalıyız.
                 bin_cert = ssock.getpeercert(binary_form=True)
-                
-                # Eğer buraya kadar geldiyse bağlantı başarılıdır ama 
-                # standart kütüphanede pyOpenSSL olmadan binary sertifikayı 
-                # parse etmek zordur. Bu yüzden en temel el sıkışma bilgisini doğrulanmış olarak döneriz.
-                # Daha detaylı parse için terminale "pip install pyOpenSSL" yazılması önerilir.
-                
-                # Standart doğrulama ile tekrar detay almayı deneyelim (Belki bazı domainlerde yerel hata vermez)
-                decoded_cert = None
-                try:
-                    ctx_verify = ssl.create_default_context()
-                    with socket.create_connection((target, 443), timeout=3) as sock_v:
-                        with ctx_verify.wrap_socket(sock_v, server_hostname=target) as ssock_v:
-                            decoded_cert = ssock_v.getpeercert()
-                except Exception:
-                    pass
 
-                if not decoded_cert:
-                    return {
-                        "domain": target,
-                        "common_name": target,
-                        "issuer": "Handshake Succeeded (Details limited without pyOpenSSL)",
-                        "issuer_common_name": "Run: pip install pyOpenSSL",
-                        "serial_number": "N/A",
-                        "version": "N/A",
-                        "not_before": "N/A",
-                        "not_after": "N/A",
-                        "days_left": 0,
-                        "is_valid": True,
-                        "sans": [target]
-                    }
+        cert = x509.load_der_x509_certificate(bin_cert, default_backend())
 
-                ssl_date_fmt = r"%b %d %H:%M:%S %Y %Z"
-                not_before = datetime.strptime(decoded_cert.get("notBefore"), ssl_date_fmt)
-                not_after = datetime.strptime(decoded_cert.get("notAfter"), ssl_date_fmt)
-                
-                now = datetime.utcnow()
-                days_left = (not_after - now).days
-                is_expired = days_left < 0
+        not_before = cert.not_valid_before_utc.replace(tzinfo=None)
+        not_after = cert.not_valid_after_utc.replace(tzinfo=None)
+        now = datetime.utcnow()
+        days_left = (not_after - now).days
+        is_expired = days_left < 0
 
-                def parse_components(entries):
-                    result = {}
-                    for item in entries:
-                        for key, val in item:
-                            result[key] = val
-                    return result
+        def get_name_attr(name_obj, oid):
+            attrs = name_obj.get_attributes_for_oid(oid)
+            return attrs[0].value if attrs else None
 
-                issuer_data = parse_components(decoded_cert.get("issuer", []))
-                subject_data = parse_components(decoded_cert.get("subject", []))
-                sans = [item[1] for item in decoded_cert.get("subjectAltName", []) if item[0] == "DNS"]
+        from cryptography.x509.oid import NameOID, ExtensionOID
 
-                return {
-                    "domain": target,
-                    "common_name": subject_data.get("commonName", target),
-                    "issuer": issuer_data.get("organizationName", "Unknown Authority"),
-                    "issuer_common_name": issuer_data.get("commonName", "N/A"),
-                    "serial_number": decoded_cert.get("serialNumber", "N/A"),
-                    "version": decoded_cert.get("version", "N/A"),
-                    "not_before": not_before.strftime("%Y-%m-%d %H:%M:%S UTC"),
-                    "not_after": not_after.strftime("%Y-%m-%d %H:%M:%S UTC"),
-                    "days_left": max(0, days_left) if not is_expired else days_left,
-                    "is_valid": not is_expired,
-                    "sans": sans[:15]
-                }
+        common_name = get_name_attr(cert.subject, NameOID.COMMON_NAME) or target
+        issuer_org = get_name_attr(cert.issuer, NameOID.ORGANIZATION_NAME) or "Unknown Authority"
+        issuer_cn = get_name_attr(cert.issuer, NameOID.COMMON_NAME) or "N/A"
+
+        sans = []
+        try:
+            san_ext = cert.extensions.get_extension_for_oid(ExtensionOID.SUBJECT_ALTERNATIVE_NAME)
+            sans = san_ext.value.get_values_for_type(x509.DNSName)
+        except x509.ExtensionNotFound:
+            pass
+
+        return {
+            "domain": target,
+            "common_name": common_name,
+            "issuer": issuer_org,
+            "issuer_common_name": issuer_cn,
+            "serial_number": str(cert.serial_number),
+            "version": str(cert.version.value + 1) if hasattr(cert.version, "value") else str(cert.version),
+            "not_before": not_before.strftime("%Y-%m-%d %H:%M:%S UTC"),
+            "not_after": not_after.strftime("%Y-%m-%d %H:%M:%S UTC"),
+            "days_left": max(0, days_left) if not is_expired else days_left,
+            "is_valid": not is_expired,
+            "sans": sans[:15]
+        }
+
+    except socket.timeout:
+        return {"error": "Connection timed out. Port 443 might be closed or blocked on the destination host."}
     except Exception as e:
         return {"error": f"Failed to retrieve SSL details: {str(e)}"}

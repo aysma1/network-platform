@@ -94,3 +94,19 @@
     border-bottom: 1px solid #1a1e29 !important;
 }
 .wifi-child-row:hover td { background-color: #10131a !important; }
+
+/* ── Wifi Radar Scan Butonu ── */
+.btn-wifi-radar {
+    background: #00ff66 !important;           /* İçi dolu parlak siber yeşil */
+    color: #000000 !important;                /* Yeşil üstünde siyah yazı en yüksek kontrastı ve okunabilirliği sağlar */
+    border: 1px solid #00ff66 !important;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+/* Üzerine gelindiğinde (Hover) */
+.btn-wifi-radar:hover { 
+    background: #00c24e !important;           /* Tıpkı IP butonunun koyu kırmızıya dönmesi gibi, bu da koyu yeşile döner */
+    border-color: #00c24e !important;
+    color: #ffffff !important;                /* Koyu yeşil üstünde yazı beyaza döner */
+}

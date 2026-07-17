@@ -50,27 +50,29 @@
     padding: 8px 10px;
     font-size: 0.9rem;
 }
-
-.bt-scan-btn {
-    margin-left: auto;
-    background: #2f6fed;
-    color: #fff;
-    border: none;
-    border-radius: 6px;
-    padding: 10px 20px;
-    font-size: 0.95rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background 0.15s ease;
+/* ── Bluetooth Radar Scan Butonu ── */
+.btn-bluetooth-radar {
+    background: #00d2ff !important;           /* İçi dolu parlak siber yeşil */
+    color: #000000 !important;                /* Yeşil üstünde siyah yazı en yüksek kontrastı ve okunabilirliği sağlar */
+    border: 1px solid #00d2ff !important;
+    font-weight: 700;
+    text-transform: uppercase;
 }
 
-.bt-scan-btn:hover {
-    background: #4a83f2;
+/* Üzerine gelindiğinde (Hover) */
+.btn-bluetooth-radar:hover { 
+    background: #00a9cf !important;           /* Tıpkı IP butonunun koyu kırmızıya dönmesi gibi, bu da koyu yeşile döner */
+    border-color: #00a9cf !important;
+    color: #ffffff !important;                /* Koyu yeşil üstünde yazı beyaza döner */
 }
 
-.bt-scan-btn:disabled {
-    background: #3a4150;
-    cursor: not-allowed;
+/* Buton devre dışı bırakıldığında (Örn: Tarama yaparken) */
+.btn-bluetooth-radar:disabled {
+    background: #3a4150 !important;
+    border-color: #3a4150 !important;
+    color: #8a94a6 !important;
+    cursor: not-allowed !important;
+    box-shadow: none !important;
 }
 
 /* Status line */
@@ -186,27 +188,28 @@
     border: 1px solid #262b33;
 }
 
-/* ── Bluetooth Sayfası Yenilenen Scan Butonu Tasarımı ── */
-#bt-scan-btn {
-    background-color: transparent !important;
-    color: #ff0033 !important; /* Wi-Fi ScanNow ile aynı projenin canlı kırmızısı */
-    border: 1px solid #ff0033 !important;
-    font-weight: 700;
+/* ── Bluetooth PDF Butonu ── */
+.btn-bluetooth-pdf {
+    background: transparent !important;
+    color: #00d2ff !important;                /* Canlı buz mavisi yazı ve ikon */
+    border: 1px solid #00d2ff !important;     /* İnce buz mavisi kenarlık */
     text-transform: uppercase;
-    transition: all 0.2s ease-in-out;
-    box-shadow: none;
+    transition: all 0.2s ease-in-out !important;
 }
 
-#bt-scan-btn:hover {
-    background-color: rgba(255, 0, 51, 0.1) !important;
-    box-shadow: 0 0 15px rgba(255, 0, 51, 0.5) !important;
-    color: #ff4d66 !important;
+/* Üzerine gelindiğinde (Sadece buton aktifken çalışır) */
+.btn-bluetooth-pdf:hover:not(:disabled) { 
+    background: #00a9cf !important;           /* İçi buz mavisi doluyor */
+    color: #000000 !important;                /* Yazı ve ikon siyah oluyor */
+    border-color: #00d2ff !important;
 }
 
-#bt-scan-btn:disabled {
-    background-color: #1c1f26 !important;
-    border-color: #262b33 !important;
-    color: #6b7280 !important;
-    cursor: not-allowed;
+/* Buton Devre Dışı (Disabled / Kilitli) Durumdayken */
+.btn-bluetooth-pdf:disabled {
+    background: transparent !important;
+    color: #4a5568 !important;                /* Sönük, koyu gri yazı */
+    border-color: #2d3748 !important;         /* Sönük kenarlık */
+    cursor: not-allowed !important;
+    opacity: 0.6;
     box-shadow: none !important;
 }
