@@ -79,5 +79,23 @@
     "jitter": 8.3,
     "server": "Wingo AG (Lausanne)",
     "timestamp": "2026-07-17T15:54:39.106833"
+  },
+  {
+    "success": true,
+    "download": 100.14,
+    "upload": 110.94,
+    "ping": 142.17,
+    "jitter": 32.39,
+    "server": "Comnet (Tashkent)",
+    "timestamp": "2026-07-21T10:22:45.273446"
+  },
+  {
+    "success": true,
+    "download": 116.02,
+    "upload": 85.28,
+    "ping": 199.55,
+    "jitter": 10.77,
+    "server": "Comnet (Tashkent)",
+    "timestamp": "2026-07-21T10:22:56.806742"
   }
 ]
