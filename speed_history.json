@@ -1,42 +1,6 @@
 [
   {
     "success": true,
-    "download": 74.76,
-    "upload": 130.43,
-    "ping": 93.15,
-    "jitter": 0,
-    "server": "Wien Energie Superschnell (Vienna)",
-    "timestamp": "2026-07-16T14:33:10.889151"
-  },
-  {
-    "success": true,
-    "download": 84.08,
-    "upload": 167.03,
-    "ping": 55.97,
-    "jitter": 0,
-    "server": "Wien Energie Superschnell (Vienna)",
-    "timestamp": "2026-07-16T14:39:06.553881"
-  },
-  {
-    "success": true,
-    "download": 119.58,
-    "upload": 151.73,
-    "ping": 54.41,
-    "jitter": 0,
-    "server": "Wien Energie Superschnell (Vienna)",
-    "timestamp": "2026-07-16T14:41:38.848422"
-  },
-  {
-    "success": true,
-    "download": 27.43,
-    "upload": 179.74,
-    "ping": 54.76,
-    "jitter": 0.0,
-    "server": "Wien Energie Superschnell (Vienna)",
-    "timestamp": "2026-07-16T14:44:04.723019"
-  },
-  {
-    "success": true,
     "download": 54.34,
     "upload": 90.72,
     "ping": 76.89,
