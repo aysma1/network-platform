@@ -76,6 +76,12 @@ def _signal_label(rssi: int) -> str:
 
 
 async def _discover(timeout: float, min_rssi: int) -> list[dict]:
+
+    scanner = BleakScanner(
+        scanning_mode="active",
+        cb=dict(use_bdaddr=True)
+    )
+
     discovered = await BleakScanner.discover(timeout=timeout, return_adv=True)
 
     devices = []
@@ -87,7 +93,7 @@ async def _discover(timeout: float, min_rssi: int) -> list[dict]:
         real_name = device.name
         service_uuids = list(adv_data.service_uuids) if adv_data.service_uuids else []
         manufacturer_guess = _guess_manufacturer(adv_data.manufacturer_data)
-        type_guess = _guess_device_type(service_uuids)
+        type_guess = _guess_device_type(service_uuids, adv_data.manufacturer_data)
 
         # manufacturer_data keys are ints (company IDs), values are raw bytes.
         # Convert to a JSON/display-friendly form.
@@ -134,3 +140,36 @@ if __name__ == "__main__":
     for d in results:
         tag = "" if d["name_source"] == "known" else f" ({d['name_source']})"
         print(f"{d['rssi']:>5} dBm | {d['display_name']:<28}{tag:<12} | {d['address']}")
+
+def _guess_apple_device_type(data_bytes: bytes) -> Optional[str]:
+    """Apple'ın özel reklam paketinden cihaz tipini tahmin eder."""
+    if not data_bytes or len(data_bytes) < 2:
+        return None
+    
+    type_byte = data_bytes[0]
+    # Apple Proximity Pairing / AirDrop / Continuity tipleri
+    if type_byte == 0x10:  # Nearby / Continuity
+        return "Apple Device (iPhone / iPad / Mac)"
+    elif type_byte == 0x07: # AirPods / HomePod
+        return "Apple Audio Device (AirPods / HomePod)"
+    elif type_byte == 0x12: # AirTag / Find My network
+        return "Apple Find My Network Item (AirTag / Tracker)"
+    elif type_byte == 0x02: # iBeacon
+        return "iBeacon Beacon"
+    
+    return "Apple Device"
+
+def _guess_device_type(service_uuids: list, manufacturer_data: dict) -> Optional[str]:
+    # 1. Öncelik: Servis UUID'leri
+    for uuid in service_uuids or []:
+        short_uuid = uuid.lower()[:8]
+        if short_uuid in SERVICE_TYPE_HINTS:
+            return SERVICE_TYPE_HINTS[short_uuid]
+            
+    # 2. Öncelik: Apple'a özel paket analizi (Apple servis UUID göndermediği için)
+    if 0x004C in manufacturer_data:
+        apple_guess = _guess_apple_device_type(manufacturer_data[0x004C])
+        if apple_guess:
+            return apple_guess
+
+    return None
