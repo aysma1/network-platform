@@ -51,7 +51,7 @@
     --text-body:         #e2e8f0;
     --text-secondary:    #94a3b8;
     --text-tertiary:     #64748b;
-    --text-muted:        #475569;
+    --text-muted:        #9c9d9e;
     --text-faint:        #334155;
     --text-disabled:     #4a5568;
 
@@ -83,7 +83,7 @@
     --accent-orange-alt:   #ff9900;
     --accent-indigo:       #818cf8;
     --accent-indigo-light: #7dd3fc;
-    --accent-pink:         #e879f9;
+    --accent-pink:         #e681f6;
     --accent-sky:          #38bdf8;
     --accent-emerald:          #4ade80;
     --accent-emerald-border:   #22c55e;
@@ -104,57 +104,64 @@
 
 /* ── AÇIK TEMA — sadece yapısal renkler değişir, marka renkleri sabit kalır ── */
 [data-theme="light"] {
-    --bg-body:          #eef1f6;
-    --bg-panel:          #ffffff;
-    --bg-panel-alt:      #f4f6f9;
-    --bg-surface:        #f7f9fb;
-    --bg-surface-alt:    #eef1f6;
+    --bg-body:           #faf4fa; 
+    --bg-panel:          #fffdff;
+    --bg-panel-alt:      #fbf3fb;
+    --bg-surface:        #fffbff;
+    --bg-surface-alt:    #fbeff9;
     --bg-input:          #ffffff;
-    --bg-input-alt:      #f4f6fa;
-    --bg-card-soft:      #f4f6f9;
-    --bg-hover:          #eef1f6;
-    --bg-hover-alt:      #e6eaf1;
-    --bg-terminal:       #0d1117;
-    --bg-danger:         #fdeceb;
-    --bg-danger-hover:   #fbdedb;
-    --bg-danger-deep:    #fdeceb;
-    --bg-success:        #e9f9ee;
-    --bg-success-hover:  #dcf5e4;
-    --bg-success-deep:   #e9f9ee;
-    --bg-badge-success:  #e9f9ee;
-    --bg-port-box:       #fdeceb;
-    --bg-latency-box:    #eef2fb;
-    --bg-warn:           #fdf3e0;
-    --bg-tag-known:      #e9f9ee;
-    --bg-disabled:       #e2e6ee;
+    --bg-input-alt:      #fbf3fb;
+    --bg-card-soft:      #ffffff;
+    --bg-hover:          #f6e4f4;
+    --bg-hover-alt:      #efd4ec;
+    --bg-terminal:       #0f172a;
+    --bg-danger:         #ffeef0;
+    --bg-danger-hover:   #ffdbe0;
+    --bg-danger-deep:    #fecdd3;
+    --bg-success:        #ecfdf5;
+    --bg-success-hover:  #d1fae5;
+    --bg-success-deep:   #a7f3d0;
+    --bg-badge-success:  #d1fae5;
+    --bg-port-box:       #fff1f2;
+    --bg-latency-box:    #f0f9ff;
+    --bg-warn:           #fffbeb;
+    --bg-tag-known:      #d1fae5;
+    --bg-disabled:       #cbd5e1;
 
-    --border-color:      #d7dce4;
-    --border-color-soft: #e3e7ee;
-    --border-subtle:     #e1e5ee;
-    --border-subtle-2:   #dbe0e9;
-    --border-input:      #d3d9e3;
-    --border-terminal:   #1a1f2e;
-    --border-danger:     #f3b9b3;
-    --border-success:    #a9dfba;
-    --border-warn:       #f0d9a3;
-    --border-latency:    #cdd7ea;
-    --border-disabled:   #cbd3e0;
+    --border-color:      #ecd3ea;
+    --border-color-soft: #f3e1f1;
+    --border-subtle:     #eeddec;
+    --border-subtle-2:   #d4a9ce;
+    --border-input:      #d4a9ce;
+    --border-terminal:   #1e293b;
+    --border-danger:     #fda4af;
+    --border-success:    #6ee7b7;
+    --border-warn:       #fde68a;
+    --border-latency:    #bae6fd;
+    --border-disabled:   #94a3b8;
 
-    --text-primary:      #0f172a;
-    --text-body:         #1e293b;
-    --text-secondary:    #47536b;
-    --text-tertiary:     #64748b;
-    --text-muted:        #8592a8;
-    --text-faint:        #aab4c5;
-    --text-disabled:     #a0aabb;
+    --text-primary:      #2a1230;
+    --text-body:         #3a1f40;
+    --text-secondary:    #5c3d60;
+    --text-tertiary:     #7c5c80;
+    --text-muted:        #9c7fa0;
+    --text-faint:        #c9a8c8;
 
-    --overlay-faint:      rgba(15, 23, 42, 0.035);
-    --overlay-soft:       rgba(15, 23, 42, 0.05);
-    --overlay-medium:     rgba(15, 23, 42, 0.06);
-    --glow-primary:       rgba(15, 23, 42, 0.12);
-    --shadow-color:       rgba(30, 41, 59, 0.1);
-    --shadow-color-strong: rgba(30, 41, 59, 0.18);
-    --shadow-inset:       rgba(30, 41, 59, 0.1);
+    --overlay-faint:      rgba(150, 30, 140, 0.035);
+    --overlay-soft:       rgba(150, 30, 140, 0.05);
+    --overlay-medium:     rgba(150, 30, 140, 0.07);
+    --glow-primary:       rgba(230, 129, 246, 0.18);
+    --shadow-color:        rgba(150, 30, 140, 0.10);
+    --shadow-color-strong: rgba(150, 30, 140, 0.20);
+    --shadow-inset:        rgba(150, 30, 140, 0.06);
+}
+
+/* Açık temada gövdeye markanın pembe rengine uygun bir mesh-gradyan — düz beyazlığı kırar */
+[data-theme="light"] body {
+    background: radial-gradient(ellipse 1200px 500px at 20% -15%, rgba(230, 129, 246, 0.12), transparent 55%),
+                radial-gradient(ellipse 1000px 500px at 100% 10%, rgba(129, 140, 248, 0.08), transparent 55%),
+                #faf6fb;
+    background-attachment: fixed;
 }
 
 body {
@@ -165,10 +172,12 @@ body {
 }
 .custom-navbar {
     background-color: var(--bg-panel);
-    border-bottom: 2px solid var(--accent-red);
+    border-bottom: 2px solid transparent;
+    border-image: linear-gradient(90deg, var(--accent-pink) 0%, var(--accent-indigo) 55%, transparent 100%) 1;
+    box-shadow: 0 2px 20px var(--shadow-color);
     padding: 15px 0;
 }
-.brand-text { font-weight: 700; letter-spacing: 1px; color: var(--accent-red) !important; }
+.brand-text { font-weight: 700; letter-spacing: 1px; color: var(--accent-pink) !important; }
 
 /* ── Ana Tablo Kartı ── */
 .main-card {
