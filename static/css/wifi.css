@@ -5,17 +5,17 @@
 
 /* ── Sinyal seviyeleri ── */
 .wifi-signal-good {
-    color: #00ff66 !important;
+    color: var(--accent-green) !important;
     font-weight: bold;
     text-shadow: 0 0 8px rgba(0, 255, 102, 0.4);
 }
 .wifi-signal-medium {
-    color: #ffcc00 !important;
+    color: var(--accent-yellow-alt) !important;
     font-weight: bold;
     text-shadow: 0 0 8px rgba(255, 204, 0, 0.4);
 }
 .wifi-signal-poor {
-    color: #ff3300 !important;
+    color: var(--accent-red-alt) !important;
     font-weight: bold;
     text-shadow: 0 0 8px rgba(255, 51, 0, 0.4);
 }
@@ -23,30 +23,30 @@
 /* ── Güvenlik badge'leri ── */
 .security-badge-wpa {
     background-color: rgba(255, 0, 51, 0.15) !important;
-    color: #ff4d66 !important;
-    border: 1px solid #ff0033 !important;
+    color: var(--accent-red-light) !important;
+    border: 1px solid var(--accent-red) !important;
 }
 .security-badge-open {
     background-color: rgba(0, 255, 102, 0.15) !important;
-    color: #00ff66 !important;
-    border: 1px solid #00ff66 !important;
+    color: var(--accent-green) !important;
+    border: 1px solid var(--accent-green) !important;
 }
 
 /* ── SSID grup satırı ── */
 .wifi-group-parent { background-color: transparent !important; }
-.wifi-group-parent td { padding: 0 !important; border-bottom: 1px solid #2a2f3d !important; }
+.wifi-group-parent td { padding: 0 !important; border-bottom: 1px solid var(--border-color-soft) !important; }
 
 .wifi-group-summary {
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 16px 24px;
-    background-color: #0d0f14;
+    background-color: var(--bg-panel);
     transition: background-color 0.2s ease;
     min-height: 60px;
     cursor: pointer;
 }
-.wifi-group-parent:hover .wifi-group-summary { background-color: #1a1e29; }
+.wifi-group-parent:hover .wifi-group-summary { background-color: var(--bg-hover); }
 
 .wifi-group-left {
     display: flex;
@@ -55,11 +55,11 @@
     flex-wrap: wrap;
 }
 .wifi-group-lock { font-size: 1.05rem; }
-.wifi-group-name { font-size: 1rem; font-weight: 700; color: #ffffff; }
+.wifi-group-name { font-size: 1rem; font-weight: 700; color: var(--text-primary); }
 
 .wifi-ap-count-badge {
     background-color: rgba(255, 153, 0, 0.12) !important;
-    color: #ff9900 !important;
+    color: var(--accent-orange-alt) !important;
     border: 1px solid rgba(255, 153, 0, 0.4) !important;
     font-size: 0.7rem;
     font-weight: 700;
@@ -80,7 +80,7 @@
 .wifi-group-signal { font-weight: bold; white-space: nowrap; }
 
 /* ── Alt AP satırları ── */
-.wifi-group-children td { padding: 0 !important; background-color: #07090d !important; }
+.wifi-group-children td { padding: 0 !important; background-color: var(--bg-panel-alt) !important; }
 .wifi-children-collapse {
     max-height: 0;
     overflow: hidden;
@@ -89,24 +89,24 @@
 }
 .wifi-children-collapse.open { max-height: 800px; opacity: 1; }
 .wifi-child-row td {
-    background-color: #07090d !important;
+    background-color: var(--bg-panel-alt) !important;
     padding-left: 44px !important;
-    border-bottom: 1px solid #1a1e29 !important;
+    border-bottom: 1px solid var(--bg-hover) !important;
 }
-.wifi-child-row:hover td { background-color: #10131a !important; }
+.wifi-child-row:hover td { background-color: var(--bg-hover-alt) !important; }
 
 /* ── Wifi Radar Scan Butonu ── */
 .btn-wifi-radar {
-    background: #00ff66 !important;           /* İçi dolu parlak siber yeşil */
-    color: #000000 !important;                /* Yeşil üstünde siyah yazı en yüksek kontrastı ve okunabilirliği sağlar */
-    border: 1px solid #00ff66 !important;
+    background: var(--accent-green) !important;           /* İçi dolu parlak siber yeşil */
+    color: var(--bg-terminal) !important;                /* Yeşil üstünde siyah yazı en yüksek kontrastı ve okunabilirliği sağlar */
+    border: 1px solid var(--accent-green) !important;
     font-weight: 700;
     text-transform: uppercase;
 }
 
 /* Üzerine gelindiğinde (Hover) */
 .btn-wifi-radar:hover { 
-    background: #00c24e !important;           /* Tıpkı IP butonunun koyu kırmızıya dönmesi gibi, bu da koyu yeşile döner */
-    border-color: #00c24e !important;
-    color: #ffffff !important;                /* Koyu yeşil üstünde yazı beyaza döner */
+    background: var(--accent-green-hover) !important;           /* Tıpkı IP butonunun koyu kırmızıya dönmesi gibi, bu da koyu yeşile döner */
+    border-color: var(--accent-green-hover) !important;
+    color: var(--fixed-white) !important;                /* Koyu yeşil üstünde yazı beyaza döner */
 }

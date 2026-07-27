@@ -6,6 +6,7 @@
     <title>Internet Tools — Network Platform</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/internet_tools.css') }}">
 </head>
@@ -17,6 +18,10 @@
                 <i class="fa-solid fa-globe me-2"></i> INTERNET TOOLS
             </a>
             <div class="d-flex align-items-center">
+                <button id="theme-toggle-btn" class="theme-toggle-btn me-2" type="button"
+                        aria-label="Temayı değiştir" title="Açık / Koyu tema">
+                    <i class="fa-solid fa-moon"></i>
+                </button>
                 <div class="module-dropdown" id="moduleDropdown">
                     <button class="module-dropdown-btn" onclick="toggleModuleMenu()">
                         <i class="fa-solid fa-th-large"></i>
@@ -69,8 +74,8 @@
 
     <div class="container">
         <div class="mb-4">
-            <h2 class="h4 fw-bold mb-1" style="color:#fff;">Internet Domain & IP Tools</h2>
-            <span class="small" style="color:#475569;">
+            <h2 class="h4 fw-bold mb-1" style="color:var(--text-primary);">Internet Domain & IP Tools</h2>
+            <span class="small" style="color:var(--text-muted);">
                 <i class="fa-solid fa-circle-info me-1"></i>
                 WHOIS · DNS Lookup · IP Geolocation — free, no API key required
             </span>
@@ -98,7 +103,7 @@
             <div id="panel-whois" class="it-panel active">
                 <div class="it-query-box">
                     <span class="it-query-label">
-                        <i class="fa-solid fa-magnifying-glass me-1" style="color:#a78bfa;"></i>
+                        <i class="fa-solid fa-magnifying-glass me-1" style="color:var(--accent-purple);"></i>
                         Domain or IP Address
                     </span>
                     <div class="it-input-row">
@@ -110,7 +115,7 @@
                         </button>
                     </div>
                     <div class="mt-2 d-flex gap-2 flex-wrap align-items-center">
-                        <span class="small" style="color:#334155;">Quick:</span>
+                        <span class="small" style="color:var(--text-faint);">Quick:</span>
                         <span class="it-type-pill" onclick="quickQuery('whois','google.com')">google.com</span>
                         <span class="it-type-pill" onclick="quickQuery('whois','github.com')">github.com</span>
                         <span class="it-type-pill" onclick="quickQuery('whois','8.8.8.8')">8.8.8.8</span>
@@ -129,7 +134,7 @@
             <div id="panel-dns" class="it-panel">
                 <div class="it-query-box">
                     <span class="it-query-label">
-                        <i class="fa-solid fa-server me-1" style="color:#a78bfa;"></i>
+                        <i class="fa-solid fa-server me-1" style="color:var(--accent-purple);"></i>
                         Domain Name
                     </span>
                     <div class="it-input-row">
@@ -156,7 +161,7 @@
                         </div>
                     </div>
                     <div class="mt-2 d-flex gap-2 flex-wrap align-items-center">
-                        <span class="small" style="color:#334155;">Quick:</span>
+                        <span class="small" style="color:var(--text-faint);">Quick:</span>
                         <span class="it-type-pill" onclick="quickQuery('dns','google.com')">google.com</span>
                         <span class="it-type-pill" onclick="quickQuery('dns','github.com')">github.com</span>
                         <span class="it-type-pill" onclick="quickQuery('dns','cloudflare.com')">cloudflare.com</span>
@@ -174,7 +179,7 @@
             <div id="panel-ipinfo" class="it-panel">
                 <div class="it-query-box">
                     <span class="it-query-label">
-                        <i class="fa-solid fa-location-dot me-1" style="color:#a78bfa;"></i>
+                        <i class="fa-solid fa-location-dot me-1" style="color:var(--accent-purple);"></i>
                         IP Address
                     </span>
                     <div class="it-input-row">
@@ -186,7 +191,7 @@
                         </button>
                     </div>
                     <div class="mt-2 d-flex gap-2 flex-wrap align-items-center">
-                        <span class="small" style="color:#334155;">Quick:</span>
+                        <span class="small" style="color:var(--text-faint);">Quick:</span>
                         <span class="it-type-pill" onclick="quickQuery('ipinfo','8.8.8.8')">8.8.8.8 (Google)</span>
                         <span class="it-type-pill" onclick="quickQuery('ipinfo','1.1.1.1')">1.1.1.1 (Cloudflare)</span>
                         <span class="it-type-pill" onclick="quickQuery('ipinfo','208.67.222.222')">208.67.222.222 (OpenDNS)</span>
@@ -204,7 +209,7 @@
             <div id="panel-ssl" class="it-panel">
                 <div class="it-query-box">
                     <span class="it-query-label">
-                        <i class="fa-solid fa-shield-halved me-1" style="color:#a78bfa;"></i>
+                        <i class="fa-solid fa-shield-halved me-1" style="color:var(--accent-purple);"></i>
                         Domain Name (HTTPS)
                     </span>
                     <div class="it-input-row">
@@ -216,7 +221,7 @@
                         </button>
                     </div>
                     <div class="mt-2 d-flex gap-2 flex-wrap align-items-center">
-                        <span class="small" style="color:#334155;">Quick:</span>
+                        <span class="small" style="color:var(--text-faint);">Quick:</span>
                         <span class="it-type-pill" onclick="quickQuery('ssl','google.com')">google.com</span>
                         <span class="it-type-pill" onclick="quickQuery('ssl','cloudflare.com')">cloudflare.com</span>
                         <span class="it-type-pill" onclick="quickQuery('ssl','self-signed.badssl.com')">self-signed (badssl)</span>

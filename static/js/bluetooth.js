@@ -202,7 +202,7 @@ function deviceRowHtml(d) {
     return `
         <tr class="clickable-row">
             <td class="fw-bold">
-                <i class="fa-brands fa-bluetooth-b me-2" style="color:#00d2ff;"></i>
+                <i class="fa-brands fa-bluetooth-b me-2" style="color:var(--accent-cyan);"></i>
                 ${d.display_name}
                 <div class="mt-1">${sourceTag(d.name_source)}</div>
             </td>

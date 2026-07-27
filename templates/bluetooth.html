@@ -6,6 +6,7 @@
     <title>Bluetooth Airspace Audit Radar</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/bluetooth.css') }}">
 </head>
@@ -13,10 +14,14 @@
 
     <nav class="navbar navbar-dark custom-navbar mb-4">
         <div class="container">
-            <a href="/" class="navbar-brand mb-0 h1" style="color:#00d2ff; font-weight:700; letter-spacing:1px;">
+            <a href="/" class="navbar-brand mb-0 h1" style="color:var(--accent-cyan); font-weight:700; letter-spacing:1px;">
                 <i class="fa-brands fa-bluetooth-b me-2"></i> BLUETOOTH AIRSPACE RADAR
             </a>
             <div class="d-flex align-items-center">
+                <button id="theme-toggle-btn" class="theme-toggle-btn me-2" type="button"
+                        aria-label="Temayı değiştir" title="Açık / Koyu tema">
+                    <i class="fa-solid fa-moon"></i>
+                </button>
                 <div class="module-dropdown" id="moduleDropdown">
                 <button class="module-dropdown-btn" onclick="toggleModuleMenu()">
                     <i class="fa-solid fa-th-large"></i>
@@ -113,7 +118,7 @@
                     <div class="mx-auto" style="max-width: 500px;">
                         <div class="progress bg-dark border border-secondary" style="height: 10px; border-radius: 4px;">
                             <div id="progressBar" class="progress-bar progress-bar-striped progress-bar-animated"
-                                style="width: 15%; background-color: #00d2ff;" role="progressbar"></div>
+                                style="width: 15%; background-color: var(--accent-cyan);" role="progressbar"></div>
                         </div>
                     </div>
                 </div>

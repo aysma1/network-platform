@@ -1,18 +1,18 @@
 /* ════════════════════════════════════════════════════════════
    TOPOLOGY.CSS — Network Topology sayfasına özel
    base.css her zaman önce yüklenmeli
-   Accent: #818cf8 (cyan-blue) — proje temasıyla uyumlu
+   Accent: var(--accent-indigo) (cyan-blue) — proje temasıyla uyumlu
    ════════════════════════════════════════════════════════════ */
 
-body { background-color: #0d0f14; padding-bottom: 80px; }
+body { background-color: var(--bg-panel); padding-bottom: 80px; }
 
 /* ── Topo brand rengi ── */
-.topo-brand { color: #818cf8 !important; font-weight: 700; letter-spacing: 1px; }
+.topo-brand { color: var(--accent-indigo) !important; font-weight: 700; letter-spacing: 1px; }
 
 /* ── Panel kart ── */
 .topo-panel {
-    background: #0a0c10;
-    border: 1px solid #1a1f2e;
+    background: var(--bg-surface-alt);
+    border: 1px solid var(--border-subtle);
     border-radius: 8px;
     padding: 20px;
     margin-bottom: 16px;
@@ -32,18 +32,18 @@ body { background-color: #0d0f14; padding-bottom: 80px; }
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 1.2px;
-    color: #475569;
+    color: var(--text-muted);
     display: flex;
     align-items: center;
     gap: 7px;
 }
-.topo-section-title i { color: #818cf8; }
+.topo-section-title i { color: var(--accent-indigo); }
 
 /* ── Scan butonu ── */
 .btn-topo-scan {
     background: transparent;
-    color: #818cf8 !important;
-    border: 1px solid #818cf8 !important;
+    color: var(--accent-indigo) !important;
+    border: 1px solid var(--accent-indigo) !important;
     font-weight: 700;
     font-size: 0.8rem;
     text-transform: uppercase;
@@ -56,28 +56,28 @@ body { background-color: #0d0f14; padding-bottom: 80px; }
 .btn-topo-scan:hover {
     background: rgba(129,140,248,0.1);
     box-shadow: 0 0 12px rgba(129,140,248,0.3);
-    color: #7dd3fc !important;
+    color: var(--accent-indigo-light) !important;
 }
 .btn-topo-scan:disabled { opacity: 0.4; cursor: not-allowed; }
 
 /* ── Durum metni ── */
 .topo-status {
     font-size: 0.78rem;
-    color: #475569;
+    color: var(--text-muted);
     font-family: 'Consolas', monospace;
 }
-.topo-status.scanning { color: #818cf8; }
-.topo-status.done     { color: #4ade80; }
-.topo-status.error    { color: #f87171; }
+.topo-status.scanning { color: var(--accent-indigo); }
+.topo-status.done     { color: var(--accent-emerald); }
+.topo-status.error    { color: var(--accent-rose); }
 
 /* ── Canvas ── */
 #topology-canvas {
     width: 100%;
     height: 500px;
     display: block;
-    background: radial-gradient(circle at center, rgba(129,140,248,0.04) 0%, transparent 70%), #07090d;
+    background: radial-gradient(circle at center, rgba(129,140,248,0.04) 0%, transparent 70%), var(--bg-panel-alt);
     border-radius: 8px;
-    border: 1px solid #1a1f2e;
+    border: 1px solid var(--border-subtle);
 }
 
 /* ── Lejant ── */
@@ -86,7 +86,7 @@ body { background-color: #0d0f14; padding-bottom: 80px; }
     gap: 20px;
     margin-top: 12px;
     font-size: 0.75rem;
-    color: #475569;
+    color: var(--text-muted);
     flex-wrap: wrap;
     align-items: center;
 }
@@ -97,9 +97,9 @@ body { background-color: #0d0f14; padding-bottom: 80px; }
     margin-right: 6px;
     vertical-align: middle;
 }
-.topo-dot.router  { background: #ff0033; box-shadow: 0 0 5px rgba(255,0,51,0.5); }
-.topo-dot.self    { background: #4ade80; box-shadow: 0 0 5px rgba(74,222,128,0.5); }
-.topo-dot.device  { background: #818cf8; box-shadow: 0 0 5px rgba(129,140,248,0.4); }
+.topo-dot.router  { background: var(--accent-red); box-shadow: 0 0 5px rgba(255,0,51,0.5); }
+.topo-dot.self    { background: var(--accent-emerald); box-shadow: 0 0 5px rgba(74,222,128,0.5); }
+.topo-dot.device  { background: var(--accent-indigo); box-shadow: 0 0 5px rgba(129,140,248,0.4); }
 
 /* ── Cihaz listesi ── */
 .topo-device-grid {
@@ -109,16 +109,16 @@ body { background-color: #0d0f14; padding-bottom: 80px; }
     margin-top: 4px;
 }
 .topo-device-card {
-    background: #07090d;
-    border: 1px solid #1a1f2e;
+    background: var(--bg-panel-alt);
+    border: 1px solid var(--border-subtle);
     border-radius: 6px;
     padding: 10px 14px;
     transition: border-color 0.2s;
 }
-.topo-device-card:hover { border-color: #818cf8; }
+.topo-device-card:hover { border-color: var(--accent-indigo); }
 .topo-device-card .dc-name {
     font-weight: 700;
-    color: #e2e8f0;
+    color: var(--text-body);
     font-size: 0.85rem;
     margin-bottom: 4px;
     white-space: nowrap;
@@ -128,7 +128,7 @@ body { background-color: #0d0f14; padding-bottom: 80px; }
 .topo-device-card .dc-ip,
 .topo-device-card .dc-mac {
     font-size: 0.72rem;
-    color: #475569;
+    color: var(--text-muted);
     font-family: 'Consolas', monospace;
 }
 .topo-device-card .dc-type {
@@ -137,5 +137,5 @@ body { background-color: #0d0f14; padding-bottom: 80px; }
     text-transform: uppercase;
     letter-spacing: 0.4px;
     margin-top: 5px;
-    color: #818cf8;
+    color: var(--accent-indigo);
 }

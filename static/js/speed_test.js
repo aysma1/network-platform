@@ -8,6 +8,16 @@ const centerY   = canvas.height * 0.85;
 const radius    = canvas.width  * 0.4;
 const MAX_MBPS  = 200;
 
+// ── Tema değişkenini gerçek renge çevir ────────────────────
+// Canvas 2D API, CSS var(--x) ifadesini anlamaz; bu yüzden aktif
+// temada değişkenin çözümlenmiş (hesaplanmış) değerini okuyoruz.
+function cssVar(name, fallback) {
+    const v = getComputedStyle(document.documentElement)
+        .getPropertyValue(name)
+        .trim();
+    return v || fallback;
+}
+
 // ── Gauge çizimi ──────────────────────────────────────────
 function drawGauge(valueMbps) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -15,11 +25,16 @@ function drawGauge(valueMbps) {
     const startAngle = Math.PI;
     const endAngle   = 2 * Math.PI;
 
+    const trackColor = cssVar('--border-subtle', '#1a1f2e');
+    const tickColor  = cssVar('--text-faint', 'var(--text-faint)');
+    const accentFrom = cssVar('--accent-orange', '#f97316');
+    const accentTo   = cssVar('--accent-yellow', 'var(--accent-yellow)');
+
     // Arka plan yayı
     ctx.beginPath();
     ctx.arc(centerX, centerY, radius, startAngle, endAngle);
     ctx.lineWidth   = 16;
-    ctx.strokeStyle = "#1a1f2e";
+    ctx.strokeStyle = trackColor;
     ctx.lineCap     = "round";
     ctx.stroke();
 
@@ -32,9 +47,9 @@ function drawGauge(valueMbps) {
             centerX - radius, centerY,
             centerX + radius, centerY
         );
-        grad.addColorStop(0,   "#f97316");
-        grad.addColorStop(0.5, "#f97316");
-        grad.addColorStop(1,   "#facc15");
+        grad.addColorStop(0,   accentFrom);
+        grad.addColorStop(0.5, accentFrom);
+        grad.addColorStop(1,   accentTo);
 
         ctx.beginPath();
         ctx.arc(centerX, centerY, radius, startAngle, valueAngle);
@@ -56,18 +71,23 @@ function drawGauge(valueMbps) {
         ctx.moveTo(x1, y1);
         ctx.lineTo(x2, y2);
         ctx.lineWidth   = 1.5;
-        ctx.strokeStyle = "#334155";
+        ctx.strokeStyle = tickColor;
         ctx.stroke();
 
         // Etiket
         const lx = centerX + (radius - 36) * Math.cos(a);
         const ly = centerY + (radius - 36) * Math.sin(a);
-        ctx.fillStyle  = "#334155";
+        ctx.fillStyle  = tickColor;
         ctx.font       = "9px Consolas, monospace";
         ctx.textAlign  = "center";
         ctx.fillText(v, lx, ly + 3);
     });
 }
+
+// Tema değişince gauge'u güncel renklerle yeniden çiz
+window.addEventListener('np-theme-change', () => {
+    drawGauge(parseFloat(document.getElementById("gauge-num").textContent) || 0);
+});
 
 // ── Gauge animasyonu ──────────────────────────────────────
 function animateGauge(target) {
@@ -135,18 +155,18 @@ async function loadHistory() {
         const tbody   = document.getElementById("history-body");
 
         if (!history.length) {
-            tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:#334155;padding:20px;">No test history yet</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--text-faint);padding:20px;">No test history yet</td></tr>`;
             return;
         }
 
         tbody.innerHTML = [...history].reverse().map(row => `
             <tr>
-                <td style="color:#64748b;">${row.timestamp}</td>
+                <td style="color:var(--text-tertiary);">${row.timestamp}</td>
                 <td class="td-dl">${row.download_mbps}</td>
                 <td class="td-ul">${row.upload_mbps}</td>
                 <td class="td-ping">${row.ping_ms}</td>
-                <td style="color:#facc15;">${row.jitter_ms}</td>
-                <td style="color:#475569;font-size:0.75rem;">${row.server?.name || '—'}</td>
+                <td style="color:var(--accent-yellow);">${row.jitter_ms}</td>
+                <td style="color:var(--text-muted);font-size:0.75rem;">${row.server?.name || '—'}</td>
             </tr>
         `).join('');
     } catch {

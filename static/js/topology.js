@@ -37,6 +37,16 @@ function layoutNodes(nodes) {
     return positioned;
 }
 
+// ── Tema değişkenini gerçek renge çevir ────────────────────
+// Canvas 2D API CSS var(--x) ifadesini anlamaz; aktif temada
+// değişkenin hesaplanmış değerini okuyup kullanıyoruz.
+function cssVar(name, fallback) {
+    const v = getComputedStyle(document.documentElement)
+        .getPropertyValue(name)
+        .trim();
+    return v || fallback;
+}
+
 // ── Renk ─────────────────────────────────────────────────
 function colorForType(type) {
     if (type === "router")      return "#ff0033";
@@ -107,7 +117,7 @@ function draw() {
         ctx.fill();
 
         // Label
-        ctx.fillStyle  = "#94a3b8";
+        ctx.fillStyle  = cssVar('--text-secondary', '#94a3b8');
         ctx.font       = "11px 'Segoe UI', monospace";
         ctx.textAlign  = "center";
         const label    = n.label.length > 16 ? n.label.slice(0, 14) + "…" : n.label;
@@ -128,8 +138,8 @@ function renderDeviceList() {
 
     if (!nonRouter.length) {
         deviceList.innerHTML = `
-            <div style="color:#334155;font-size:0.82rem;grid-column:1/-1;text-align:center;padding:24px 0;">
-                <i class="fa-solid fa-diagram-project d-block mb-2" style="font-size:1.8rem;color:#1a1f2e;"></i>
+            <div style="color:var(--text-faint);font-size:0.82rem;grid-column:1/-1;text-align:center;padding:24px 0;">
+                <i class="fa-solid fa-diagram-project d-block mb-2" style="font-size:1.8rem;color:var(--border-subtle);"></i>
                 No devices found
             </div>`;
         return;
@@ -179,6 +189,9 @@ async function scanNetwork() {
         scanBtn.disabled = false;
     }
 }
+
+// Tema değişince radar'ı güncel renklerle yeniden çiz
+window.addEventListener('np-theme-change', () => draw());
 
 // ── Init ──────────────────────────────────────────────────
 resizeCanvas();

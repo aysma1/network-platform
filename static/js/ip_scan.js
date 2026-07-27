@@ -114,13 +114,13 @@ function startAutoScanTimer() {
     clearInterval(timerInterval);
     if (autoScanToggle.checked) {
         scanGroupContainer.classList.remove('disabled-state');
-        autoTimerBadge.style.color = '#38bdf8';
+        autoTimerBadge.style.color = 'var(--accent-sky)';
         autoTimerBadge.innerHTML = `<i class="fa-solid fa-clock perfect-spin me-1"></i> Auto-Scan: ${countdown}s`;
     }
     timerInterval = setInterval(async () => {
         if (!autoScanToggle.checked) {
             scanGroupContainer.classList.add('disabled-state');
-            autoTimerBadge.style.color = '#64748b';
+            autoTimerBadge.style.color = 'var(--text-tertiary)';
             autoTimerBadge.innerHTML = `<i class="fa-solid fa-pause me-1"></i> Auto-Scan: Disabled`;
             return;
         }
@@ -130,7 +130,7 @@ function startAutoScanTimer() {
             autoTimerBadge.innerHTML = `<i class="fa-solid fa-arrows-rotate perfect-spin me-1"></i> Syncing...`;
             await triggerScan(true);
         } else {
-            autoTimerBadge.style.color = '#38bdf8';
+            autoTimerBadge.style.color = 'var(--accent-sky)';
             autoTimerBadge.innerHTML = `<i class="fa-solid fa-clock perfect-spin me-1"></i> Auto-Scan: ${countdown}s`;
         }
     }, 1000);
@@ -244,7 +244,7 @@ function renderTable(dataList) {
             </td>`;
         tbody.appendChild(row);
 
-        const portBoxStyle = hasCritical ? 'border-color:#ff0033;background-color:#210c0e;' : 'border-color:#22c55e;background-color:#0c2112;';
+        const portBoxStyle = hasCritical ? 'border-color:var(--accent-red);background-color:var(--bg-danger-deep);' : 'border-color:var(--accent-emerald-border);background-color:var(--bg-success-deep);';
         const portBoxClass = hasCritical ? 'text-danger' : 'text-success';
         const portBoxIcon  = hasCritical ? 'fa-radiation' : 'fa-shield-halved';
         const detailRow = document.createElement('tr');
@@ -267,9 +267,9 @@ function renderTable(dataList) {
                                 <div class="feature-value text-light fs-6">${device.properties.connection_type}</div>
                             </div></div>
                             <div class="col-md-3">
-                                <div class="feature-box" style="background-color:#111827;border-color:#1f2937;">
-                                    <div class="feature-title" style="color: #00e5ff !important;"><i class="fa-solid fa-gauge-high me-1"></i> Current Latency</div>
-                                    <div class="feature-value font-monospace fs-6" style="color: #00ffff !important; font-weight: bold;">${device.properties.latency}</div>
+                                <div class="feature-box" style="background-color:var(--bg-latency-box);border-color:var(--border-latency);">
+                                    <div class="feature-title" style="color: var(--accent-cyan-bright) !important;"><i class="fa-solid fa-gauge-high me-1"></i> Current Latency</div>
+                                    <div class="feature-value font-monospace fs-6" style="color: var(--accent-cyan-bright) !important; font-weight: bold;">${device.properties.latency}</div>
                                 </div>
                             </div>
                         </div>
@@ -478,13 +478,13 @@ autoScanToggle.addEventListener('change', () => {
     if (autoScanToggle.checked) {
         countdown = 120;
         scanGroupContainer.classList.remove('disabled-state');
-        autoTimerBadge.style.color = '#38bdf8';
+        autoTimerBadge.style.color = 'var(--accent-sky)';
         autoTimerBadge.innerHTML = `<i class="fa-solid fa-clock perfect-spin me-1"></i> Auto-Scan: ${countdown}s`;
         startAutoScanTimer();
     } else {
         clearInterval(timerInterval);
         scanGroupContainer.classList.add('disabled-state');
-        autoTimerBadge.style.color = '#64748b';
+        autoTimerBadge.style.color = 'var(--text-tertiary)';
         autoTimerBadge.innerHTML = `<i class="fa-solid fa-pause me-1"></i> Auto-Scan: Disabled`;
     }
 });

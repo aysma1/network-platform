@@ -64,12 +64,12 @@ async function runWhois() {
         const statusHtml = (data.status || []).length
             ? `<div class="it-pill-list">${data.status.map(s =>
                 `<span class="it-status-pill">${s.split(' ')[0]}</span>`).join('')}</div>`
-            : '<span style="color:#334155;">—</span>';
+            : '<span style="color:var(--text-faint);">—</span>';
 
         const nsHtml = (data.name_servers || []).length
             ? `<div class="it-pill-list">${data.name_servers.map(n =>
                 `<span class="it-ns-pill">${n}</span>`).join('')}</div>`
-            : '<span style="color:#334155;">—</span>';
+            : '<span style="color:var(--text-faint);">—</span>';
 
         document.getElementById('whois-result').innerHTML = `
             <div class="it-whois-grid">
@@ -133,14 +133,14 @@ async function runDns() {
         };
 
         const resolverBadge = data.resolver_used
-            ? `<span style="font-size:0.7rem;background:rgba(167,139,250,0.1);border:1px solid rgba(167,139,250,0.25);color:#a78bfa;padding:3px 9px;border-radius:3px;font-family:monospace;margin-left:8px;">
+            ? `<span style="font-size:0.7rem;background:rgba(167,139,250,0.1);border:1px solid rgba(167,139,250,0.25);color:var(--accent-purple);padding:3px 9px;border-radius:3px;font-family:monospace;margin-left:8px;">
                 <i class="fa-solid fa-server me-1"></i>via ${data.resolver_used}</span>`
             : '';
 
-        let html = `<div style="margin-bottom:12px;font-size:0.78rem;color:#334155;display:flex;align-items:center;flex-wrap:wrap;gap:6px;">
-            <i class="fa-solid fa-check-circle" style="color:#a78bfa;"></i>
-            <strong style="color:#a78bfa;">${data.total}</strong> records found for
-            <span style="font-family:monospace;color:#e2e8f0;">${data.query}</span>
+        let html = `<div style="margin-bottom:12px;font-size:0.78rem;color:var(--text-faint);display:flex;align-items:center;flex-wrap:wrap;gap:6px;">
+            <i class="fa-solid fa-check-circle" style="color:var(--accent-purple);"></i>
+            <strong style="color:var(--accent-purple);">${data.total}</strong> records found for
+            <span style="font-family:monospace;color:var(--text-body);">${data.query}</span>
             ${resolverBadge}
         </div>`;
 
@@ -212,7 +212,7 @@ async function runIpInfo() {
             <div class="mt-3">
                 <a href="https://www.openstreetmap.org/?mlat=${data.lat}&mlon=${data.lon}&zoom=10"
                    target="_blank" rel="noopener"
-                   style="font-size:0.78rem;color:#a78bfa;text-decoration:none;">
+                   style="font-size:0.78rem;color:var(--accent-purple);text-decoration:none;">
                     <i class="fa-solid fa-map-location-dot me-1"></i>
                     View on OpenStreetMap (${data.lat}, ${data.lon})
                 </a>
@@ -249,16 +249,16 @@ async function runSsl() {
         if (data.error) { showError('ssl-result', data.error); return; }
 
         const statusText = data.is_valid 
-            ? `<span class="it-status-pill" style="background:rgba(34,197,94,0.12); border-color:#22c55e; color:#4ade80;"><i class="fa-solid fa-circle-check me-1"></i>Active / Valid</span>`
-            : `<span class="it-status-pill" style="background:rgba(220,38,38,0.12); border-color:#ef4444; color:#f87171;"><i class="fa-solid fa-circle-xmark me-1"></i>Expired / Invalid</span>`;
+            ? `<span class="it-status-pill" style="background:rgba(34,197,94,0.12); border-color:var(--accent-emerald-border); color:var(--accent-emerald);"><i class="fa-solid fa-circle-check me-1"></i>Active / Valid</span>`
+            : `<span class="it-status-pill" style="background:rgba(220,38,38,0.12); border-color:var(--accent-rose-strong); color:var(--accent-rose);"><i class="fa-solid fa-circle-xmark me-1"></i>Expired / Invalid</span>`;
 
-        let dayColor = "#4ade80"; 
-        if (data.days_left <= 15) dayColor = "#facc15"; 
-        if (data.days_left <= 3 || !data.is_valid) dayColor = "#f87171"; 
+        let dayColor = "var(--accent-emerald)"; 
+        if (data.days_left <= 15) dayColor = "var(--accent-yellow)"; 
+        if (data.days_left <= 3 || !data.is_valid) dayColor = "var(--accent-rose)"; 
 
         const sansHtml = (data.sans || []).length
             ? `<div class="it-pill-list">${data.sans.map(n => `<span class="it-ns-pill">${n}</span>`).join('')}</div>`
-            : '<span style="color:#334155;">—</span>';
+            : '<span style="color:var(--text-faint);">—</span>';
 
         document.getElementById('ssl-result').innerHTML = `
             <div class="it-whois-grid">

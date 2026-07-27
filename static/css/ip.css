@@ -6,50 +6,50 @@
 /* ── Güvensiz satır ── */
 .table tbody tr.row-danger-alert td,
 .table tbody tr.row-danger-alert:not(:hover) td {
-    background-color: #3a161a !important;
-    color: #f87171 !important;
-    border-bottom: 1px solid #7a1f2d !important;
+    background-color: var(--bg-danger) !important;
+    color: var(--accent-rose) !important;
+    border-bottom: 1px solid var(--border-danger) !important;
 }
-.table tbody tr.row-danger-alert:hover td { background-color: #4c1d22 !important; }
+.table tbody tr.row-danger-alert:hover td { background-color: var(--bg-danger-hover) !important; }
 .table tbody tr.row-danger-alert .ip-badge {
-    background-color: #1a0a0c !important;
-    color: #ff8888 !important;
-    border: 1px solid #7a1f2d !important;
+    background-color: var(--bg-danger-deep) !important;
+    color: var(--accent-red-lighter) !important;
+    border: 1px solid var(--border-danger) !important;
     box-shadow: 0 0 6px rgba(255, 0, 51, 0.15);
 }
 
 /* ── Güvenli satır ── */
 .table tbody tr.row-success-alert td,
 .table tbody tr.row-success-alert:not(:hover) td {
-    background-color: #142c1b !important;
-    color: #86efac !important;
-    border-bottom: 1px solid #1f7a3a !important;
+    background-color: var(--bg-success) !important;
+    color: var(--accent-emerald-light) !important;
+    border-bottom: 1px solid var(--border-success) !important;
 }
-.table tbody tr.row-success-alert:hover td { background-color: #1c3d26 !important; }
+.table tbody tr.row-success-alert:hover td { background-color: var(--bg-success-hover) !important; }
 .table tbody tr.row-success-alert .ip-badge {
-    background-color: #0a140e !important;
-    color: #a7f3d0 !important;
-    border: 1px solid #1f7a3a !important;
+    background-color: var(--bg-success-deep) !important;
+    color: var(--accent-emerald-pale) !important;
+    border: 1px solid var(--border-success) !important;
 }
 
 /* Metin renk sabitleme */
 .row-danger-alert .text-light, .row-danger-alert .fw-semibold, .row-danger-alert td span,
 .row-success-alert .text-light, .row-success-alert .fw-semibold, .row-success-alert td span {
-    color: #ffffff !important;
+    color: var(--text-primary) !important;
 }
 
 /* ── Scan butonu ── */
 .btn-scan {
-    background: #ff0033;
-    color: #ffffff !important;
-    border: 1px solid #ff0033;
+    background: var(--accent-red);
+    color: var(--fixed-white) !important;
+    border: 1px solid var(--accent-red);
     font-weight: 700;
     text-transform: uppercase;
 }
-.btn-scan:hover { background: #cc0029; box-shadow: 0 0 15px rgba(255,0,51,0.4); }
+.btn-scan:hover { background: var(--accent-red-hover); box-shadow: 0 0 15px rgba(255,0,51,0.4); }
 
 /* ── Port badge'leri ── */
-.port-box { background-color: #1a1215; border: 1px solid #5c1a24; }
+.port-box { background-color: var(--bg-port-box); border: 1px solid var(--border-danger); }
 .port-badge {
     font-family: 'Consolas', monospace;
     font-size: 0.85rem;
@@ -59,49 +59,49 @@
 }
 .port-critical {
     background-color: rgba(255, 0, 51, 0.25) !important;
-    color: #ff4d66 !important;
-    border: 1px solid #ff0033 !important;
+    color: var(--accent-red-light) !important;
+    border: 1px solid var(--accent-red) !important;
     box-shadow: 0 0 8px rgba(255, 0, 51, 0.3);
 }
 .port-neutral {
     background-color: rgba(148, 163, 184, 0.1) !important;
-    color: #cbd5e1 !important;
-    border: 1px solid #475569 !important;
+    color: var(--text-secondary) !important;
+    border: 1px solid var(--text-muted) !important;
 }
 .port-none-detected {
-    color: #86efac !important;
+    color: var(--accent-emerald-light) !important;
     font-weight: 700;
     text-shadow: 0 0 12px rgba(134, 239, 172, 0.4);
 }
-.port-none-detected i { color: #4ade80 !important; }
+.port-none-detected i { color: var(--accent-emerald) !important; }
 
 /* ── Terminal Alanı Genel Ayarları ── */
 .cmd-terminal {
-    background-color: #05070a !important;   /* Tam siyah yerine çok hafif lacivert/gri tonlu derin bir terminal siyahı */
-    color: #39ff14 !important;               /* Neon Terminal Yeşili (Aşırı parlak ve okuması çok rahattır) */
+    background-color: var(--bg-terminal) !important;   /* Tam siyah yerine çok hafif lacivert/gri tonlu derin bir terminal siyahı */
+    color: var(--accent-terminal-green) !important;               /* Neon Terminal Yeşili (Aşırı parlak ve okuması çok rahattır) */
     font-family: 'Consolas', 'Courier New', monospace !important;
     padding: 12px;
     border-radius: 6px;
-    border: 1px solid #1a2333;               /* Şık ve hafif belirgin bir terminal çerçevesi */
+    border: 1px solid var(--border-terminal);               /* Şık ve hafif belirgin bir terminal çerçevesi */
     font-size: 0.875rem;
     line-height: 1.5;
-    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.8); /* Terminale derinlik katan iç gölge */
+    box-shadow: inset 0 0 10px var(--shadow-inset); /* Terminale derinlik katan iç gölge */
 }
 
 /* ── Latency Kutusu Özel Renklendirmesi ── */
 .latency-box {
-    background-color: #111827 !important;
-    border-color: #1f2937 !important;
+    background-color: var(--bg-latency-box) !important;
+    border-color: var(--border-latency) !important;
 }
 
 /* Başlık ve İkon için Canlı Turkuaz */
 .latency-text {
-    color: #00e5ff !important; /* Çok daha parlak ve enerjik bir cyan/turkuaz */
+    color: var(--accent-cyan-bright) !important; /* Çok daha parlak ve enerjik bir cyan/turkuaz */
     text-shadow: 0 0 8px rgba(0, 229, 255, 0.2); /* Hafif siber parlama efekti */
 }
 
 /* Değer kısmı (ms) için ekstra parlaklık */
 .latency-value {
-    color: #00ffff !important; /* Tam parlak cyan */
+    color: var(--accent-cyan-bright) !important; /* Tam parlak cyan */
     font-weight: 700;
 }

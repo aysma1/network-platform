@@ -4,7 +4,7 @@
     max-width: 960px;
     margin: 0 auto;
     padding: 24px 16px 64px;
-    color: #e6e8eb;
+    color: var(--text-body);
     font-family: -apple-system, "Segoe UI", Roboto, sans-serif;
 }
 
@@ -14,7 +14,7 @@
 }
 
 .bt-subtitle {
-    color: #9aa4b2;
+    color: var(--text-secondary);
     font-size: 0.9rem;
     max-width: 640px;
     line-height: 1.4;
@@ -28,8 +28,8 @@
     gap: 16px;
     margin: 20px 0;
     padding: 16px;
-    background: #161a20;
-    border: 1px solid #262b33;
+    background: var(--bg-card-soft);
+    border: 1px solid var(--border-subtle-2);
     border-radius: 8px;
     flex-wrap: wrap;
 }
@@ -39,38 +39,38 @@
     flex-direction: column;
     gap: 6px;
     font-size: 0.8rem;
-    color: #9aa4b2;
+    color: var(--text-secondary);
 }
 
 .bt-field select {
-    background: #0d0f13;
-    color: #e6e8eb;
-    border: 1px solid #2f3541;
+    background: var(--bg-panel);
+    color: var(--text-body);
+    border: 1px solid var(--border-input);
     border-radius: 6px;
     padding: 8px 10px;
     font-size: 0.9rem;
 }
 /* ── Bluetooth Radar Scan Butonu ── */
 .btn-bluetooth-radar {
-    background: #00d2ff !important;           /* İçi dolu parlak siber yeşil */
-    color: #000000 !important;                /* Yeşil üstünde siyah yazı en yüksek kontrastı ve okunabilirliği sağlar */
-    border: 1px solid #00d2ff !important;
+    background: var(--accent-cyan) !important;           /* İçi dolu parlak siber yeşil */
+    color: var(--bg-terminal) !important;                /* Yeşil üstünde siyah yazı en yüksek kontrastı ve okunabilirliği sağlar */
+    border: 1px solid var(--accent-cyan) !important;
     font-weight: 700;
     text-transform: uppercase;
 }
 
 /* Üzerine gelindiğinde (Hover) */
 .btn-bluetooth-radar:hover { 
-    background: #00a9cf !important;           /* Tıpkı IP butonunun koyu kırmızıya dönmesi gibi, bu da koyu yeşile döner */
-    border-color: #00a9cf !important;
-    color: #ffffff !important;                /* Koyu yeşil üstünde yazı beyaza döner */
+    background: var(--accent-cyan-hover) !important;           /* Tıpkı IP butonunun koyu kırmızıya dönmesi gibi, bu da koyu yeşile döner */
+    border-color: var(--accent-cyan-hover) !important;
+    color: var(--fixed-white) !important;                /* Koyu yeşil üstünde yazı beyaza döner */
 }
 
 /* Buton devre dışı bırakıldığında (Örn: Tarama yaparken) */
 .btn-bluetooth-radar:disabled {
-    background: #3a4150 !important;
-    border-color: #3a4150 !important;
-    color: #8a94a6 !important;
+    background: var(--bg-disabled) !important;
+    border-color: var(--bg-disabled) !important;
+    color: var(--text-disabled) !important;
     cursor: not-allowed !important;
     box-shadow: none !important;
 }
@@ -79,28 +79,28 @@
 
 .bt-status {
     font-size: 0.85rem;
-    color: #9aa4b2;
+    color: var(--text-secondary);
     margin-bottom: 12px;
 }
 
 .bt-status.error {
-    color: #ef5a5a;
+    color: var(--accent-rose-strong);
 }
 
 /* Results */
 
 .bt-results-header {
     font-size: 0.8rem;
-    color: #9aa4b2;
+    color: var(--text-secondary);
     margin-bottom: 10px;
 }
 
 .bt-empty {
-    color: #6b7280;
+    color: var(--text-tertiary);
     font-size: 0.9rem;
     padding: 32px 0;
     text-align: center;
-    border: 1px dashed #262b33;
+    border: 1px dashed var(--border-subtle-2);
     border-radius: 8px;
 }
 
@@ -111,8 +111,8 @@
 }
 
 .bt-device-card {
-    background: #161a20;
-    border: 1px solid #262b33;
+    background: var(--bg-card-soft);
+    border: 1px solid var(--border-subtle-2);
     border-radius: 8px;
     padding: 14px 16px;
     display: grid;
@@ -132,7 +132,7 @@
     grid-column: 1 / -1;
     font-family: "SF Mono", "Consolas", monospace;
     font-size: 0.82rem;
-    color: #9aa4b2;
+    color: var(--text-secondary);
     letter-spacing: 0.3px;
 }
 
@@ -140,13 +140,13 @@
     text-align: right;
     font-family: "SF Mono", "Consolas", monospace;
     font-size: 0.85rem;
-    color: #c7ccd4;
+    color: var(--text-body);
 }
 
 .bt-signal-estimate {
     grid-column: 1 / -1;
     font-size: 0.78rem;
-    color: #6b7280;
+    color: var(--text-tertiary);
 }
 
 .bt-device-details {
@@ -167,15 +167,15 @@
 }
 
 .bt-tag-known {
-    background: #16311f;
-    color: #4ade80;
-    border: 1px solid #1f4d2c;
+    background: var(--bg-tag-known);
+    color: var(--accent-emerald);
+    border: 1px solid var(--border-success);
 }
 
 .bt-tag-inferred {
-    background: #332815;
-    color: #f2b13d;
-    border: 1px solid #4d3c1a;
+    background: var(--bg-warn);
+    color: var(--accent-amber);
+    border: 1px solid var(--border-warn);
 }
 
 .bt-tag-inferred::before {
@@ -183,32 +183,32 @@
 }
 
 .bt-tag-unavailable {
-    background: #1c1f26;
-    color: #6b7280;
-    border: 1px solid #262b33;
+    background: var(--bg-input);
+    color: var(--text-tertiary);
+    border: 1px solid var(--border-subtle-2);
 }
 
 /* ── Bluetooth PDF Butonu ── */
 .btn-bluetooth-pdf {
     background: transparent !important;
-    color: #00d2ff !important;                /* Canlı buz mavisi yazı ve ikon */
-    border: 1px solid #00d2ff !important;     /* İnce buz mavisi kenarlık */
+    color: var(--accent-cyan) !important;                /* Canlı buz mavisi yazı ve ikon */
+    border: 1px solid var(--accent-cyan) !important;     /* İnce buz mavisi kenarlık */
     text-transform: uppercase;
     transition: all 0.2s ease-in-out !important;
 }
 
 /* Üzerine gelindiğinde (Sadece buton aktifken çalışır) */
 .btn-bluetooth-pdf:hover:not(:disabled) { 
-    background: #00a9cf !important;           /* İçi buz mavisi doluyor */
-    color: #000000 !important;                /* Yazı ve ikon siyah oluyor */
-    border-color: #00d2ff !important;
+    background: var(--accent-cyan-hover) !important;           /* İçi buz mavisi doluyor */
+    color: var(--bg-terminal) !important;                /* Yazı ve ikon siyah oluyor */
+    border-color: var(--accent-cyan) !important;
 }
 
 /* Buton Devre Dışı (Disabled / Kilitli) Durumdayken */
 .btn-bluetooth-pdf:disabled {
     background: transparent !important;
-    color: #4a5568 !important;                /* Sönük, koyu gri yazı */
-    border-color: #2d3748 !important;         /* Sönük kenarlık */
+    color: var(--text-disabled) !important;                /* Sönük, koyu gri yazı */
+    border-color: var(--border-disabled) !important;         /* Sönük kenarlık */
     cursor: not-allowed !important;
     opacity: 0.6;
     box-shadow: none !important;

@@ -10,13 +10,13 @@
     font-size: 2rem;
     font-weight: 800;
     letter-spacing: 1px;
-    color: #ffffff;
+    color: var(--text-primary);
     margin-bottom: 8px;
 }
-.landing-hero .hero-title span { color: #e879f9; }
+.landing-hero .hero-title span { color: var(--accent-pink); }
 .landing-hero .hero-sub {
     font-size: 0.88rem;
-    color: #475569;
+    color: var(--text-muted);
     letter-spacing: 0.5px;
 }
 
@@ -33,8 +33,8 @@
 @media (max-width: 600px)  { .module-grid { grid-template-columns: 1fr; } }
 
 .module-card {
-    background-color: #0a0c10;
-    border: 1px solid #1a1f2e;
+    background-color: var(--bg-surface-alt);
+    border: 1px solid var(--border-subtle);
     border-radius: 10px;
     padding: 32px 24px 28px;
     display: flex;
@@ -64,25 +64,25 @@
 
 /* IP Radar */
 .module-card.ip {
-    --card-accent:  #ff0033;
+    --card-accent:  var(--accent-red);
     --card-glow:    rgba(255, 0, 51, 0.12);
     --card-shadow:  rgba(255, 0, 51, 0.2);
 }
 /* Wi-Fi Radar */
 .module-card.wifi {
-    --card-accent:  #00ff66;
+    --card-accent:  var(--accent-green);
     --card-glow:    rgba(0, 255, 102, 0.1);
     --card-shadow:  rgba(0, 255, 102, 0.15);
 }
 /* Bluetooth */
 .module-card.bluetooth {
-    --card-accent:  #00d2ff;
+    --card-accent:  var(--accent-cyan);
     --card-glow:    rgba(0, 210, 255, 0.1);
     --card-shadow:  rgba(0, 210, 255, 0.15);
 }
 /* Internet Tools */
 .module-card.internet {
-    --card-accent:  #a78bfa;
+    --card-accent:  var(--accent-purple);
     --card-glow:    rgba(167, 139, 250, 0.1);
     --card-shadow:  rgba(167, 139, 250, 0.15);
 }
@@ -100,14 +100,14 @@
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 1.5px;
-    color: #ffffff;
+    color: var(--text-primary);
     margin-bottom: 10px;
     position: relative;
     z-index: 1;
 }
 .module-desc {
     font-size: 0.78rem;
-    color: #475569;
+    color: var(--text-muted);
     line-height: 1.6;
     margin-bottom: 24px;
     position: relative;
@@ -129,9 +129,9 @@
     letter-spacing: 0.5px;
     padding: 3px 9px;
     border-radius: 3px;
-    background-color: rgba(255,255,255,0.04);
-    border: 1px solid #1e2535;
-    color: #64748b;
+    background-color: var(--overlay-soft);
+    border: 1px solid var(--border-subtle-2);
+    color: var(--text-tertiary);
 }
 .module-btn {
     display: inline-flex;
@@ -152,7 +152,7 @@
     text-decoration: none;
 }
 .module-btn:hover {
-    background: rgba(255,255,255,0.05);
+    background: var(--overlay-medium);
     box-shadow: 0 0 14px var(--card-shadow);
     color: var(--card-accent);
 }
@@ -167,12 +167,12 @@
     flex-wrap: wrap;
 }
 .status-chip {
-    background: #0a0c10;
-    border: 1px solid #1a1f2e;
+    background: var(--bg-surface-alt);
+    border: 1px solid var(--border-subtle);
     border-radius: 4px;
     padding: 6px 14px;
     font-size: 0.76rem;
-    color: #475569;
+    color: var(--text-muted);
     display: flex;
     align-items: center;
     gap: 7px;
@@ -180,22 +180,22 @@
 .status-chip .dot {
     width: 7px; height: 7px;
     border-radius: 50%;
-    background: #1e2535;
+    background: var(--border-subtle-2);
 }
 .status-chip .dot.online {
-    background: #22c55e;
+    background: var(--accent-emerald-border);
     box-shadow: 0 0 5px rgba(34,197,94,0.5);
 }
 
 /* Speed Test */
 .module-card.speed {
-    --card-accent:  #f97316;
+    --card-accent:  var(--accent-orange);
     --card-glow:    rgba(249, 115, 22, 0.1);
     --card-shadow:  rgba(249, 115, 22, 0.15);
 }
 /* Network Topology */
 .module-card.topology {
-    --card-accent:  #818cf8;
+    --card-accent:  var(--accent-indigo);
     --card-glow:    rgba(129, 140, 248, 0.1);
     --card-shadow:  rgba(129, 140, 248, 0.15);
 }
