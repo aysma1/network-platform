@@ -12,8 +12,8 @@
 }
 .table tbody tr.row-danger-alert:hover td { background-color: var(--bg-danger-hover) !important; }
 .table tbody tr.row-danger-alert .ip-badge {
-    background-color: var(--bg-danger-deep) !important;
-    color: var(--accent-red-lighter) !important;
+    background-color: var(--accent-red) !important;
+    color: var(--fixed-white) !important;
     border: 1px solid var(--border-danger) !important;
     box-shadow: 0 0 6px rgba(255, 0, 51, 0.15);
 }
@@ -27,8 +27,8 @@
 }
 .table tbody tr.row-success-alert:hover td { background-color: var(--bg-success-hover) !important; }
 .table tbody tr.row-success-alert .ip-badge {
-    background-color: var(--bg-success-deep) !important;
-    color: var(--accent-emerald-pale) !important;
+    background-color: var(--accent-emerald-border) !important;
+    color: var(--fixed-white) !important;
     border: 1px solid var(--border-success) !important;
 }
 
@@ -105,3 +105,54 @@
     color: var(--accent-cyan-bright) !important; /* Tam parlak cyan */
     font-weight: 700;
 }
+
+/* ── Açık temada koyu-tema için ayarlanmış neon tonlar okunmuyor, düzeltiliyor ── */
+[data-theme="light"] .latency-text,
+[data-theme="light"] .latency-value {
+    color: #075985 !important;
+    text-shadow: none;
+    font-weight: 700;
+}
+[data-theme="light"] .latency-box {
+    border-color: #7dd3fc !important;
+}
+[data-theme="light"] .port-none-detected,
+[data-theme="light"] .port-none-detected i {
+    color: #0f7a42 !important;
+    text-shadow: none;
+}
+
+/* ── Bu sayfada koyu temaya göre ayarlanmış beyaz/açık renkli metin ve outline
+   butonlar (başlık, "Gateway/Router", "Wired/Unknown", Execute Ping, Connect,
+   Running etiketi vb.) açık temanın açık zemininde kayboluyor — tema-duyarlı hale getiriliyor ── */
+.text-light {
+    color: var(--text-primary) !important;
+}
+.btn-outline-light {
+    color: var(--text-primary) !important;
+    border-color: var(--border-color) !important;
+    background-color: transparent !important;
+}
+.btn-outline-light:hover {
+    background-color: var(--overlay-soft) !important;
+    color: var(--text-primary) !important;
+}
+.btn-outline-light:disabled,
+.btn-outline-light.disabled {
+    color: var(--text-muted) !important;
+    border-color: var(--border-subtle) !important;
+}
+
+/* ── Telnet port kutusu: bg-dark + text-white ile sabit koyu kutu olacak
+   şekilde tasarlanmış, temadan bağımsız olmalı. id ile doğrudan hedefleyip
+   her türlü çakışmayı bertaraf ediyoruz. ── */
+input[id^="port-"] {
+    background-color: #15161a !important;
+    color: #ffffff !important;
+    border-color: var(--border-terminal) !important;
+}
+input[id^="port-"]::placeholder { color: #8a8f98 !important; }
+
+/* ── Tarama sırasındaki durum/yüzde metni ── */
+#progress-status { color: var(--accent-red) !important; }
+#progress-percent { color: var(--text-primary) !important; }

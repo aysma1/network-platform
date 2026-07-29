@@ -95,7 +95,7 @@ function renderGroupedTable(networks, tbody) {
                     <div class="wifi-group-right">
                         <span class="${signalClass} wifi-group-signal">
                             <i class="fa-solid fa-signal me-1"></i>${best.signal} dBm
-                            <span class="text-muted small fw-normal">best</span>
+                            <span class="wifi-group-signal-label small fw-normal">best</span>
                         </span>
                         <span class="badge port-badge ${isOpen ? 'security-badge-open' : 'security-badge-wpa'}">${best.security}</span>
                         <i class="fa-solid fa-angle-down toggle-icon"></i>

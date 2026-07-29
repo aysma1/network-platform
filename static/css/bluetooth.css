@@ -213,3 +213,12 @@
     opacity: 0.6;
     box-shadow: none !important;
 }
+
+/* Tema-uyumlu başlık ve dipnot renkleri (Bootstrap'in sabit text-light/text-muted yerine) */
+.bt-heading {
+    color: var(--text-heading, var(--text-body));
+}
+
+.bt-footnote {
+    color: var(--text-tertiary);
+}

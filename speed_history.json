@@ -61,5 +61,113 @@
     "jitter": 10.77,
     "server": "Comnet (Tashkent)",
     "timestamp": "2026-07-21T10:22:56.806742"
+  },
+  {
+    "success": true,
+    "download": 86.01,
+    "upload": 133.91,
+    "ping": 117.4,
+    "jitter": 12.57,
+    "server": "LEW TelNet GmbH (Neusaess)",
+    "timestamp": "2026-07-28T09:38:27.530821"
+  },
+  {
+    "success": true,
+    "download": 36.82,
+    "upload": 55.59,
+    "ping": 1800000.0,
+    "jitter": 21.44,
+    "server": "Tojiktelecom (Dushanbe)",
+    "timestamp": "2026-07-29T08:57:21.244145"
+  },
+  {
+    "success": true,
+    "download": 0.0,
+    "upload": 0.23,
+    "ping": 600094.74,
+    "jitter": 23.96,
+    "server": "FreeLink (Tashkent)",
+    "timestamp": "2026-07-29T09:17:34.215064"
+  },
+  {
+    "success": true,
+    "download": 20.75,
+    "upload": 47.01,
+    "ping": 1800000.0,
+    "jitter": 14.96,
+    "server": "Tojiktelecom (Dushanbe)",
+    "timestamp": "2026-07-29T09:19:30.494668"
+  },
+  {
+    "success": true,
+    "download": 0.0,
+    "upload": 0.0,
+    "ping": 1200553.45,
+    "jitter": 80797.36,
+    "server": "FreeLink (Tashkent)",
+    "timestamp": "2026-07-29T09:31:22.973668"
+  },
+  {
+    "success": true,
+    "download": 38.5,
+    "upload": 12.76,
+    "ping": 1800000.0,
+    "jitter": 21.81,
+    "server": "Tojiktelecom (Dushanbe)",
+    "timestamp": "2026-07-29T09:33:10.581522"
+  },
+  {
+    "success": true,
+    "download": 0.6,
+    "upload": 0.42,
+    "ping": 1201217.72,
+    "jitter": 16.29,
+    "server": "FreeLink (Tashkent)",
+    "timestamp": "2026-07-29T09:36:23.424251"
+  },
+  {
+    "success": true,
+    "download": 28.06,
+    "upload": 48.63,
+    "ping": 1800000.0,
+    "jitter": 17.6,
+    "server": "Tojiktelecom (Dushanbe)",
+    "timestamp": "2026-07-29T09:41:47.836119"
+  },
+  {
+    "success": true,
+    "download": 0.0,
+    "upload": 0.42,
+    "ping": 600269.15,
+    "jitter": 28934.86,
+    "server": "FreeLink (Tashkent)",
+    "timestamp": "2026-07-29T09:49:03.333614"
+  },
+  {
+    "success": true,
+    "download": 19.75,
+    "upload": 45.66,
+    "ping": 1800000.0,
+    "jitter": 44.65,
+    "server": "Tojiktelecom (Dushanbe)",
+    "timestamp": "2026-07-29T10:06:53.155978"
+  },
+  {
+    "success": true,
+    "download": 0.4,
+    "upload": 0.83,
+    "ping": 1201225.09,
+    "jitter": 787.96,
+    "server": "FreeLink (Tashkent)",
+    "timestamp": "2026-07-29T10:08:41.406065"
+  },
+  {
+    "success": true,
+    "download": 0.2,
+    "upload": 0.83,
+    "ping": 1201222.88,
+    "jitter": 17.55,
+    "server": "FreeLink (Tashkent)",
+    "timestamp": "2026-07-29T10:12:19.590238"
   }
 ]

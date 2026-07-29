@@ -95,7 +95,17 @@
 }
 .wifi-child-row:hover td { background-color: var(--bg-hover-alt) !important; }
 
+/* ── Tema-uyumlu metin sınıfları (Bootstrap text-light / text-muted yerine) ── */
+.wifi-page-title {
+    color: var(--text-primary) !important;
+}
+.wifi-group-signal-label {
+    color: var(--text-secondary) !important;
+}
+
 /* ── Wifi Radar Scan Butonu ── */
+
+
 .btn-wifi-radar {
     background: var(--accent-green) !important;           /* İçi dolu parlak siber yeşil */
     color: var(--bg-terminal) !important;                /* Yeşil üstünde siyah yazı en yüksek kontrastı ve okunabilirliği sağlar */
