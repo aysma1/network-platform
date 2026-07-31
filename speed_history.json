@@ -187,5 +187,14 @@
     "jitter": 40.06,
     "server": "Tojiktelecom (Dushanbe)",
     "timestamp": "2026-07-29T10:50:49.159564"
+  },
+  {
+    "success": true,
+    "download": 20.1,
+    "upload": 49.45,
+    "ping": 1800000.0,
+    "jitter": 8.4,
+    "server": "Teleimpianti srl (Ardea)",
+    "timestamp": "2026-07-31T10:46:24.601068"
   }
 ]
