@@ -262,3 +262,13 @@
     --card-glow:    rgba(129, 140, 248, 0.1);
     --card-shadow:  rgba(129, 140, 248, 0.15);
 }
+/* Hotspot Radar */
+.module-card.hotspot {
+    --card-accent:  var(--accent-amber);
+    --card-glow:    rgba(242, 177, 61, 0.1);
+    --card-shadow:  rgba(242, 177, 61, 0.15);
+}
+.module-card.hotspot .module-btn,
+.module-card.hotspot .module-btn:hover {
+    color: #2b1d02;
+}

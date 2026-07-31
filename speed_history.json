@@ -169,5 +169,23 @@
     "jitter": 17.55,
     "server": "FreeLink (Tashkent)",
     "timestamp": "2026-07-29T10:12:19.590238"
+  },
+  {
+    "success": true,
+    "download": 0.39,
+    "upload": 0.0,
+    "ping": 1201227.62,
+    "jitter": 95462.04,
+    "server": "FreeLink (Tashkent)",
+    "timestamp": "2026-07-29T10:48:28.436329"
+  },
+  {
+    "success": true,
+    "download": 38.47,
+    "upload": 34.83,
+    "ping": 1800000.0,
+    "jitter": 40.06,
+    "server": "Tojiktelecom (Dushanbe)",
+    "timestamp": "2026-07-29T10:50:49.159564"
   }
 ]

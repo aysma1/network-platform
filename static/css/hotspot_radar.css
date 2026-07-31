@@ -1,0 +1,119 @@
+.status-banner {
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+
+.status-banner.active {
+    background: rgba(242, 177, 61, 0.15);
+    border: 1px solid var(--accent-amber);
+    color: var(--accent-amber);
+}
+
+.status-banner.inactive {
+    background: rgba(120, 120, 120, 0.15);
+    border: 1px solid var(--text-secondary);
+    color: var(--text-secondary);
+}
+
+.btn-scan-hotspot {
+    background: var(--accent-amber);
+    color: #1a1a1a;
+    border: none;
+}
+
+.btn-scan-hotspot:hover {
+    opacity: 0.85;
+    color: #1a1a1a;
+}
+
+.btn-scan-hotspot {
+    background-color: var(--accent-amber) !important;
+    color: #1a1a1a !important;
+    border: none !important;
+}
+
+.btn-scan-hotspot:hover,
+.btn-scan-hotspot:focus,
+.btn-scan-hotspot:active {
+    background-color: var(--accent-amber) !important;
+    color: #1a1a1a !important;
+    opacity: 0.85;
+    border: none !important;
+}
+
+.hotspot-table thead th {
+    color: var(--accent-amber);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    font-weight: 700;
+    border-bottom: 2px solid var(--accent-amber);
+    padding: 12px 10px;
+    background: rgba(242, 177, 61, 0.06);
+}
+
+.hotspot-table tbody tr {
+    transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.hotspot-table tbody tr:hover {
+    background: rgba(242, 177, 61, 0.08);
+}
+
+.hotspot-table tbody td {
+    padding: 12px 10px;
+    border-bottom: 1px solid var(--border-subtle, rgba(255,255,255,0.06));
+}
+
+.hotspot-row-num {
+    color: var(--text-muted, #9ca3af);
+    font-weight: 700;
+    font-size: 0.8rem;
+}
+
+.hotspot-ip-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'Courier New', monospace;
+    font-weight: 700;
+    color: var(--accent-amber);
+}
+
+.hotspot-ip-badge::before {
+    content: '';
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--accent-amber);
+    box-shadow: 0 0 6px var(--accent-amber);
+    flex-shrink: 0;
+}
+
+.hotspot-hostname {
+    font-weight: 600;
+    color: var(--text-primary, #fff);
+}
+
+.hotspot-mac {
+    font-family: 'Courier New', monospace;
+    font-size: 0.82rem;
+    color: var(--text-muted, #9ca3af);
+    letter-spacing: 0.3px;
+}
+
+.hotspot-vendor-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    border: 1px solid var(--accent-amber);
+    color: var(--accent-amber);
+    background: rgba(242, 177, 61, 0.1);
+    white-space: nowrap;
+}

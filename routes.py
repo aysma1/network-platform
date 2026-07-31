@@ -8,7 +8,7 @@ from utils.bluetooth_scanner import scan_bluetooth_sync
 from utils.internet_tools import query_whois, query_dns, query_ip_info, query_ssl
 from utils.speed_test import run_speed_test, get_speed_history
 from utils.topology import get_topology
-
+from utils.hotspot_scanner import scan_hotspot_clients
 
 def register_routes(app):
 
@@ -249,3 +249,13 @@ def register_routes(app):
             return jsonify({"status": "success", "data": result})
         except Exception as e:
             return jsonify({"status": "error", "message": str(e)}), 500
+
+
+
+    @app.route('/hotspot-radar')
+    def hotspot_radar():
+        return render_template('hotspot_radar.html')
+
+    @app.route('/api/hotspot-radar/scan')
+    def api_hotspot_scan():
+        return jsonify(scan_hotspot_clients())
