@@ -539,6 +539,7 @@ body {
 .module-dropdown-item[data-module="internet"]  { --mc: var(--accent-purple); }
 .module-dropdown-item[data-module="speed"]     { --mc: var(--accent-orange); }
 .module-dropdown-item[data-module="topology"]  { --mc: var(--accent-indigo); }
+.module-dropdown-item[data-module="hotspot"]   { --mc: var(--accent-amber); }
 
 .module-dropdown-item .item-dot  { background: var(--mc); box-shadow: 0 0 5px var(--mc); }
 .module-dropdown-item:hover      { border-left-color: var(--mc); color: var(--mc); }
