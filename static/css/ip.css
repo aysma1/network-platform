@@ -40,13 +40,20 @@
 
 /* ── Scan butonu ── */
 .btn-scan {
-    background: var(--accent-red);
+    background: var(--accent-red) !important;
     color: var(--fixed-white) !important;
     border: 1px solid var(--accent-red);
     font-weight: 700;
     text-transform: uppercase;
 }
-.btn-scan:hover { background: var(--accent-red-hover); box-shadow: 0 0 15px rgba(255,0,51,0.4); }
+.btn-scan:hover { background: var(--accent-red-hover) !important; box-shadow: 0 0 15px rgba(255,0,51,0.4); }
+.btn-scan:disabled,
+.btn-scan.disabled {
+    background: var(--accent-red) !important;
+    color: var(--fixed-white) !important;
+    border-color: var(--accent-red) !important;
+    opacity: 0.7;
+}
 
 /* ── Port badge'leri ── */
 .port-box { background-color: var(--bg-port-box); border: 1px solid var(--border-danger); }
