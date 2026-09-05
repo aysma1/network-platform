@@ -1,0 +1,10 @@
+Flask>=2.3
+scapy>=2.5
+pywifi>=1.1.12
+bleak>=0.21
+speedtest-cli>=2.1.3
+dnspython>=2.4
+python-whois>=0.9.4
+mac-vendor-lookup>=0.1.12
+psutil>=5.9
+netifaces>=0.11
